@@ -1,0 +1,41 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="my_checkbox_style">
+        <item name="buttonTint">#5000</item>
+    </style>
+
+
+    <string name="title_phraseMystere"><u>Phrase Mystère :</u></string>
+    <string name="title_Photographie"> <u>Vos Photos :</u></string>
+    <string name="title_Succes"><u>Vos Succès :</u></string>
+
+    <string name="vf_numQuestion_1"><u>Question 1</u></string>
+    <string name="vf_numQuestion_2"><u>Question 2</u></string>
+    <string name="vf_numQuestion_3"><u>Question 3</u></string>
+    <string name="vf_txt_startgame"><u>Cliquer sur l'écran pour démarrer le jeu.</u></string>
+    <string name="vf_timer">Temps Restant : 10</string>
+
+
+    <string name="rules_title_carte"><u>La Carte :</u></string>
+    <string name="rules_title_interface"><u>L\'Interface :</u></string>
+    <string name="rules_title_jeu"><u>Les Jeux :</u></string>
+
+    <string name="qcm_number_question">Question 1</string>
+
+
+
+
+
+
+</resources>

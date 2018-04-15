@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="1040dp"
+    android:layout_height="650dp"
+    android:gravity="center_horizontal|center_vertical"
+    android:background="@drawable/background_jeu_vraifaux">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:id="@+id/VF_layoutConsigne"
+            android:layout_width="900dp"
+            android:layout_height="600dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="50dp"
+            android:layout_centerInParent="true"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/VF_consigne"
+                android:layout_width="700dp"
+                android:layout_height="400dp"
+                android:layout_marginTop="30dp"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/VF_blinkText"
+                android:layout_width="700dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="15dp"
+                android:textSize="25sp"
+                android:textColor="@color/noir"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/VF_layoutGame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="800dp"
+                android:layout_height="60dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:id="@+id/VF_numeroQuestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vf_numQuestion_1"
+                    android:textSize="28sp"
+                    android:textColor="@color/noir"
+                    android:layout_marginLeft="100dp"
+                    android:background="@drawable/textview_qcm_style"/>
+
+                <TextView
+                    android:id="@+id/VF_chrono"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="200dp"
+                    android:text="@string/vf_timer"
+                    android:textSize="26sp"
+                    android:textColor="@color/noir"
+                    android:gravity="center"
+                    android:format="Chronomètre : %s"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/VF_question"
+                android:layout_width="800dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="90dp"
+                android:gravity="center"
+                android:textSize="25sp"
+                android:textColor="@color/noir"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/design_question"/>
+
+
+
+            <Button
+                android:id="@+id/VF_btnVrai"
+                android:layout_width="600dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="35dp"
+                android:background="@drawable/btn_choix_vrai"/>
+
+            <Button
+                android:id="@+id/VF_btnFaux"
+                android:layout_width="600dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="35dp"
+                android:background="@drawable/btn_choix_faux"/>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/VF_layoutResultat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/VF_resultQuestion"
+                android:layout_width="800dp"
+                android:layout_height="250dp"
+                android:layout_marginTop="50dp"
+                android:padding="90dp"
+                android:textSize="20sp"
+                android:textColor="@color/noir"
+                android:gravity="center"
+                android:background="@drawable/design_question"/>
+
+            <LinearLayout
+                android:layout_width="800dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/VF_isCorrectMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:textAlignment="center"
+                    android:textSize="30sp"
+                    android:textColor="@color/noir"
+                    android:gravity="center" />
+
+                <ImageView
+                    android:id="@+id/VF_ImageAnswer"
+                    android:layout_width="500dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="30dp" />
+
+                <TextView
+                    android:id="@+id/VF_resultAnswer"
+                    android:layout_width="600dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:textSize="20sp"
+                    android:textColor="@color/noir"
+                    android:gravity="center" />
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+  <include
+      layout="@layout/player_selection" />
+
+</RelativeLayout>

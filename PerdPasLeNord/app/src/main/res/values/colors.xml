@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorError">#BB0B0B</color>
+
+
+    <color name="noir">#000</color>
+    <color name="noir_trans">#90303030</color>
+    <color name="gris">#BABABA</color>
+
+    <color name="blanc">#FFF</color>
+
+    <color name="blue">#73C2FB</color>
+    <color name="blue_trans">#4073C2FB</color>
+
+    <color name="rouge">#BB0B0B</color>
+    <color name="rouge_trans">#40BB0B0B</color>
+
+    <color name="vert">#3A9D23</color>
+    <color name="vert_trans">#403A9D23</color>
+
+    <color name="orange">#ED7F10</color>
+    <color name="orange_trans">#40ED7F10</color>
+
+    <color name="marron">#5B3C11</color>
+    <color name="text_shadow">#7F000000</color>
+
+    <color name="jaune">#FFFF00</color>
+    <color name="jaune_trans">#40FFFF00</color>
+
+    <color name="violet">#791CF8</color>
+    <color name="violet_trans">#40791CF8</color>
+
+    <color name="transparent">#00FFFFFF</color>
+
+</resources>

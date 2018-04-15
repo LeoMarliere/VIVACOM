@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="100dp"
+    android:layout_height="800dp">
+
+    <Button
+        android:id="@+id/menuBtn_Infos"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="40dp"
+        android:padding="5dp"
+        android:background="@drawable/btn_info_off"
+        android:layout_alignParentBottom="true"/>
+
+    <Button
+        android:id="@+id/menuBtn_Photos"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="40dp"
+        android:padding="5dp"
+        android:background="@drawable/btn_photo_off"
+        android:layout_alignParentBottom="true"/>
+
+    <Button
+        android:id="@+id/menuBtn_Jeu"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="40dp"
+        android:padding="5dp"
+        android:background="@drawable/btn_jeu_off"
+        android:layout_alignParentBottom="true"/>
+
+    <Button
+        android:id="@+id/menuBtn_Carnet"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="40dp"
+        android:padding="5dp"
+        android:background="@drawable/btn_carnet_on"
+        android:layout_alignParentBottom="true"/>
+
+    <Button
+        android:id="@+id/menuBtn_Carte"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="40dp"
+        android:padding="5dp"
+        android:background="@drawable/btn_map"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

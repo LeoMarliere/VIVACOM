@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/acceuil_mainScreen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/MJ_Introduction"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/Team_Creation"
+        android:visibility="visible"
+        android:background="@color/noir_trans">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="450dp"
+            android:layout_centerVertical="true">
+
+            <RelativeLayout
+                android:id="@+id/MJ_textBox"
+                android:layout_width="750dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="25dp"
+                android:background="@drawable/guide_bulle"
+                android:layout_centerVertical="true"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/MJ_consigne"
+                    android:layout_width="620dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="90dp"
+                    android:text="kjhgfdsqsfghgfd"
+                    android:textAlignment="center"
+                    android:textColor="@color/noir"
+                    android:textSize="32sp" />
+
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/MJ_image"
+            android:layout_width="450dp"
+            android:layout_height="450dp"
+            android:layout_centerVertical="true"
+            android:layout_margin="50dp"
+            android:src="@drawable/guide_happy" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/Team_Creation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="1100dp"
+            android:layout_height="700dp"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:padding="15dp"
+            android:background="@drawable/background_teamcreation">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="CRÉATION DE VOTRE ÉQUIPE"
+                android:textColor="@color/noir"
+                android:textSize="38sp"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:orientation="horizontal"
+                android:layout_margin="25dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="120dp"
+                    android:layout_gravity="center_vertical"
+                    android:text="Choix du nom :"
+                    android:textColor="@color/noir"
+                    android:textSize="30sp"/>
+
+                <EditText
+                    android:id="@+id/edit_TeamName"
+                    android:layout_width="500dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="110dp"
+                    android:textColor="@color/noir"
+                    android:textSize="30sp"
+                    android:textAlignment="center"
+                    android:inputType="textCapWords|textNoSuggestions"
+                    android:imeOptions="actionDone"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="700dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/rouge"/>
+
+            <TextView
+                android:id="@+id/txt_Composition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/noir"
+                android:textSize="30sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nom du joueur :"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/noir"
+                    android:textSize="30sp"/>
+
+                <EditText
+                    android:id="@+id/edit_MemberName"
+                    android:layout_width="400dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="50dp"
+                    android:textColor="@color/noir"
+                    android:textSize="30sp"
+                    android:textAlignment="center"
+                    android:inputType="textCapWords|textNoSuggestions"
+                    android:imeOptions="actionDone"/>
+
+                <Button
+                    android:id="@+id/btn_addMember"
+                    android:layout_width="280dp"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="70dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/btn_action_ajouter"
+                    android:textColor="@color/noir"
+                    android:textSize="22sp"
+                    android:textAlignment="center"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="700dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/rouge"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:orientation="horizontal"
+                android:layout_margin="25dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="70dp"
+                    android:text="Choix de votre insigne :"
+                    android:textColor="@color/noir"
+                    android:textSize="30sp"/>
+
+                <Button
+                    android:id="@+id/btn_insigne1"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="80dp"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="center"
+                    android:background="@drawable/btn_equipe_biere_off"/>
+
+                <Button
+                    android:id="@+id/btn_insigne2"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="center"
+                    android:background="@drawable/btn_equipe_frite_off"/>
+
+                <Button
+                    android:id="@+id/btn_insigne3"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="center"
+                    android:background="@drawable/btn_equipe_hein_off"/>
+
+                <Button
+                    android:id="@+id/btn_insigne4"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="center"
+                    android:background="@drawable/btn_equipe_chicon_off"/>
+
+                <Button
+                    android:id="@+id/btn_insigne5"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="center"
+                    android:background="@drawable/btn_equipe_moule_off"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="700dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/rouge"/>
+
+            <Button
+                android:id="@+id/btn_createTeam"
+                android:layout_width="500dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_action_terminer"
+                android:textColor="@color/noir"
+                android:textSize="22sp"
+                android:textAlignment="center"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/blackScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/noir"
+        android:visibility="gone"/>
+
+</RelativeLayout>

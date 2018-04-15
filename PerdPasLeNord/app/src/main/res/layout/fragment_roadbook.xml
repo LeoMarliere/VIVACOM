@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
+    android:layout_width="1040dp"
+    android:layout_height="650dp"
+    android:background="@drawable/background_roadbook">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="35sp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="50dp"
+        android:text="@string/rb_Titre1"
+        android:textColor="@color/rouge"
+        android:visibility="visible"/>
+
+    <ScrollView
+        android:layout_width="1000dp"
+        android:layout_height="530dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="85dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/rb_phraseMystere"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/phrase_mystere_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/title_phraseMystere"
+                    android:textColor="@color/noir"
+                    android:textSize="35sp" />
+
+                <LinearLayout
+                    android:id="@+id/phrase_mystere_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="70dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/pm_0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pm_0"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_1"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_2"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_3"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_4"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_5"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_6"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_6"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_7"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_7"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_8"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_8"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_9"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_9"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/pm_10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pm_10"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_11"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_11"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_12"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_12"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_13"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_13"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_14"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_14"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_15"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_15"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_16"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_16"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_17"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_17"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/pm_18"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="@string/pm_18"
+                            android:textColor="@color/noir"
+                            android:textSize="28sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/ligne01"
+                android:layout_width="960dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/rouge"
+                android:visibility="visible"/>
+
+            <LinearLayout
+                android:id="@+id/rb_succes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="35sp"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/title_Succes"
+                    android:textColor="@color/noir"
+                    android:visibility="visible"/>
+
+                <LinearLayout
+                    android:layout_width="900dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:layout_margin="15dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
+                        android:src="@drawable/marker_principal_valide"/>
+
+                    <TextView
+                        android:id="@+id/stats_pointPassage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Point de Passage Complété : "
+                        android:textColor="@color/noir"
+                        android:textSize="24sp"
+                        android:layout_marginLeft="20dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="900dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:layout_margin="15dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
+                        android:src="@drawable/marker_secondaire_valide"/>
+
+                    <TextView
+                        android:id="@+id/stats_pointCulture"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Point Secondaire Complété : "
+                        android:textColor="@color/noir"
+                        android:textSize="24sp"
+                        android:layout_marginLeft="20dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="900dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:layout_margin="15dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
+                        android:src="@drawable/marker_secret"/>
+
+                    <TextView
+                        android:id="@+id/stats_pointSecret"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Point Secret Découvert : "
+                        android:textColor="@color/noir"
+                        android:textSize="24sp"
+                        android:layout_marginLeft="20dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="900dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:layout_margin="15dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
+                        android:src="@drawable/zone_jaune"/>
+
+                    <TextView
+                        android:id="@+id/stats_zone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre de Zone Complété : "
+                        android:textColor="@color/noir"
+                        android:textSize="24sp"
+                        android:layout_marginLeft="20dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="900dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:layout_margin="15dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
+                        android:src="@drawable/icone_pas"/>
+
+                    <TextView
+                        android:id="@+id/stats_Km"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre de mètre parcourus : "
+                        android:textColor="@color/noir"
+                        android:textSize="24sp"
+                        android:layout_marginLeft="20dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="900dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:layout_margin="15dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
+                        android:src="@drawable/icone_pas"/>
+
+                    <TextView
+                        android:id="@+id/stats_Jeu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre de jeu gagné : "
+                        android:textColor="@color/noir"
+                        android:textSize="24sp"
+                        android:layout_marginLeft="20dp"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/ligne02"
+                android:layout_width="960dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/rouge"
+                android:visibility="visible"/>
+
+            <RelativeLayout
+                android:id="@+id/rb_photographie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="35sp"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/title_Photographie"
+                    android:textColor="@color/noir"
+                    android:visibility="visible"/>
+                <RelativeLayout
+                    android:id="@+id/photos"
+                    android:layout_width="600dp"
+                    android:layout_height="450dp"
+                    android:layout_marginTop="85dp"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/rb_photo1"
+                        android:layout_width="600dp"
+                        android:layout_height="450dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:src="@drawable/test_1" />
+
+                    <ImageView
+                        android:id="@+id/rb_photo2"
+                        android:layout_width="600dp"
+                        android:layout_height="450dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:src="@drawable/test_1" />
+
+                    <ImageView
+                        android:id="@+id/rb_photo3"
+                        android:layout_width="600dp"
+                        android:layout_height="450dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:src="@drawable/test_1" />
+
+
+                </RelativeLayout>
+                <ImageView
+                    android:layout_width="690dp"
+                    android:layout_height="480dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="110dp"
+                    android:layout_marginTop="70dp"
+                    android:src="@drawable/background_photo_roadbook"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/ligne03"
+                    android:layout_width="960dp"
+                    android:layout_height="2dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@color/rouge"
+                    android:visibility="visible"/>
+
+            </RelativeLayout>
+
+
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+
+
+
+
+
+
+
+
+    <Button
+        android:id="@+id/sendMail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Mail"
+        android:textAlignment="center"
+        android:textSize="25sp"
+        android:visibility="gone"/>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+</RelativeLayout>
