@@ -112,9 +112,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
     int currentZone = 0;
     int currentLegend = 1;
 
-    float lastIndex = -1;
-    float iDistance;
-
     int spotState = 0;
 
     boolean cameraMooveFinish = true;
@@ -729,8 +726,8 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         Location markerLocation = new Location("");
         markerLocation.setLatitude(markerOptionOperaDeLille.getPosition().latitude);
         markerLocation.setLongitude(markerOptionOperaDeLille.getPosition().longitude);
-        iDistance = markerLocation.distanceTo(mLastLocationGoogleMap);
-        Log.d(TAG, "Initialisation de la distance / iDistance : "+ iDistance);
+        float distance = markerLocation.distanceTo(mLastLocationGoogleMap);
+        Log.d(TAG, "Initialisation de la distance / distance : "+ distance);
 
 
     }
@@ -1294,51 +1291,34 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      */
     public boolean checkDistanceWithSpotForGameActivation(SpotClass spot) {
         boolean proche = false;
+        float distance = 0;
         String spotName = spot.getmSpotName();
 
         // On récupère le marker et on calcul la distance
-        if (mLastLocationGoogleMap != null){getDistance(spot);}
-        else { proche = true; }
+        if (mLastLocationGoogleMap != null) {
 
-        if (iDistance != 0) {proche = iDistance < 750000;} // inferieur a 40m
+            // On récupère dans la BDD le bon markerOption
+            MarkerOptions markerOption = getMarkerOptionFromBDD(spotName);
+            Location markerLocation = new Location("");
 
-        Log.w(TAG, "Distance du spot "+ spotName + " : "+ iDistance + " / "+ proche + " / Précision : "+ mLastLocationGoogleMap.getAccuracy() );
+            // On récupère la position
+            markerLocation.setLatitude(markerOption.getPosition().latitude);
+            markerLocation.setLongitude(markerOption.getPosition().longitude);
+            // On calcul la distance
+            distance = markerLocation.distanceTo(mLastLocationGoogleMap);
+
+        } else {
+            proche = true;
+        }
+
+        if (distance != 0) {proche = distance < 750000;} // inferieur a 40m
+
+        Log.w(TAG, "Distance du spot "+ spotName + " : "+ distance + " / "+ proche + " / Précision : "+ mLastLocationGoogleMap.getAccuracy() );
         //return proche;
         return true;
     }
 
-    /**
-     * Cette méthode calcul la distance entre la postion actuelle
-     * et le spot séléctionné
-     */
-    private void getDistance(final SpotClass spot)  {
 
-        Log.w(TAG, "Call getDistance() method" );
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                // On récupère dans la BDD le bon markerOption
-                String spotName = spot.getmSpotName();
-                MarkerOptions markerOption = getMarkerOptionFromBDD(spotName);
-                Location markerLocation = new Location("");
-
-                // On récupère la position
-                iDistance = 0;
-                markerLocation.setLatitude(markerOption.getPosition().latitude);
-                markerLocation.setLongitude(markerOption.getPosition().longitude);
-
-                // On calcul la distance
-                iDistance = markerLocation.distanceTo(mLastLocationGoogleMap);
-
-
-            }
-
-
-        }).start();
-
-    }
 
 
     // --------------------- Autres -----------------------------------
