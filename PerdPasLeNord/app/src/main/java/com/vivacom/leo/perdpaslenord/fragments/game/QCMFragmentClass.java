@@ -39,7 +39,7 @@ public class QCMFragmentClass extends Fragment {
 
     // Pour le jeu
     LinearLayout gameLayout;
-    TextView txtVQuestion;
+    TextView txtVQuestion, txtQuestionNumber;
     CheckBox chkBReponse1,chkBReponse2,chkBReponse3,chkBReponse4,chkBReponse5;
     CheckBox chkBSelected1,chkBSelected2,chkBSelected3;
     Button btnValider;
@@ -51,7 +51,7 @@ public class QCMFragmentClass extends Fragment {
 
     // ------- Variables pour le jeu -------
 
-    String startMessage,succesMessage, failMessage = "";
+    String startMessage, succesMessage, failMessage = "";
     String question1,question2,question3;
     String possibility1for1,possibility2for1,possibility3for1,possibility4for1,possibility5for1;
     String possibility1for2, possibility2for2,possibility3for2,possibility4for2,possibility5for2;
@@ -152,7 +152,7 @@ public class QCMFragmentClass extends Fragment {
         gameLayout = view.findViewById(R.id.qcm_gameLayout);
 
         txtVConsigne1 = view.findViewById(R.id.qcm_consigne1);
-
+        txtQuestionNumber = view.findViewById(R.id.question_number);
 
         txtVQuestion = view.findViewById(R.id.qcm_question);
         chkBReponse1 =view.findViewById(R.id.qcm_reponse1);
@@ -284,7 +284,7 @@ public class QCMFragmentClass extends Fragment {
                     spotTag = 1;
                     nbRoatationPlayerSelection = 23;
                     setUpQuestionAndAnswerForVieilleBourse();
-                } else if (args.getString(SPOT_NAME).equals("Le Nouveau Siècle")){
+                } else if (args.getString(SPOT_NAME).equals("Le Nouveau Siecle")){
                     spotTag = 3;
                     nbRoatationPlayerSelection = 24;
                     setUpQuestionAndAnswerForLeNouveauSiecle();
@@ -300,39 +300,6 @@ public class QCMFragmentClass extends Fragment {
             }
         }
 
-    }
-
-    /**
-     * Affiche la question et les réponses du QCM 'La Voix Du Nord'
-     */
-    public void setUpQuestionAndAnswerForLaVoixDuNord(){
-        //TODO : trouver des questions pour Questionnaire
-        question1 = "Combien il a t'y d'armoirie sur la façade de La Voix Du Nord?";
-        possibility1for1 ="21";
-        possibility2for1 ="22";
-        possibility3for1 = "24";
-        possibility4for1 = "28";
-        possibility5for1 = "32";
-        bonneReponse1 = "28";
-
-        question2 = "Quelle célèbre brasserie de Lille, ouverte de 10h à l'aube, trouve t'on sur la place de Rihour ?";
-        possibility1for2 = "Les 3 Brasseurs";
-        possibility2for2 = "La Chicorée";
-        possibility3for2 = "André";
-        possibility4for2 = "Le Bettigny";
-        possibility5for2 = "Au Moulin D'Or";
-        bonneReponse2 = "La Chicorée";
-
-        question3 = "";
-        possibility1for3 ="";
-        possibility2for3 ="";
-        possibility3for3 = "";
-        possibility4for3 = "";
-        possibility5for3 = "";
-        bonneReponse3 = "";
-
-        succesMessage= "";
-        failMessage = "";
     }
 
     /**
@@ -364,17 +331,16 @@ public class QCMFragmentClass extends Fragment {
         possibility5for3 = "Des bars";
         bonneReponse3 = "Des bars";
 
-        succesMessage= "Bravo !! \n \n On peut dire que vous maitrisez le quartier de Lille Centre, je vous en félicite. \n \n Cliquer sur l'écran pour continuer et débloquer un nouveau mot ";
-        failMessage = "Aïe Aïe Aïe !! \n \n Dommage, j'ai l'impression que vous n'avez pas été assez attentif ... \n \n Cliquer sur l'écran pour continuer";
+        succesMessage= "Bravo !!  \n On peut dire que vous maitrisez le quartier de Lille Centre, je vous en félicite. \n \n Cliquer sur l'écran pour continuer et débloquer un nouveau mot ";
+        failMessage = "Aïe Aïe Aïe !!  \n Dommage, j'ai l'impression que vous n'avez pas été assez attentif ... \n \n Cliquer sur l'écran pour continuer";
 
 
-    }
+    }   // DONE
 
     /**
      * Affiche la question et les réponses du QCM 'Rue Grande Chaussee' -- 4
      */
     public void setUpQuestionAndAnswerForRueGrandeChaussee(){
-        startMessage = "Qu'elle superbe rue !! \n Parfais pour un petit questionnaire sur la ville de Lille. \n \n Les règles sont simples : 3 questions, 5 réponses possibles à chaque fois. \n Il suffit de 2 bonnes réponses pour gagner.";
 
         question1 = "Il y a deux gares de voyageurs à Lille. La gare \"Lille-Flandre\" et :";
         possibility1for1 = "La Gare Lille-France";
@@ -400,26 +366,25 @@ public class QCMFragmentClass extends Fragment {
         possibility5for3 = "Du Welsh";
         bonneReponse3 = "Des moules frites";
 
-        succesMessage= "Bravo !! \n \n La ville n'a plus de secret pour vous.. \n \n Cliquer sur l'écran pour continuer et un mot.";
-        failMessage = "Aïe Aïe Aïe !! \n \n Dommage, j'ai l'impression que Lille vous est toujours inconnue ... \n \n Cliquer sur l'écran pour continuer";
+        succesMessage= "Bravo !!  \n La ville n'a plus de secret pour vous.. \n \n Cliquer sur l'écran pour continuer et un mot.";
+        failMessage = "Aïe Aïe Aïe !! \n Dommage, j'ai l'impression que Lille vous est toujours inconnue ... \n \n Cliquer sur l'écran pour continuer";
 
 
-    }
+    }  // DONE
 
     /**
      * Affiche la question et les réponses du QCM 'La Place aux Oignons' -- 2
      */
     public void setUpQuestionAndAnswerForPlaceOignons(){
 
+        question1 = "A quel endroit se situe cette place ?";
+        possibility1for1 ="Sur un ancien cimetière indien (ayant habité a Lille il y a fort fort longtemps).";
+        possibility2for1 ="Sur un site préhistorique.";
+        possibility3for1 = "Sur un ancien Donjon.";
+        possibility4for1 = "Sur la coline la plus haute de l'époque.";
+        possibility5for1 = "Sur les ruines d'une ancienne écurie très célèbre.";
+        bonneReponse1 = possibility3for1;
 
-        //TODO : trouver des questions pour Questionnaire
-        question1 = "Combien il a t'y d'armoirie sur la façade de La Voix Du Nord?";
-        possibility1for1 ="21";
-        possibility2for1 ="22";
-        possibility3for1 = "24";
-        possibility4for1 = "28";
-        possibility5for1 = "32";
-        bonneReponse1 = "28";
 
         question2 = "Quelle célèbre brasserie de Lille, ouverte de 10h à l'aube, trouve t'on sur la place de Rihour ?";
         possibility1for2 = "Les 3 Brasseurs";
@@ -427,20 +392,21 @@ public class QCMFragmentClass extends Fragment {
         possibility3for2 = "André";
         possibility4for2 = "Le Bettigny";
         possibility5for2 = "Au Moulin D'Or";
-        bonneReponse2 = "La Chicorée";
+        bonneReponse2 = possibility2for2;
 
-        question3 = "";
-        possibility1for3 ="";
-        possibility2for3 ="";
-        possibility3for3 = "";
-        possibility4for3 = "";
-        possibility5for3 = "";
-        bonneReponse3 = "";
 
-        succesMessage= "";
-        failMessage = "";
+        question3 = "Quel fameux restaurant se situe sur cette place ?";
+        possibility1for3 = "Le Vieux de la Veille";
+        possibility2for3 = "La Chicorée";
+        possibility3for3 = "Au Moulin D'Or";
+        possibility4for3 = "Le Bettigny";
+        possibility5for3 = "Le Bon Ch'ti";
+        bonneReponse3 = possibility1for2;
 
-    }
+        succesMessage= "Clap Clap Clap !! \n Je vous félicite, vous avez réussi ce jeu !! \n \n Ciquer sur l'écran pour continuer.";
+        failMessage = "Dommage !! \n Tous les autres ont pourtant réussi ..... \n \n Ciquer sur l'écran pour continuer.";
+
+    } // DONE
 
     /**
      * Affiche la question et les réponses du QCM 'La Vieille Bourse' -- 1
@@ -453,28 +419,28 @@ public class QCMFragmentClass extends Fragment {
         possibility3for1 = "24";
         possibility4for1 = "28";
         possibility5for1 = "32";
-        bonneReponse1 = "28";
+        bonneReponse1 = possibility4for1;
 
-        question2 = "Quelle célèbre brasserie de Lille, ouverte de 10h à l'aube, trouve t'on sur la place de Rihour ?";
-        possibility1for2 = "Les 3 Brasseurs";
-        possibility2for2 = "La Chicorée";
-        possibility3for2 = "André";
-        possibility4for2 = "Le Bettigny";
-        possibility5for2 = "Au Moulin D'Or";
-        bonneReponse2 = "La Chicorée";
+        question2 = "Qui dit commerce dit calcul : 3 - 2 * 4  +5";
+        possibility1for2 ="12";
+        possibility2for2 ="9";
+        possibility3for2 = "0";
+        possibility4for2 = "-9";
+        possibility5for2 = "-12";
+        bonneReponse2 = possibility5for2 ;
 
-        question3 = "";
-        possibility1for3 ="";
-        possibility2for3 ="";
-        possibility3for3 = "";
-        possibility4for3 = "";
-        possibility5for3 = "";
-        bonneReponse3 = "";
+        question3 = "Combien y a t'il d'acces a la chambre des Commerces .";
+        possibility1for3 ="1";
+        possibility2for3 ="2";
+        possibility3for3 = "3";
+        possibility4for3 = "4";
+        possibility5for3 = "5";
+        bonneReponse3 = possibility4for3;
 
-        succesMessage= "";
-        failMessage = "";
+        succesMessage= "Tu as réussi la quête de la Chambre des Secrets Harry !! Tu es un ... Heu Non ... Bravo à vous !! Cliquer pour débloquer un mot.";
+        failMessage = "Dommage pour vous, cela n'etais pourtant pas très compliqué ... Cliquer sur l'écran pour continuer";
 
-    }
+    } // DONE
 
 
 
@@ -576,6 +542,7 @@ public class QCMFragmentClass extends Fragment {
     public void setUpQuestion(){
         switch (currentQuestion){
             case 1 :
+                txtQuestionNumber.setText("Question 1");
                 txtVQuestion.setText(question1);
                 chkBReponse1.setText(possibility1for1);
                 chkBReponse2.setText(possibility2for1);
@@ -583,24 +550,16 @@ public class QCMFragmentClass extends Fragment {
                 chkBReponse4.setText(possibility4for1);
                 chkBReponse5.setText(possibility5for1);
                 btnValider.setBackgroundResource(R.drawable.btn_action_question_suivante);
-
                 break;
             case 2 :
+                txtQuestionNumber.setText("Question 2");
                 animator.slideOutAndInWithMessage(txtVQuestion, question2);
-                txtVQuestion.setText(question2);
-                chkBReponse1.setText(possibility1for2);
-                chkBReponse2.setText(possibility2for2);
-                chkBReponse3.setText(possibility3for2);
-                chkBReponse4.setText(possibility4for2);
-                chkBReponse5.setText(possibility5for2);
+                fadeInOutAllCheckBox(2);
                 break;
             case 3 :
+                txtQuestionNumber.setText("Question 3");
                 animator.slideOutAndInWithMessage(txtVQuestion, question3);
-                chkBReponse1.setText(possibility1for3);
-                chkBReponse2.setText(possibility2for3);
-                chkBReponse3.setText(possibility3for3);
-                chkBReponse4.setText(possibility4for3);
-                chkBReponse5.setText(possibility5for3);
+                fadeInOutAllCheckBox(3);
                 btnValider.setBackgroundResource(R.drawable.btn_action_terminer);
                 break;
             case 4 :
@@ -631,6 +590,48 @@ public class QCMFragmentClass extends Fragment {
     }
 
     /**
+     * Cette méthode s'occupe de l'animation des CheckBox
+     * @param nbState
+     */
+    public void fadeInOutAllCheckBox(final int nbState){
+        animator.fadeOutAnimation(chkBReponse1);
+        animator.fadeOutAnimation(chkBReponse2);
+        animator.fadeOutAnimation(chkBReponse3);
+        animator.fadeOutAnimation(chkBReponse4);
+        animator.fadeOutAnimation(chkBReponse5);
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                animator.fadeInAnimation(chkBReponse1);
+                animator.fadeInAnimation(chkBReponse2);
+                animator.fadeInAnimation(chkBReponse3);
+                animator.fadeInAnimation(chkBReponse4);
+                animator.fadeInAnimation(chkBReponse5);
+
+                if(nbState == 2){
+                    chkBReponse1.setText(possibility1for2);
+                    chkBReponse2.setText(possibility2for2);
+                    chkBReponse3.setText(possibility3for2);
+                    chkBReponse4.setText(possibility4for2);
+                    chkBReponse5.setText(possibility5for2);
+                }
+
+                if(nbState == 3){
+                    chkBReponse1.setText(possibility1for3);
+                    chkBReponse2.setText(possibility2for3);
+                    chkBReponse3.setText(possibility3for3);
+                    chkBReponse4.setText(possibility4for3);
+                    chkBReponse5.setText(possibility5for3);
+                }
+
+
+            }
+        },750);
+    }
+
+    /**
      * Méthode comparant les réponses obtenu
      * et permet d'avoir le nombre de bonne reponse obtenue
      */
@@ -656,8 +657,8 @@ public class QCMFragmentClass extends Fragment {
             case 1:
                 chkBSelected1.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_uncorrect));
                 chkBSelected1.setChecked(true);
-                if (spotTag == 1){}
-                else if (spotTag == 2){}
+                if (spotTag == 1){chkBReponse4.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
+                else if (spotTag == 2){chkBReponse1.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 3){chkBReponse3.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 4){chkBReponse3.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 break;
@@ -665,8 +666,8 @@ public class QCMFragmentClass extends Fragment {
             case 2:
                 chkBSelected2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_uncorrect));
                 chkBSelected2.setChecked(true);
-                if (spotTag == 1){}
-                else if (spotTag == 2){}
+                if (spotTag == 1){chkBReponse5.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
+                else if (spotTag == 2){chkBReponse2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 3){chkBReponse2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 4){chkBReponse1.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 break;
@@ -674,8 +675,8 @@ public class QCMFragmentClass extends Fragment {
             case 3:
                 chkBSelected3.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_uncorrect));
                 chkBSelected3.setChecked(true);
-                if (spotTag == 1){}
-                else if (spotTag == 2){}
+                if (spotTag == 1){chkBReponse4.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
+                else if (spotTag == 2){chkBReponse2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 3){chkBReponse5.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 4){chkBReponse4.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 break;
@@ -683,10 +684,7 @@ public class QCMFragmentClass extends Fragment {
 
     }
 
-
-
     //------------------------------------------------------------------
-
     // ------------- Méthode de fonctionnement du jeu ------------
 
     /**
@@ -698,12 +696,11 @@ public class QCMFragmentClass extends Fragment {
         playersName = qcmFragmentClassCallBack.getPlayerName();
         tGameTitle.setPaintFlags(tGameTitle.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
-
         Handler handler1 = new Handler();
         handler1.postDelayed(new Runnable() {
             @Override
             public void run() {
-                tGameTitle.animate().translationY(-200).withLayer();
+                tGameTitle.animate().translationY(-150).withLayer();
             }
         },1500);
 
@@ -711,8 +708,8 @@ public class QCMFragmentClass extends Fragment {
         handler2.postDelayed(new Runnable() {
             @Override
             public void run() {
-                tGameName.setVisibility(View.VISIBLE);
-                tGameName.setText("C'est au tour de : \n " + playersName.get(numName));
+                animator.fadeInAnimation(tGameName);
+                tGameName.setText(getText(R.string.playerSelection_subtitle) + "\n" + playersName.get(numName));
                 startNameRotation();
             }
         }, 2000);
@@ -733,7 +730,7 @@ public class QCMFragmentClass extends Fragment {
             @Override
             public void run() {
                 nbRotation++;
-                tGameName.setText("C'est au tour de : \n " + playersName.get(v));
+                tGameName.setText(getText(R.string.playerSelection_subtitle) + "\n" + playersName.get(v));
                 v++;
                 if (v == z) {v = 0;}
                 // On défini le nombre de rotation

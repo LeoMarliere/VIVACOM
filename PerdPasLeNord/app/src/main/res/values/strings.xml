@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">PerdPasLeNord</string>
+    <string name="app_name">PerdsPasLeNord</string>
     <string name="text">BlaBlaBlaBla BlaBlaBla "\n" BlaBlaBlaBlaBlaBlaBla BlaBla</string>
 
 
@@ -23,6 +23,8 @@
     ]
   }
 ]</string>
+
+
     <string name="VF_vrai">VRAI</string>
     <string name="VF_faux">FAUX</string>
 
@@ -36,25 +38,25 @@
     <string name="rb_Titre1">Carnet de Route</string>
 
 
-    <string name="pm_0">----</string>
-    <string name="pm_1">--</string>
-    <string name="pm_2">--</string>
-    <string name="pm_3">----</string>
-    <string name="pm_4">----,</string>
-    <string name="pm_5">--------</string>
-    <string name="pm_6">--</string>
-    <string name="pm_7">--</string>
-    <string name="pm_8">----</string>
-    <string name="pm_9">----.</string>
-    <string name="pm_10">---- </string>
-    <string name="pm_11">---------</string>
-    <string name="pm_12">--</string>
-    <string name="pm_13">----</string>
-    <string name="pm_14">------</string>
-    <string name="pm_15">------</string>
-    <string name="pm_16">-----------</string>
-    <string name="pm_17">---</string>
-    <string name="pm_18">---------.</string>
+    <string name="pm_0">____</string>
+    <string name="pm_1">__</string>
+    <string name="pm_2">__</string>
+    <string name="pm_3">____</string>
+    <string name="pm_4">____,</string>
+    <string name="pm_5">________</string>
+    <string name="pm_6">__</string>
+    <string name="pm_7">__</string>
+    <string name="pm_8">____</string>
+    <string name="pm_9">____.</string>
+    <string name="pm_10">____ </string>
+    <string name="pm_11">_________</string>
+    <string name="pm_12">__</string>
+    <string name="pm_13">____</string>
+    <string name="pm_14">______</string>
+    <string name="pm_15">______</string>
+    <string name="pm_16">___________</string>
+    <string name="pm_17">___</string>
+    <string name="pm_18">_________.</string>
 
 
     <string name="rules_Map_1">La carte qui vous est fournie est divisée en plusieures zones de couleurs, correspondant aux différents quartiers de la ville. </string>
@@ -68,6 +70,13 @@
     <string name="rules_Game_1">Vous trouverez un mini-jeu à chaque point principal. Chaque jeu ne peut être lancé qu\'une seule fois, et ne peut être arrêté une fois commencé.</string>
     <string name="rules_Game_2">Il existe plusieurs jeux différents, mais ils vous demanderont tous d\'être attentifs à votre environnement ainsi qu\'aux différentes informations qui vous seront fournies.  </string>
     <string name="rules_Game_3">Lorsque vous gagnez un jeu, vous débloquez un mot composant une phrase mystère, visible dans votre Carnet de bord. Compléter cette phrase est l\'un de vos objectifs secondaire.</string>
+
+    <string name="deroulement_Game_1">Une partie se déroule très simplement. Vous devez d\'abord vous rendre à l\'un des lieux affiché sur votre carte.</string>
+    <string name="deroulement_Game_2">Une fois devant le lieu, vous pouvez accéder aux différentes rubriques associé à ce dernier. Une fois le lieu complété, il ne vous reste plus qu\'à vous rendre au prochain lieu.</string>
+    <string name="deroulement_Game_3">Le but de ce jeu est que vous vous amusiez tout en visitant la captitale des Flandres. </string>
+
+    <string name="title_PlayerSelection">Sélection du joueur</string>
+
 
 
 </resources>

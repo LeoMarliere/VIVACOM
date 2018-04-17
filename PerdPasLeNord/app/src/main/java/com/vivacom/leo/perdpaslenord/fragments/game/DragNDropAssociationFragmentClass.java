@@ -33,6 +33,10 @@ import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
 import java.util.List;
 import java.util.Objects;
 
+import es.dmoral.toasty.Toasty;
+
+import static com.vivacom.leo.perdpaslenord.R.string.playerSelection_subtitle;
+
 /**
  * Created by Leo on 18/09/2017.
  */
@@ -224,7 +228,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         if (getArguments() != null) {
             Bundle args = getArguments();
             if (args.containsKey(TXT_INFOS)){
-                if (Objects.equals(args.getString(TXT_INFOS), "La Colonne De La Déesse")){
+                if (Objects.equals(args.getString(TXT_INFOS), "La Colonne De La Deesse")){
                     affectImageAndAnswerForSpotColonneDeLaDeesse();
                     nbRoatationPlayerSelection = 17;
                 } else if (Objects.equals(args.getString(TXT_INFOS), "Rue Nationale")){
@@ -269,9 +273,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
                     if(checkIfAllImageArePlaced()){
                         checkIfAnswerIsCorrect();
                     } else {
-                        Toast toast = Toast.makeText(getContext(),"Il faut d'abord associer toutes les images à leur titre", Toast.LENGTH_SHORT );
-                        toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
-                        toast.show();
+                        Toasty.error(getActivity().getApplicationContext(), "Il faut d'abord associer toutes les images à leur titre.", Toast.LENGTH_SHORT, true).show();
                     }
                 } else {
                     dragNDropAssociationFragmentClassCallBack.whenGameIsValidate(gameWin);
@@ -577,7 +579,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         handler1.postDelayed(new Runnable() {
             @Override
             public void run() {
-                tGameTitle.animate().translationY(-200).withLayer();
+                tGameTitle.animate().translationY(-150).withLayer();
             }
         },1500);
 
@@ -585,8 +587,8 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         handler2.postDelayed(new Runnable() {
             @Override
             public void run() {
-                tGameName.setVisibility(View.VISIBLE);
-                tGameName.setText("C'est au tour de : \n " + playersName.get(numName));
+                animator.fadeInAnimation(tGameName);
+                tGameName.setText(getText(R.string.playerSelection_subtitle) + "\n" + playersName.get(numName));
                 startNameRotation();
             }
         }, 2000);
@@ -607,7 +609,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
             @Override
             public void run() {
                 nbRotation++;
-                tGameName.setText("C'est au tour de : \n " + playersName.get(v));
+                tGameName.setText(getText(R.string.playerSelection_subtitle) + "\n" + playersName.get(v));
                 v++;
                 if (v == z) {v = 0;}
                 // On défini le nombre de rotation

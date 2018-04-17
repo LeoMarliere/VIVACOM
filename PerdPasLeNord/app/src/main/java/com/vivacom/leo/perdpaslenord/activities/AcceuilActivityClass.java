@@ -1,16 +1,20 @@
 package com.vivacom.leo.perdpaslenord.activities;
 
 import android.app.Activity;
+
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -29,6 +33,7 @@ import com.vivacom.leo.perdpaslenord.objects.ZoneClass;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
@@ -44,7 +49,7 @@ public class AcceuilActivityClass extends Activity {
 
     // ------- Elements graphiques -------
     RelativeLayout lMainScreen, lMJ_Introduction, lMJ_textBox, lTeam_Creation, lBlackScreen;
-    TextView tConsigne, tComposition;
+    TextView tConsigne, tComposition, tTeamCreation_Title;
     EditText eTeamName, eMemberName;
 
     Button btn_addMember, btn_CreateTeam, btn_insigne1,btn_insigne2,btn_insigne3,btn_insigne4,btn_insigne5;
@@ -59,6 +64,7 @@ public class AcceuilActivityClass extends Activity {
     ViewAnimations animator = new ViewAnimations();
     Realm realm;
     TeamClass theTeam;
+
 
     // ------- Nos Paramètres -------
     int numText = 1;
@@ -88,6 +94,13 @@ public class AcceuilActivityClass extends Activity {
         super.onPause();
         Log.d(TAG, "Activity onPause");
     }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        Log.d(TAG, "Activity onStop");
+    }
+
 
     // ----------------------------------------------------
 
@@ -124,8 +137,19 @@ public class AcceuilActivityClass extends Activity {
         checkTeamInBDD();
 
 
-
-    }
+        eMemberName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(!eMemberName.getText().toString().equals("")) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        btn_addMember.performClick();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+                                              }
 
     // ------- Méthode de setUp -------
     /**
@@ -157,6 +181,10 @@ public class AcceuilActivityClass extends Activity {
         btn_Insigne_List.add(btn_insigne4);
         btn_Insigne_List.add(btn_insigne5);
 
+        tTeamCreation_Title = findViewById(R.id.creationTeam_title);
+
+
+
 
     }
 
@@ -166,8 +194,7 @@ public class AcceuilActivityClass extends Activity {
     private void initRealmBDD(){
         Realm.init(this);
 
-        deleteAllDataFromRealm();
-
+        //deleteAllDataFromRealm();
 
         new Thread(new Runnable() {
             @Override
@@ -202,6 +229,11 @@ public class AcceuilActivityClass extends Activity {
                         createZoneVieuxLilleInRealm();
                     } else {Log.i(TAG, "Donnée trouvé pour : VIEUX LILLE");}
 
+                    SpotClass spotSecret = realm.where(SpotClass.class).equalTo("mZoneName", "Secret").findFirst();
+                    if (spotSecret == null){
+                        Log.i(TAG, "Aucune donnée Spot Secret, lancement de la création des Spot");
+                        createSecretSpotInRealm();
+                    } else {Log.i(TAG, "Donnée trouvé pour : SPOT SECRET");}
 
                 } finally {realm.close();}
 
@@ -262,10 +294,10 @@ public class AcceuilActivityClass extends Activity {
 
         // ----
 
-        final SpotClass spotLaVieilleBourse = new SpotClass(1,0, zonePlaceDuTheatre.getmZoneName(), "La Vieille Bourse", "NO TITLE", 3, ConstantInfos.INFO_LAVIEILLEBOURSE1, ConstantInfos.INFO_LAVIEILLEBOURSE2, ConstantInfos.INFO_LAVIEILLEBOURSE3, photoGalleryLaVieilleBourse);
-        final SpotClass spotLeRangDuBeauregard = new SpotClass(1,15, zonePlaceDuTheatre.getmZoneName(), "Le Rang Du Beauregard","Les bieres de chez nous", 3, ConstantInfos.INFO_LERANGBEAUREGARD1, ConstantInfos.INFO_LERANGBEAUREGARD2, ConstantInfos.INFO_LERANGBEAUREGARD3, photoGalleryLeRangBeauxregard);
-        final SpotClass spotLeBeffroi = new SpotClass(1,7, zonePlaceDuTheatre.getmZoneName(), "Le Beffroi","Info/Intox", 3,  ConstantInfos.INFO_LEBEFFROI1, ConstantInfos.INFO_LEBEFFROI2, ConstantInfos.INFO_LEBEFFROI3, photoGalleryLeBeffroi);
-        final SpotClass spotLOpera = new SpotClass(1,9, zonePlaceDuTheatre.getmZoneName(), "L'Opéra De Lille" ,"Théatre en piece", 3, ConstantInfos.INFO_OPERA1, ConstantInfos.INFO_OPERA2, ConstantInfos.INFO_OPERA3, photoGalleryLOpera);
+        final SpotClass spotLaVieilleBourse = new SpotClass(1,0, zonePlaceDuTheatre.getmZoneName(), "La Vieille Bourse", "Calcul Mentaux", 3, ConstantInfos.INFO_LAVIEILLEBOURSE1, ConstantInfos.INFO_LAVIEILLEBOURSE2, ConstantInfos.INFO_LAVIEILLEBOURSE3, photoGalleryLaVieilleBourse);
+        final SpotClass spotLeRangDuBeauregard = new SpotClass(1,15, zonePlaceDuTheatre.getmZoneName(), "Le Rang Du Beauregard","Photo !!", 3, ConstantInfos.INFO_LERANGBEAUREGARD1, ConstantInfos.INFO_LERANGBEAUREGARD2, ConstantInfos.INFO_LERANGBEAUREGARD3, photoGalleryLeRangBeauxregard);
+        final SpotClass spotLeBeffroi = new SpotClass(1,7, zonePlaceDuTheatre.getmZoneName(), "Le Beffroi","Le Beffroi", 3,  ConstantInfos.INFO_LEBEFFROI1, ConstantInfos.INFO_LEBEFFROI2, ConstantInfos.INFO_LEBEFFROI3, photoGalleryLeBeffroi);
+        final SpotClass spotLOpera = new SpotClass(1,9, zonePlaceDuTheatre.getmZoneName(), "L'Opera De Lille" ,"Pièce de Théatre", 3, ConstantInfos.INFO_OPERA1, ConstantInfos.INFO_OPERA2, ConstantInfos.INFO_OPERA3, photoGalleryLOpera);
 
         final SpotClass spotChambreCommerce = new SpotClass(2, 21, zonePlaceDuTheatre.getmZoneName(), "La Chambre des Commerces" , "PAS DE JEU", 1, ConstantInfos.CULTURE_CHAMBRECOMMERCE, null, null, photoGalleryChambreCommerce);
 
@@ -335,9 +367,9 @@ public class AcceuilActivityClass extends Activity {
 
         final SpotClass spotRueNationale = new SpotClass(1, 1, zoneLilleCentre.getmZoneName(), "Rue Nationale","Fête du Nord", 1,  ConstantInfos.INFO_RUENATIONALE, null, null, photoGaleryRueNationale);
         final SpotClass spotStatueQuinQuin = new SpotClass(1, 6, zoneLilleCentre.getmZoneName(), "La Statue du Ptit Quinquin","Ptit Quinquin", 3,  ConstantInfos.INFO_LASTATUEDUPTITQUINQUIN1, ConstantInfos.INFO_LASTATUEDUPTITQUINQUIN2, ConstantInfos.INFO_LASTATUEDUPTITQUINQUIN3 ,photoGaleryStatueQuinquin);
-        final SpotClass spotNouveauSiecle = new SpotClass(1, 18, zoneLilleCentre.getmZoneName(), "Le Nouveau Siècle", "Question d'Observation", 3, ConstantInfos.INFO_LENOUVEAUSIECLE1, ConstantInfos.INFO_LENOUVEAUSIECLE2, ConstantInfos.INFO_LENOUVEAUSIECLE3, photoGaleryNouveauSiecle);
+        final SpotClass spotNouveauSiecle = new SpotClass(1, 18, zoneLilleCentre.getmZoneName(), "Le Nouveau Siecle", "Question d'Observation", 3, ConstantInfos.INFO_LENOUVEAUSIECLE1, ConstantInfos.INFO_LENOUVEAUSIECLE2, ConstantInfos.INFO_LENOUVEAUSIECLE3, photoGaleryNouveauSiecle);
 
-        final SpotClass spotStatueFoch = new SpotClass(2, 22,  zoneLilleCentre.getmZoneName(), "La Statue du Général Foch","PAS DE JEU", 1, ConstantInfos.CULTURE_STATUEFOCH, null, null, photoGaleryStatueFoch );
+        final SpotClass spotStatueFoch = new SpotClass(2, 22,  zoneLilleCentre.getmZoneName(), "La Statue du General Foch","PAS DE JEU", 1, ConstantInfos.CULTURE_STATUEFOCH, null, null, photoGaleryStatueFoch );
         final SpotClass spotLe28 = new SpotClass(2, 23,  zoneLilleCentre.getmZoneName(), "Le 28 Thiers", "PAS DE JEU", 1, ConstantInfos.CULTURE_LE28, null, null, photoGaleryLe28 );
         final SpotClass spotQuaiDuWault = new SpotClass(2, 24, zoneLilleCentre.getmZoneName(), "Quai Du Wault", "PAS DE JEU", 1,  ConstantInfos.CULTURE_QUAIDUWAULT, null, null, photoGaleryQuaiDuWault );
 
@@ -413,10 +445,10 @@ public class AcceuilActivityClass extends Activity {
         // -----------
 
         final SpotClass spotLeFuretDuNord = new SpotClass(1, 2, zoneGrandPlace.getmZoneName(), "Le Furet Du Nord","Culture Générale", 3, ConstantInfos.INFO_FURETDUNORD1, ConstantInfos.INFO_FURETDUNORD2, ConstantInfos.INFO_FURETDUNORD3,  photoGaleryFuretDuNord);
-        final SpotClass spotLaGrandGarde = new SpotClass(1, 17, zoneGrandPlace.getmZoneName(), "La Grand'Garde","GRAND GARDE", 3, ConstantInfos.INFO_LAGRANDGARDE1, ConstantInfos.INFO_LAGRANDGARDE2, ConstantInfos.INFO_LAGRANDGARDE3, photoGaleryGrandGarde);
+        final SpotClass spotLaGrandGarde = new SpotClass(1, 17, zoneGrandPlace.getmZoneName(), "La Grand'Garde","Garde À Vous !!", 3, ConstantInfos.INFO_LAGRANDGARDE1, ConstantInfos.INFO_LAGRANDGARDE2, ConstantInfos.INFO_LAGRANDGARDE3, photoGaleryGrandGarde);
         final SpotClass spotLaVoixDuNord = new SpotClass(1, 5, zoneGrandPlace.getmZoneName(), "La Voix Du Nord","Le jeu des blasons", 3, ConstantInfos.INFO_LAVOIXDUNORD1, ConstantInfos.INFO_LAVOIXDUNORD2, ConstantInfos.INFO_LAVOIXDUNORD3,  photoGaleryVoixDuNord);
-        final SpotClass spotLaColonneDeLaDeese = new SpotClass(1, 13, zoneGrandPlace.getmZoneName(), "La Colonne De La Déesse","Statue", 3,  ConstantInfos.INFO_LACOLONNEDELADEESSE1,  ConstantInfos.INFO_LACOLONNEDELADEESSE2,  ConstantInfos.INFO_LACOLONNEDELADEESSE3,  photoGaleryColonneDeLaDeesse);
-        final SpotClass spotPalaisRihour = new SpotClass(1, 11, zoneGrandPlace.getmZoneName(), "Le Palais Rihour", "", 3, ConstantInfos.INFO_PALAISRIHOUR1, ConstantInfos.INFO_PALAISRIHOUR2, ConstantInfos.INFO_PALAISRIHOUR3,  photoGaleryPalaisRihour);
+        final SpotClass spotLaColonneDeLaDeese = new SpotClass(1, 13, zoneGrandPlace.getmZoneName(), "La Colonne De La Deesse","Statue", 3,  ConstantInfos.INFO_LACOLONNEDELADEESSE1,  ConstantInfos.INFO_LACOLONNEDELADEESSE2,  ConstantInfos.INFO_LACOLONNEDELADEESSE3,  photoGaleryColonneDeLaDeesse);
+        final SpotClass spotPalaisRihour = new SpotClass(1, 11, zoneGrandPlace.getmZoneName(), "Le Palais Rihour", "Vrai ou Feu ?", 3, ConstantInfos.INFO_PALAISRIHOUR1, ConstantInfos.INFO_PALAISRIHOUR2, ConstantInfos.INFO_PALAISRIHOUR3,  photoGaleryPalaisRihour);
 
         final SpotClass spotPyramideRihour = new SpotClass(2, 25,  zoneGrandPlace.getmZoneName(), "La Pyramide de Rihour","PAS DE JEU",  1, ConstantInfos.CULTURE_PYRAMIDE, null, null, photoGaleryPyramide);
 
@@ -520,15 +552,15 @@ public class AcceuilActivityClass extends Activity {
 
         // -------
 
-        final SpotClass spotPlaceAuxOignons = new SpotClass(1, 3, zoneVieuxLille.getmZoneName(), "La Place aux Oignons", "NO TITLE",3, ConstantInfos.INFO_LAPLACEAUXOIGNONS1,ConstantInfos.INFO_LAPLACEAUXOIGNONS2, ConstantInfos.INFO_LAPLACEAUXOIGNONS3 ,  photoGaleryPlaceAuxOignons);
-        final SpotClass spotPlaceLouiseDeBettignies = new SpotClass(1,4, zoneVieuxLille.getmZoneName(), "La Place Louise De Bettignies","INFO/INTOX", 1, ConstantInfos.INFO_PLACELOUISEDEBETTIGNIES, null, null , photoGaleryPlaceLouiseDeBettignies);
-        final SpotClass spotIlotComtesse = new SpotClass(1, 8, zoneVieuxLille.getmZoneName(), "L'Ilot Comtesse","NO TITLE", 1, ConstantInfos.INFO_LILOTCOMTESSE, null, null, photoGaleryIlotComtesse);
-        final SpotClass spotHospiceComtesse = new SpotClass(1, 10, zoneVieuxLille.getmZoneName(), "L'Hospice Comtesse","NO TITLE", 3,  ConstantInfos.INFO_LHOSPICECOMTESSE1,  ConstantInfos.INFO_LHOSPICECOMTESSE2,  ConstantInfos.INFO_LHOSPICECOMTESSE3,  photoGaleryHospiceComtesse);
-        final SpotClass spotRueEsquermoise = new SpotClass(1, 12, zoneVieuxLille.getmZoneName(), "Rue Esquermoise","NO TITLE", 1, ConstantInfos.INFO_LARUEESQUERMOISE, null, null,  photoGaleryRueEsquermoise);
+        final SpotClass spotPlaceAuxOignons = new SpotClass(1, 3, zoneVieuxLille.getmZoneName(), "La Place aux Oignons", "Questions aux petits Oignons",3, ConstantInfos.INFO_LAPLACEAUXOIGNONS1,ConstantInfos.INFO_LAPLACEAUXOIGNONS2, ConstantInfos.INFO_LAPLACEAUXOIGNONS3 ,  photoGaleryPlaceAuxOignons);
+        final SpotClass spotPlaceLouiseDeBettignies = new SpotClass(1,4, zoneVieuxLille.getmZoneName(), "La Place Louise De Bettignies","INFO ou INTOX ?", 1, ConstantInfos.INFO_PLACELOUISEDEBETTIGNIES, null, null , photoGaleryPlaceLouiseDeBettignies);
+        final SpotClass spotIlotComtesse = new SpotClass(1, 8, zoneVieuxLille.getmZoneName(), "L'Ilot Comtesse","Tape la pose !!", 1, ConstantInfos.INFO_LILOTCOMTESSE, null, null, photoGaleryIlotComtesse);
+        final SpotClass spotHospiceComtesse = new SpotClass(1, 10, zoneVieuxLille.getmZoneName(), "L'Hospice Comtesse","La Bière du Ch'Nord", 3,  ConstantInfos.INFO_LHOSPICECOMTESSE1,  ConstantInfos.INFO_LHOSPICECOMTESSE2,  ConstantInfos.INFO_LHOSPICECOMTESSE3,  photoGaleryHospiceComtesse);
+        final SpotClass spotRueEsquermoise = new SpotClass(1, 12, zoneVieuxLille.getmZoneName(), "Rue Esquermoise","Ki C ?", 1, ConstantInfos.INFO_LARUEESQUERMOISE, null, null,  photoGaleryRueEsquermoise);
         final SpotClass spotRueGrandeChaussee = new SpotClass(1,  14, zoneVieuxLille.getmZoneName(), "Rue Grande Chaussee","Lille Mystère",3, ConstantInfos.INFO_LARUEGRANDECHAUSSEE1, ConstantInfos.INFO_LARUEGRANDECHAUSSEE2, ConstantInfos.INFO_LARUEGRANDECHAUSSEE3,  photoGaleryRueGrandeChaussee);
-        final SpotClass spotNotreDameDeLaTreille = new SpotClass(1, 16, zoneVieuxLille.getmZoneName(), "Notre Dame De La Treille","NO TITLE", 3, ConstantInfos.INFO_NOTREDAMEDELATREILLE1, ConstantInfos.INFO_NOTREDAMEDELATREILLE2, ConstantInfos.INFO_NOTREDAMEDELATREILLE3,  photoGaleryNotreDameDeLaTreille);
+        final SpotClass spotNotreDameDeLaTreille = new SpotClass(1, 16, zoneVieuxLille.getmZoneName(), "Notre Dame De La Treille","Ca.Thé.Dra.Le", 3, ConstantInfos.INFO_NOTREDAMEDELATREILLE1, ConstantInfos.INFO_NOTREDAMEDELATREILLE2, ConstantInfos.INFO_NOTREDAMEDELATREILLE3,  photoGaleryNotreDameDeLaTreille);
 
-        final SpotClass spotHuitriere = new SpotClass(2, 26, zoneVieuxLille.getmZoneName(), "(Anciennement) L'Huitrière","PAS DE JEU", 1,  ConstantInfos.CULTURE_HUITRIERE, null, null,   photoGaleryHuitriere);
+        final SpotClass spotHuitriere = new SpotClass(2, 26, zoneVieuxLille.getmZoneName(), "(Anciennement) L'Huitriere","PAS DE JEU", 1,  ConstantInfos.CULTURE_HUITRIERE, null, null,   photoGaleryHuitriere);
         final SpotClass spotMeert = new SpotClass(2, 27,zoneVieuxLille.getmZoneName(), "Meert","PAS DE JEU", 1,  ConstantInfos.CULTURE_MEERT, null,null,  photoGaleryMeert);
         final SpotClass spotCourInt = new SpotClass(2,28, zoneVieuxLille.getmZoneName(), "Les Compagnons de la Grappe","PAS DE JEU", 1, ConstantInfos.CULTURE_COURINT, null, null,  photoGaleryCourInt);
         final SpotClass spotRueWeppes = new SpotClass(2, 29,  zoneVieuxLille.getmZoneName(), "La rue Weppes","PAS DE JEU", 1, ConstantInfos.CULTURE_RUEWEPPES, null,  null ,photoGaleryRueWeppes);
@@ -562,7 +594,30 @@ public class AcceuilActivityClass extends Activity {
     }
 
     /**
-     * Cette méthode vz supprimer tout les objets présent dans la BDD Realm
+     * Cette méthode va créer dans la BDD les Spot Secret
+     */
+    private void createSecretSpotInRealm(){
+        final SpotClass spotSecret_Bras = new SpotClass(3, 41, "La Bras d'Or", 3,  ConstantInfos.SECRET_GOLDENARM1, ConstantInfos.SECRET_GOLDENARM2, ConstantInfos.SECRET_GOLDENARM3);
+        final SpotClass spotSecret_Macon = new SpotClass(3,43,  "Le Temple Maçonnique", 3, ConstantInfos.SECRET_FRANCMACON1, ConstantInfos.SECRET_FRANCMACON2, ConstantInfos.SECRET_FRANCMACON3);
+        final SpotClass spotSecter_Treille = new SpotClass(3, 44, "Le dos de la Cathédrale", 3, ConstantInfos.SECRET_BEHINDTREILLE1, ConstantInfos.SECRET_BEHINDTREILLE2,  ConstantInfos.SECRET_BEHINDTREILLE3);
+        final SpotClass spotSecret_Slave = new SpotClass(3, 44, "Le Compostelle", 2, ConstantInfos.SECRET_COMPOSTELLE1, ConstantInfos.SECRET_COMPOSTELLE2,  null);
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+
+                realm.copyToRealm(spotSecret_Bras);
+                realm.copyToRealm(spotSecret_Macon);
+                realm.copyToRealm(spotSecter_Treille);
+                realm.copyToRealm(spotSecret_Slave);
+
+                Log.i(TAG, "Création des données Spot Secret terminé");
+            }
+        });
+    }
+
+    /**
+     * Cette méthode va supprimer tout les objets présent dans la BDD Realm
      */
     private void deleteAllDataFromRealm(){
         realm = Realm.getDefaultInstance();
@@ -614,8 +669,6 @@ public class AcceuilActivityClass extends Activity {
 
 
     }
-
-
 
     // ------- Gestion des animations -------
     /**
@@ -838,6 +891,9 @@ public class AcceuilActivityClass extends Activity {
         // On prépare les textes
         tComposition.setText("L'équipe ne possède pas de joueur pour le moment.");
 
+        Typeface type = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/steinem.ttf");
+        tTeamCreation_Title.setTypeface(type);
+
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -862,9 +918,9 @@ public class AcceuilActivityClass extends Activity {
                     // on clean l'editText
                     eMemberName.setText("");
                 } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Vous devez choisir un nom.", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
-                    toast.show();
+                    Toasty.error(getApplicationContext(), "Vous devez choisir un nom de joueur à ajouter a l'équipe.", Toast.LENGTH_SHORT, true).show();
+
+
                 }
             }
         });
@@ -891,17 +947,12 @@ public class AcceuilActivityClass extends Activity {
                     }, 1250);
                 } else {
                     if (eTeamName.getText().toString().equals("")){
-                        Toast toast = Toast.makeText(getApplicationContext(), "Vous devez choisir un nom d'équipe.", Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
-                        toast.show();
+                        Toasty.error(getApplicationContext(), "Vous devez choisir un nom d'équipe.", Toast.LENGTH_SHORT, true).show();
                     } else if (nbMember < 3){
-                        Toast toast = Toast.makeText(getApplicationContext(), "Vous devez ajouter des membres à votre équipe", Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
-                        toast.show();
+                        Toasty.error(getApplicationContext(), "Vous devez ajouter des membres à votre équipe.", Toast.LENGTH_SHORT, true).show();
                     } else if (!insigneSelected){
-                        Toast toast = Toast.makeText(getApplicationContext(), "Vous devez séléctionner un insigne pour votre équipe.", Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
-                        toast.show();
+                        Toasty.error(getApplicationContext(), "Vous devez séléctionner un insigne pour votre équipe.", Toast.LENGTH_SHORT, true).show();
+
                     }
 
 
@@ -1003,11 +1054,26 @@ public class AcceuilActivityClass extends Activity {
 
     private void goToRulesExplicationActivity(){
 
-        // Puis on change d'activity
-        Intent goToRulesActivity = new Intent (getApplicationContext(), RulesExplicationClass.class);
-        startActivity(goToRulesActivity);
-        AcceuilActivityClass.this.finish();
-        overridePendingTransition(R.anim.slide_to_right, R.anim.slide_from_left);
+        animator.fadeOutAnimation(lMJ_Introduction);
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                animator.fadeInAnimation(lBlackScreen);
+            }
+        },500);
+
+        Handler handler2 = new Handler();
+        handler2.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Puis on change d'activity
+                Intent goToRulesActivity = new Intent (getApplicationContext(), RulesExplicationClass.class);
+                startActivity(goToRulesActivity);
+            }
+        },1500);
+
 
     }
 

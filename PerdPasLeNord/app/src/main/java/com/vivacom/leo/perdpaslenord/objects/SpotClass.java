@@ -72,6 +72,7 @@ public class SpotClass extends RealmObject {
         this.mSpotType = type;
         this.mSpotId = id;
         this.mSpotName = name;
+        this.mZoneName = "Secret";
         this.mSpotNbInformation = nbInfos;
         this.mSpotInformation1 = infos1;
         this.mSpotInformation2 = infos2;

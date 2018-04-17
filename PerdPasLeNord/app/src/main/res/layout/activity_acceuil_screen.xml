@@ -70,11 +70,13 @@
             android:background="@drawable/background_teamcreation">
 
             <TextView
+                android:id="@+id/creationTeam_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_marginLeft="40dp"
                 android:text="CRÉATION DE VOTRE ÉQUIPE"
-                android:textColor="@color/noir"
+                android:textColor="@color/rouge"
                 android:textSize="38sp"/>
 
 
@@ -87,9 +89,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="120dp"
+                    android:layout_marginLeft="30dp"
                     android:layout_gravity="center_vertical"
-                    android:text="Choix du nom :"
+                    android:text="@string/choix_du_nom_de_votre_quipe"
                     android:textColor="@color/noir"
                     android:textSize="30sp"/>
 
@@ -98,7 +100,7 @@
                     android:layout_width="500dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="110dp"
+                    android:layout_marginLeft="50dp"
                     android:textColor="@color/noir"
                     android:textSize="30sp"
                     android:textAlignment="center"
@@ -119,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
                 android:layout_gravity="center_horizontal"
-                android:textColor="@color/noir"
+                android:textColor="@color/gris"
                 android:textSize="30sp"/>
 
             <LinearLayout
@@ -134,7 +136,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nom du joueur :"
+                    android:text="@string/nom_du_joueur"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/noir"
                     android:textSize="30sp"/>
@@ -181,7 +183,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="70dp"
-                    android:text="Choix de votre insigne :"
+                    android:text="@string/choix_de_votre_insigne"
                     android:textColor="@color/noir"
                     android:textSize="30sp"/>
 

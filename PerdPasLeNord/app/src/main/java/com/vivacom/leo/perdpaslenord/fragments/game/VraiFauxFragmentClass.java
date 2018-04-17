@@ -38,8 +38,8 @@ import java.util.concurrent.TimeUnit;
 
 public class VraiFauxFragmentClass extends Fragment  {
 
-    LinearLayout layoutConsigne,layoutForGame,layoutResultat;
-    TextView txtVConsigne,txtVNbQuestion, txtVQuestion, txtVBlinkText;
+    LinearLayout layoutForGame,layoutResultat;
+    TextView txtVConsigne,txtVNbQuestion, txtVQuestion;
     TextView txtVResultQuestion, txtVResultAnswer, timer, isCorrectMessage;
     ImageView imageAnswer;
     CountDownTimer countDown;
@@ -120,7 +120,6 @@ public class VraiFauxFragmentClass extends Fragment  {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_vrai_faux_game,container,false);
-        layoutConsigne = view.findViewById(R.id.VF_layoutConsigne);
         layoutForGame = view.findViewById(R.id.VF_layoutGame);
         layoutResultat = view.findViewById(R.id.VF_layoutResultat);
         txtVConsigne =  view.findViewById(R.id.VF_consigne);
@@ -132,7 +131,6 @@ public class VraiFauxFragmentClass extends Fragment  {
         btnFaux = view.findViewById(R.id.VF_btnFaux);
         imageAnswer = view.findViewById(R.id.VF_ImageAnswer);
         timer = view.findViewById(R.id.VF_chrono);
-        txtVBlinkText = view.findViewById(R.id.VF_blinkText);
         lPlayerSelection = view.findViewById(R.id.playerSelection);
         tGameName = view.findViewById(R.id.gamerName);
         tGameTitle = view.findViewById(R.id.gameTitle);
@@ -286,16 +284,14 @@ public class VraiFauxFragmentClass extends Fragment  {
      * Cette méthode prépare les différents éméments pour le lancement du jeu
      */
     public void setUpBeforeGame(){
-        layoutConsigne.setVisibility(View.VISIBLE);
+        txtVConsigne.setVisibility(View.VISIBLE);
+
         layoutForGame.setVisibility(View.GONE);
         layoutResultat.setVisibility(View.GONE);
 
         txtVConsigne.setText(ConstantInfos.CONSIGNE_VRAIFAUX);
         txtVConsigne.setTextSize(25);
         txtVConsigne.setTextColor(getResources().getColor(R.color.noir));
-
-        txtVBlinkText.setText(R.string.vf_txt_startgame);
-        animator.classicBlink(txtVBlinkText);
 
         countDown = new CountDownTimer(10001, 1000) {
             @Override
@@ -314,12 +310,12 @@ public class VraiFauxFragmentClass extends Fragment  {
             }
         };
 
-        // -------------------- Gestion du click sur le layoutConsigne -----------------
-        layoutConsigne.setOnClickListener(new View.OnClickListener() {
+        // -------------------- Gestion du click sur le txtConsigne -----------------
+        txtVConsigne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fadeOutAndFadeIn(layoutConsigne, layoutForGame, 1);
-                layoutConsigne.setClickable(false);
+                fadeOutAndFadeIn(txtVConsigne, layoutForGame, 1);
+                txtVConsigne.setClickable(false);
                 setUpQuestion(0);
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -670,7 +666,7 @@ public class VraiFauxFragmentClass extends Fragment  {
         handler1.postDelayed(new Runnable() {
             @Override
             public void run() {
-                tGameTitle.animate().translationY(-200).withLayer();
+                tGameTitle.animate().translationY(-150).withLayer();
             }
         },1500);
 
@@ -678,8 +674,8 @@ public class VraiFauxFragmentClass extends Fragment  {
         handler2.postDelayed(new Runnable() {
             @Override
             public void run() {
-                tGameName.setVisibility(View.VISIBLE);
-                tGameName.setText("C'est au tour de : \n " + playersName.get(numName));
+                animator.fadeInAnimation(tGameName);
+                tGameName.setText(getText(R.string.playerSelection_subtitle) + "\n" + playersName.get(numName));
                 startNameRotation();
             }
         }, 2000);
@@ -700,7 +696,7 @@ public class VraiFauxFragmentClass extends Fragment  {
             @Override
             public void run() {
                 nbRotation++;
-                tGameName.setText("C'est au tour de : \n " + playersName.get(v));
+                tGameName.setText(getText(R.string.playerSelection_subtitle) + "\n" + playersName.get(v));
                 v++;
                 if (v == z) {v = 0;}
                 // On défini le nombre de rotation

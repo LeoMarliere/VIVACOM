@@ -2,6 +2,7 @@ package com.vivacom.leo.perdpaslenord.fragments;
 
 import android.app.Activity;
 
+import android.graphics.Typeface;
 import android.media.Image;
 import android.os.Bundle;
 
@@ -160,6 +161,9 @@ public class InformationFragmentClass extends Fragment {
         }  else if (listInfos.length == 4){
            setUpForPassage();
         }
+
+        Typeface type = Typeface.createFromAsset(getActivity().getAssets(),"fonts/steinem.ttf");
+        spotName.setTypeface(type);
     }
 
     private void setUpForPassage(){

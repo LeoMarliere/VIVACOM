@@ -18,9 +18,9 @@ public class ConstantGuideMessage {
     private static final String ACCEUIL_6 = "Pour chaque \"Points de Passage\", vous aurez à votre disposition plusieurs options différentes.";
     private static final String ACCEUIL_7 = "Je vous invite fortement à vous pencher sur ces options. \n \n L'intérêt étant bien sur de vous faire découvrir des lieux incontournables de la ville, tout en vous amusant.";
     private static final String ACCEUIL_8 = "Maintenant que les bases sont en place, vous allez pouvoir y aller. \n \n J'interviendrais tout au long de la partie pour vous donner des informations supplémentaires.";
-    private static final String ACCEUIL_9 = "Bon !! Commençons tout de suite par la création de votre équipe !!";
+    private static final String ACCEUIL_9 = "Commençons tout de suite par la création de votre équipe !!";
 
-    public static final String acceuilMessageList[] = {ACCEUIL_1,ACCEUIL_2, ACCEUIL_3, ACCEUIL_4, ACCEUIL_5, ACCEUIL_6, ACCEUIL_7, ACCEUIL_8, ACCEUIL_9};
+    public static final String acceuilMessageList[] = {ACCEUIL_1,ACCEUIL_2, ACCEUIL_3, ACCEUIL_9};
 
 
     // Lancement du jeu

@@ -1,8 +1,8 @@
 package com.vivacom.leo.perdpaslenord.activities;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,8 +17,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.vivacom.leo.perdpaslenord.constant.ConstantGuideMessage;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
 import com.vivacom.leo.perdpaslenord.fragments.MJFragmentClass;
@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import es.dmoral.toasty.Toasty;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
@@ -70,7 +71,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     // ------- Nos Objets -------
     ViewAnimations animator = new ViewAnimations();
     Realm realm;
-    TeamClass theTeam;
     SpotClass spotSelected;
     ZoneClass zoneSelected;
 
@@ -78,6 +78,10 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     List<SpotClass> secretSpotList = new ArrayList<>();
     ArrayList<String> spotCompletedList = new ArrayList<>();
     ArrayList<Integer> listPhotoOfSpot = new ArrayList<>();
+
+    // ------- Notre Team -------
+    TeamClass theTeam;
+    List<String> playerList = new ArrayList<>();
 
     // -------- Mes boolean -------
     boolean menuOpen = false;
@@ -232,8 +236,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                         // On change le design du currentPositionMarker
                         GoogleMapFragment googleMapManager = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForMap);
                         googleMapManager.changeCurrentPosMarkerIcon(theTeam.getNumInsinge());
-                        // On affiche le message
-                        //showMJFragment(ConstantGuideMessage.startMessageList, 3);
                     }
                 });
             }
@@ -271,6 +273,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
           TeamClass team = realm.where(TeamClass.class).findFirst();
           if(team != null){
               theTeam = new TeamClass(team.getmTeamName(), team.getMembersList(), team.getNumInsinge());
+              playerList.addAll(team.getMembersList());
           }
 
       } finally {
@@ -435,23 +438,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     }
 
 
-    /**
-     * Cette méthode renvoye la liste de message associé au spot secret découvert
-     * @param titre
-     * @return
-     */
-    public String[] getMessageForSecretSpot(String titre){
-        String message[] = new String[1];
-        message[0] = "Error";
-
-        for (SpotClass spotSecret : secretSpotList){
-            if(spotSecret.getmSpotName().equalsIgnoreCase(titre)){
-                message[0] = spotSecret.getmSpotInformation1();
-            }
-        }
-
-        return message;
-    }
 
     // ------------------------------------------------------------------------------------
     // ----------------- Méthodes controllant le menu et son affichage --------------------
@@ -591,15 +577,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     }
 
     /**
-     * Cette méthode augmente le nombre de Km parcourus
-     * @param metre
-     */
-    public void increase_NbMetre(int metre){
-        RoadBookFragmentClass roadBookFragment = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
-        roadBookFragment.increase_Metre(metre);
-    }
-
-    /**
      * Cette méthode ajoute une photo a la liste des photos
      * Appelé depuis le fragment NativeCameraFragment
      * @param btm
@@ -619,7 +596,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
 
     // -----------------------------------------------------------------------------------
     // ------------------ Méthodes controllant l'affichage du guide ----------------------
-
 
     /**
      * Cette méthode place le Fragment MJFragment dans son Layout
@@ -693,6 +669,29 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         Log.d(TAG, "Start MJ Message / InterfaceWasVisible :"+interfaceWasVisible);
     }
 
+    /**
+     * Cette méthode va récuperer les messageses a donner au MJ
+     */
+    public void getMessageForMJ(){
+
+        if(spotSelected.getmSpotNbInformation() == 3){
+            String[] messages = new String[4];
+            messages[0] = spotSelected.getmSpotName();
+            messages[1] = spotSelected.getmSpotInformation1();
+            messages[2] = spotSelected.getmSpotInformation2();
+            messages[3] = spotSelected.getmSpotInformation3();
+            showMJFragment(messages, 3);
+        }
+
+        if(spotSelected.getmSpotNbInformation() == 2){
+            String[] messages = new String[3];
+            messages[0] = spotSelected.getmSpotName();
+            messages[1] = spotSelected.getmSpotInformation1();
+            messages[2] = spotSelected.getmSpotInformation2();
+            showMJFragment(messages, 3);
+        }
+    }
+
     // -----------------------------------------------------------------------------------
     // ------------------ Méthode appelé depuis les fragments ----------------------------
 
@@ -711,9 +710,17 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                 SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", title).findFirst();
                 if (mySpot != null) {
                     createSpotSelected(mySpot);
-                    createZoneSelectedFromBDD();
-                    createListPhotoOfSpot(mySpot);
+
+                    if(spotSelected.getmSpotType() == 1 || spotSelected.getmSpotType() == 2){
+                        showInGameInterface();
+                        getZoneSelectedFromBDD();
+                        createListPhotoOfSpot(mySpot);
+                    } else if (spotSelected.getmSpotType() == 3){getMessageForMJ();}
+
                     txtVSpotName.setText(spotSelected.getmSpotName());
+                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/BeautyDemo.ttf");
+                    txtVSpotName.setTypeface(type);
+
                 } else {
                     Log.e(TAG, "Impossible de récuperer le spot dans la BDD");
                 }
@@ -723,7 +730,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
 
         }
 
-        showInGameInterface();
+
 
     }
 
@@ -757,44 +764,18 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      */
     public void whenGameIsValidate(Boolean correct){
         MenuCircleButtonFragment menuCircleButtonManager = (MenuCircleButtonFragment) getSupportFragmentManager().findFragmentById(R.id.IG_fragment_menu);
-        RoadBookFragmentClass roadBookFragmentManager = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
 
-        // On vérifie si le jeu est gagné ou non
-        if (correct){
-            nbGameWin++;
-            roadBookFragmentManager.showOneWord(spotSelected.getmSpotId());
-
-            /*
-            // Si c'est la premiere victoire, on affiche le MJ
-            if (!firstGameWin){
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        showMJFragment(ConstantGuideMessage.firstGameMessageList, 3);
-                    }
-                }, 1250);
-                firstGameWin = true;
-            }
-            */
-        }
-
-        checkIfGameChecked();
+        checkIfGameChecked(correct);
         if(interfaceVisible){slideOutLeftAndInRight(1);}
 
         // On check le gameBtn et on vérifie si le spot est complété
-        menuCircleButtonManager.setGameBtnValidate();
         menuCircleButtonManager.setBtnClickable(true);
+        menuCircleButtonManager.setGameBtnValidate();
 
         // On désactive la view transparent si elle existe
         if (whiteViewActive){setUpWhiteScreen(false);}
     }
 
-
-    public void whenASecretIsDiscover(){
-        RoadBookFragmentClass roadBookFragment = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
-        roadBookFragment.increase_pointSecret();
-    }
 
     // -----------------------------------------------------------------------------------
     // ------------------------- Méthodes de vérification --------------------------------
@@ -824,7 +805,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         boolean imageChecked = spotSelected.isImageChecked();
         if (!imageChecked){
             spotSelected.setImageChecked();
-            setPhtoCheckedInBDD();
+            setPhotoCheckedInBDD();
             checkIfSpotCompleted();
             menuCircleButtonManager.setPhotoBtnValidate();
         }
@@ -834,8 +815,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Méthode ajoutant des points lorsque l'utiilsateur gagne le mini jeux
      * Ne s'acrtive qu'une seule fois
      */
-    public void checkIfGameChecked(){
-        RoadBookFragmentClass roadBookFragment = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
+    public void checkIfGameChecked(boolean correct){
 
         try{
             boolean gameChecked = spotSelected.isGameChecked();
@@ -843,7 +823,10 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                 spotSelected.setGameChecked();
                 setGameCheckedInBDD();
                 checkIfSpotCompleted();
-                roadBookFragment.increase_Jeu();
+                if(correct){
+                    incrementStats_NbVictoire();
+                    addNumberToList_listWord(spotSelected.getmSpotId());
+                } else { addNumberToList_UnlistWord(spotSelected.getmSpotId()); }
             }
         } catch(Exception e){System.out.print(e.getMessage());}
 
@@ -855,7 +838,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      */
     private void checkIfSpotCompleted(){
         GoogleMapFragment googleMapManager = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForMap);
-        RoadBookFragmentClass roadBookFragment = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
 
         boolean infosChecked = spotSelected.isInfoChecked();
         boolean imageChecked = spotSelected.isImageChecked();
@@ -870,9 +852,11 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             spotCompletedList.add(spotSelected.getmSpotName());
             googleMapManager.setMarkerCompleted(spotSelected);
             googleMapManager.incrementNbPointLegendBot(spotSelected.getmSpotType());
-            roadBookFragment.increase_pointPassage();
+            incrementStats_PointPrincipaux();
             checkIfZoneCompleted();
-            if (interfaceVisible){hideInGameInterface();}
+            //if (interfaceVisible){hideInGameInterface();}
+
+            Toasty.success(getApplicationContext(), "Bravo, vous avez complété " +spotSelected.getmSpotName()+" !", Toast.LENGTH_SHORT, true).show();
         }
 
         else if (infosChecked  & imageChecked & !spotCompleted & spotSelected.getmSpotType() == 2)
@@ -880,8 +864,10 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             setSpotCompletedInBDD();
             googleMapManager.setMarkerCompleted(spotSelected);
             googleMapManager.incrementNbPointLegendBot(spotSelected.getmSpotType());
-            roadBookFragment.increase_pointCulture();
+            incrementStats_PointSecondaire();
             //if (interfaceVisible){hideInGameInterface();}
+
+            Toasty.success(getApplicationContext(), "Bravo, vous avez complété " +spotSelected.getmSpotName()+" !", Toast.LENGTH_SHORT, true).show();
         }
     }
 
@@ -909,7 +895,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Ne s'active qu'une seule fois
      */
     private void checkIfZoneCompleted(){
-        RoadBookFragmentClass roadBookFragment = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
         String zoneName = zoneSelected.getmZoneName();
         boolean allCompleted = true;
 
@@ -928,9 +913,8 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             }
 
             if (allCompleted) {
-                nbZoneCompleted++;
                 zoneSelected.setmZoneCompleted();
-                roadBookFragment.increase_zone();
+                incrementStats_NbZones();
                 setZoneCompletedInBDD();
             }
         } finally {
@@ -1104,24 +1088,21 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             public void run() {
                 GoogleMapFragment googleMapManager = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForMap);
                 if (googleMapManager.checkDistanceWithSpotForGameActivation(spotSelected)) {
-                    if (spotName.equals("La Vieille Bourse") || spotName.equals("Le Nouveau Siècle") || spotName.equals("Rue Grande Chaussee") || spotName.equals("La Place aux Oignons")) {
+                    if (spotName.equals("La Vieille Bourse") || spotName.equals("Le Nouveau Siecle") || spotName.equals("Rue Grande Chaussee") || spotName.equals("La Place aux Oignons")) {
                         actualFragment = "QCM";
                         setQCMGame(spotName);
-                    } else if (spotName.equals("La Colonne De La Déesse") || spotName.equals("Rue Nationale") || spotName.equals("La Voix Du Nord") ||  spotName.equals("L'Hospice Comtesse")) {
+                    } else if (spotName.equals("La Colonne De La Deesse") || spotName.equals("Rue Nationale") || spotName.equals("La Voix Du Nord") ||  spotName.equals("L'Hospice Comtesse")) {
                         actualFragment = "ASSO";
                         setDnDAssociationGame(spotName);
                     } else if (spotName.equals("La Place Louise De Bettignies") || spotName.equals("Le Beffroi") || spotName.equals("Le Furet Du Nord") || spotName.equals("Le Palais Rihour") || spotName.equals("Rue Esquermoise")) {
                         actualFragment = "VF";
                         setVraiFauxGame(spotName);
-                    } else if (spotName.equals("L'Opéra De Lille") || spotName.equals("La Grand'Garde") || spotName.equals("Notre Dame De La Treille")) {
+                    } else if (spotName.equals("L'Opera De Lille") || spotName.equals("La Grand'Garde") || spotName.equals("Notre Dame De La Treille")) {
                         actualFragment = "PUZZLE";
                         setDnDPuzzleGame(spotName);
-                    } else if (spotName.equals("L'Ilot Comtesse") || spotName.equals("La Statue du Ptit Quinquin")) {
+                    } else if (spotName.equals("L'Ilot Comtesse") || spotName.equals("La Statue du Ptit Quinquin") || spotName.equals("Le Rang Du Beauregard")) {
                         actualFragment = "CAMERA";
                         setNativePhotoFragment();
-                    } else if (spotName.equals("Le Rang Du Beauregard")) {
-                        actualFragment = "DIFFERENCE";
-                        setDifferenceFragment(spotName);
                     } else {
                         actualFragment = "NOTHING";
                         setMessage("Pas encore de jeu");
@@ -1265,7 +1246,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * @return
      */
     public List<String> getPlayerName(){
-        List<String> playerList = theTeam.getMembersList();
         return playerList;
     }
 
@@ -1289,24 +1269,21 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      */
     public void setInfoCheckedInBDD(){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final String spotName = spotSelected.getmSpotName();
-                realm =  Realm.getDefaultInstance();
-                try{
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", spotName).findFirst();
-                            if(mySpot != null){mySpot.setInfoChecked();}
-                        }
-                    });
-                } finally {
-                    realm.close();
+        final String spotName = spotSelected.getmSpotName();
+        realm =  Realm.getDefaultInstance();
+        try{
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", spotName).findFirst();
+                    if(mySpot != null){mySpot.setInfoChecked();}
                 }
-            }
-        }).start();
+            });
+        } finally {
+            realm.close();
+        }
+
+
 
     }
 
@@ -1314,26 +1291,22 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Cette méthode va récupérer le spot actuel dans la BDD
      * Et va passer la variable isImageChecked a TRUE
      */
-    public void setPhtoCheckedInBDD(){
+    public void setPhotoCheckedInBDD(){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final String spotName = spotSelected.getmSpotName();
-                realm =  Realm.getDefaultInstance();
-                try{
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", spotName).findFirst();
-                            if(mySpot != null){mySpot.setImageChecked();}
-                        }
-                    });
-                } finally {
-                    realm.close();
+        final String spotName = spotSelected.getmSpotName();
+        realm =  Realm.getDefaultInstance();
+        try{
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", spotName).findFirst();
+                    if(mySpot != null){mySpot.setImageChecked();}
                 }
-            }
-        }).start();
+            });
+        } finally {
+            realm.close();
+        }
+
 
     }
 
@@ -1343,25 +1316,20 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      */
     public void setGameCheckedInBDD(){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                final String spotName = spotSelected.getmSpotName();
-                realm =  Realm.getDefaultInstance();
-                try{
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", spotName).findFirst();
-                            if(mySpot != null){mySpot.setGameChecked();}
-                        }
-                    });
-                } finally {
-                    realm.close();
+        final String spotName = spotSelected.getmSpotName();
+        realm =  Realm.getDefaultInstance();
+        try{
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", spotName).findFirst();
+                    if(mySpot != null){mySpot.setGameChecked();}
                 }
-            }
-        }).start();
+            });
+        } finally {
+            realm.close();
+        }
+
 
     }
 
@@ -1371,28 +1339,20 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      */
     public void setSpotCompletedInBDD(){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        final String spotName = spotSelected.getmSpotName();
+        realm =  Realm.getDefaultInstance();
+        try{
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", spotName).findFirst();
+                    if(mySpot != null){ mySpot.setSpotCompleted(); }
 
-                final String spotName = spotSelected.getmSpotName();
-                realm =  Realm.getDefaultInstance();
-                try{
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", spotName).findFirst();
-                            if(mySpot != null){mySpot.setSpotCompleted();}
-                        }
-                    });
-                } finally {
-                    realm.close();
                 }
-
-            }
-        }).start();
-
-
+            });
+        } finally {
+            realm.close();
+        }
 
     }
 
@@ -1435,7 +1395,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Cette méthode va récupérer dans la BDD la zone associé a notre spot
      * Puis va créer notre objet zoneSelected via les informations de l'objet récupérer
      */
-    public void createZoneSelectedFromBDD(){
+    public void getZoneSelectedFromBDD(){
         final String zoneName = spotSelected.getmZoneName();
 
         realm = Realm.getDefaultInstance();
@@ -1455,6 +1415,109 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
 
     }
 
+
+    // ----------------------------------------------------------
+    // ------------------ Modification des Stats -----------------------
+
+    public void incrementStats_PointPrincipaux(){
+
+                realm =  Realm.getDefaultInstance();
+                try{
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            TeamClass team = realm.where(TeamClass.class).findFirst();
+                            if (team != null){ team.setStats_NbSpot1(team.getStats_NbSpot1()+1); }
+                        }
+                    });
+                } finally {
+                    realm.close();
+                }
+            }
+
+    public void incrementStats_PointSecondaire(){
+
+                realm =  Realm.getDefaultInstance();
+                try{
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            TeamClass team = realm.where(TeamClass.class).findFirst();
+                            if (team != null){ team.setStats_NbSpot2(team.getStats_NbSpot2()+1); }
+                        }
+                    });
+                } finally {
+                    realm.close();
+                }
+            }
+
+    public void incrementStats_NbZones(){
+
+                realm =  Realm.getDefaultInstance();
+                try{
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            TeamClass team = realm.where(TeamClass.class).findFirst();
+                            if (team != null) { team.setStats_NbZones(team.getStats_NbZones() + 1); }
+                        }
+                    });
+                } finally {
+                    realm.close();
+                }
+
+    }
+
+    public void incrementStats_NbVictoire(){
+
+                realm =  Realm.getDefaultInstance();
+                try{
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            TeamClass team = realm.where(TeamClass.class).findFirst();
+                            if (team != null){team.setStats_NbVictoire(team.getStats_NbVictoire()+1); }
+                        }
+                    });
+                } finally {
+                    realm.close();
+                }
+    }
+
+    public void addNumberToList_listWord(final int nb){
+
+        realm =  Realm.getDefaultInstance();
+        try{
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    TeamClass team = realm.where(TeamClass.class).findFirst();
+                    if (team != null){ team.getList_DiscoverWord().add(nb); }
+                    Toasty.success(getApplicationContext(), "Félicitations, vous venez de débloquer un mot !",Toast.LENGTH_SHORT, true).show();
+                }
+            });
+        } finally {
+            realm.close();
+        }
+
+    }
+
+    public void addNumberToList_UnlistWord(final int nb){
+
+        realm =  Realm.getDefaultInstance();
+        try{
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    TeamClass team = realm.where(TeamClass.class).findFirst();
+                    if (team != null){ team.getList_UnDiscoverWord().add(nb); }
+                }
+            });
+        } finally {
+            realm.close();
+        }
+
+    }
 
 
     // ---------------------------------------------------------------------------------

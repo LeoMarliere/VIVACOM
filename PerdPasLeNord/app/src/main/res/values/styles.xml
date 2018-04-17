@@ -27,11 +27,19 @@
     <string name="vf_timer">Temps Restant : 10</string>
 
 
-    <string name="rules_title_carte"><u>La Carte :</u></string>
-    <string name="rules_title_interface"><u>L\'Interface :</u></string>
-    <string name="rules_title_jeu"><u>Les Jeux :</u></string>
+    <string name="rules_title_carte"><u>La Carte</u></string>
+    <string name="rules_title_interface"><u>L\'Interface</u></string>
+    <string name="rules_title_jeu"><u>Les Jeux</u></string>
+    <string name="rules_title_deroulement"><u>Le Déroulement d\'une partie</u></string>
 
     <string name="qcm_number_question">Question 1</string>
+
+    <string name="choix_du_nom_de_votre_quipe"><u>Choix du nom de votre équipe :</u></string>
+    <string name="nom_du_joueur"><u>Nom du joueur :</u></string>
+    <string name="choix_de_votre_insigne"><u>Choix de votre insigne :</u></string>
+
+    <string name="playerSelection_subtitle"><u>C\'est au tour du joueur :</u></string>
+
 
 
 

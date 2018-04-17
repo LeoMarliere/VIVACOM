@@ -7,10 +7,11 @@
     android:background="@drawable/background_roadbook">
 
     <TextView
+        android:id="@+id/RB_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="35sp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="25dp"
         android:layout_marginLeft="50dp"
         android:text="@string/rb_Titre1"
         android:textColor="@color/rouge"
@@ -243,7 +244,7 @@
             <View
                 android:id="@+id/ligne01"
                 android:layout_width="960dp"
-                android:layout_height="2dp"
+                android:layout_height="3dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
@@ -254,7 +255,8 @@
                 android:id="@+id/rb_succes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -266,154 +268,176 @@
                     android:visibility="visible"/>
 
                 <LinearLayout
-                    android:layout_width="900dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:layout_margin="15dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="20dp"
-                        android:src="@drawable/marker_principal_valide"/>
-
-                    <TextView
-                        android:id="@+id/stats_pointPassage"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="500dp"
                         android:layout_height="wrap_content"
-                        android:text="Point de Passage Complété : "
-                        android:textColor="@color/noir"
-                        android:textSize="24sp"
-                        android:layout_marginLeft="20dp"/>
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="900dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_margin="15dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:src="@drawable/marker_principal_valide"/>
+
+                            <TextView
+                                android:id="@+id/stats_pointPassage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Point de Passage Complété : 12/19"
+                                android:textColor="@color/noir"
+                                android:layout_marginLeft="10dp"
+                                android:textSize="20sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="900dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_margin="15dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:src="@drawable/marker_secondaire_valide"/>
+
+                            <TextView
+                                android:id="@+id/stats_pointCulture"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Point Secondaire Complété : "
+                                android:textColor="@color/noir"
+                                android:textSize="20sp"
+                                android:layout_marginLeft="10dp"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="900dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_margin="15dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:src="@drawable/marker_secret"/>
+
+                            <TextView
+                                android:id="@+id/stats_pointSecret"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Point Secret Découvert : "
+                                android:textColor="@color/noir"
+                                android:textSize="20sp"
+                                android:layout_marginLeft="10dp"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="400dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="900dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_margin="15dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:src="@drawable/zone_jaune"/>
+
+                            <TextView
+                                android:id="@+id/stats_zone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nombre de Zone Complété : "
+                                android:textColor="@color/noir"
+                                android:textSize="20sp"
+                                android:layout_marginLeft="10dp"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="900dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_margin="15dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:src="@drawable/icone_pas"/>
+
+                            <TextView
+                                android:id="@+id/stats_Km"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nombre de mètre parcourus : "
+                                android:textColor="@color/noir"
+                                android:textSize="20sp"
+                                android:layout_marginLeft="10dp"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="900dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_margin="15dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:src="@drawable/icon_victoire"/>
+
+                            <TextView
+                                android:id="@+id/stats_Jeu"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nombre de jeu gagné : "
+                                android:textColor="@color/noir"
+                                android:textSize="20sp"
+                                android:layout_marginLeft="10dp"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="900dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:layout_margin="15dp"
-                    android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="20dp"
-                        android:src="@drawable/marker_secondaire_valide"/>
 
-                    <TextView
-                        android:id="@+id/stats_pointCulture"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Point Secondaire Complété : "
-                        android:textColor="@color/noir"
-                        android:textSize="24sp"
-                        android:layout_marginLeft="20dp"/>
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="900dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:layout_margin="15dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="20dp"
-                        android:src="@drawable/marker_secret"/>
-
-                    <TextView
-                        android:id="@+id/stats_pointSecret"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Point Secret Découvert : "
-                        android:textColor="@color/noir"
-                        android:textSize="24sp"
-                        android:layout_marginLeft="20dp"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="900dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:layout_margin="15dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="20dp"
-                        android:src="@drawable/zone_jaune"/>
-
-                    <TextView
-                        android:id="@+id/stats_zone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nombre de Zone Complété : "
-                        android:textColor="@color/noir"
-                        android:textSize="24sp"
-                        android:layout_marginLeft="20dp"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="900dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:layout_margin="15dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="20dp"
-                        android:src="@drawable/icone_pas"/>
-
-                    <TextView
-                        android:id="@+id/stats_Km"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nombre de mètre parcourus : "
-                        android:textColor="@color/noir"
-                        android:textSize="24sp"
-                        android:layout_marginLeft="20dp"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="900dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:layout_margin="15dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="20dp"
-                        android:src="@drawable/icone_pas"/>
-
-                    <TextView
-                        android:id="@+id/stats_Jeu"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nombre de jeu gagné : "
-                        android:textColor="@color/noir"
-                        android:textSize="24sp"
-                        android:layout_marginLeft="20dp"/>
-
-                </LinearLayout>
 
 
             </LinearLayout>
@@ -421,7 +445,7 @@
             <View
                 android:id="@+id/ligne02"
                 android:layout_width="960dp"
-                android:layout_height="2dp"
+                android:layout_height="3dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"

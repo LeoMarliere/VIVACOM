@@ -242,7 +242,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         if (getArguments() != null) {
             Bundle args = getArguments();
             if (args.containsKey(TXT_INFOS)) {
-                if (Objects.equals(args.getString(TXT_INFOS), "L'Opéra De Lille")) {
+                if (Objects.equals(args.getString(TXT_INFOS), "L'Opera De Lille")) {
                     setUpForOperaDeLille();
                     nbRotationAFaire = 14;
                 } else if (Objects.equals(args.getString(TXT_INFOS), "La Grand'Garde")) {
@@ -290,8 +290,8 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         goodImageFor11 = layoutOneTwo.getChildAt(0);
         goodImageFor12 = layoutTwoThree.getChildAt(0);
 
-        startMessage = "Oh Non !!! \n \n Notre magnifique puzzle de l'Opéra c'est mélangé ... \n \n A vous de le recomposer !!";
-        endMessage = "Félicitation !!! \n \n Vous êtes vraiment très doué pour les puzzles. \n \n Cliquer sur l'écran pour débloquer un mot !!";
+        startMessage = "Oh Non !!! \n Notre magnifique puzzle de l'Opéra c'est mélangé ... \n \n A vous de le recomposer !!";
+        endMessage = "Félicitation !!!  \n Vous êtes vraiment très doué pour les puzzles. \n \n Cliquer sur l'écran pour débloquer un mot !!";
     }
 
     /**
@@ -327,8 +327,8 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         goodImageFor11 = layoutOneTwo.getChildAt(0);
         goodImageFor12 = layoutTwoThree.getChildAt(0);
 
-        startMessage = "Oh Non !!! \n Notre puzzle de la Grand'Garde c'est mélangé ... \n \n A vous de le recomposer !!";
-        endMessage = "Félicitation !!! \n \n Vous êtes vraiment très doué pour les puzzles. \n \n Cliquer sur l'écran pour débloquer un mot.";
+        startMessage = "Oh Non !!! \n C'est le bazar au niveau de la Grand'Garde ... \n \n Aider moi a recomposer le puzzle !!";
+        endMessage = "Félicitation !!!  \n Vous êtes vraiment très doué pour les puzzles. \n \n Cliquer sur l'écran pour débloquer un mot.";
     }
 
     /**
@@ -364,8 +364,8 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         goodImageFor11 = layoutOneTwo.getChildAt(0);
         goodImageFor12 = layoutTwoThree.getChildAt(0);
 
-        startMessage = "Oh Non !!! \n \n Notre magnifique puzzle de La Vieille Bourse c'est mélangé ... \n \n A vous de le recomposer !!";
-        endMessage = "Félicitation !!! \n \n Vous êtes vraiment très doué pour les puzzles. \n \n Cliquer pour gagner 20 points";
+        startMessage = "Oh Non !!! \n La Cathédrale est sans dessus dessous... \n \n Vite, remettez moi un peu d'ordre !!";
+        endMessage = "Félicitation !!! \n Vous êtes vraiment très doué pour les puzzles. \n \n Cliquer sur l'écran pour continuer";
 
     }
 
@@ -410,7 +410,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         handler1.postDelayed(new Runnable() {
             @Override
             public void run() {
-                tGameTitle.animate().translationY(-200).withLayer();
+                tGameTitle.animate().translationY(-150).withLayer();
             }
         },1500);
 
@@ -418,8 +418,8 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         handler2.postDelayed(new Runnable() {
             @Override
             public void run() {
-                tGameName.setVisibility(View.VISIBLE);
-                tGameName.setText("C'est au tour de : \n " + playersName.get(numName));
+                animator.fadeInAnimation(tGameName);
+                tGameName.setText(getText(R.string.playerSelection_subtitle) + "\n" + playersName.get(numName));
                 startNameRotation();
             }
         }, 2000);
@@ -440,7 +440,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
             @Override
             public void run() {
                 nbRotation++;
-                tGameName.setText("C'est au tour de : \n " + playersName.get(v));
+                tGameName.setText(getText(R.string.playerSelection_subtitle) + "\n" + playersName.get(v));
                 v++;
                 if (v == z) {v = 0;}
                 // On défini le nombre de rotation

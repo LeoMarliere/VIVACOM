@@ -104,8 +104,8 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
             currentFragment = args.getInt("4");
         }
 
+        setBtnClickable(true);
         setUpBackgroundBtn();
-        setUpButtonTag();
 
         // Bouton Info
         btn_Infos.setOnClickListener(new View.OnClickListener() {
@@ -137,6 +137,7 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
             public void onClick(View v) {
                 if (currentFragment != 3 && !gameChecked){
                     currentFragment = 3;
+                    setBtnClickable(false);
                     menuCircleButtonFragmentCallBack.slideOutLeftAndInRight(currentFragment);
                     if (carnetVisible){carnetVisible=false;}
                 }
@@ -202,20 +203,11 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         else{btn_Infos.setBackgroundResource(R.drawable.btn_info_off);}
 
         // Si le jeu a déja été fait, le boutons passe au vert
-        if (gameChecked){btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_on);}
-        else{btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_off);}
-    }
-
-    /**
-     * Cette méthode attribut à chaque bouton un TAG
-     */
-    private void setUpButtonTag(){
-        btn_Jeu.setTag("JEU");
-        btn_Infos.setTag("INFOS");
-        btn_Photos.setTag("PHOTOS");
-
-        btn_Carnet.setTag("CARNET");
-        btn_Carte.setTag("CARTE");
+        if (gameChecked){
+            btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_on);
+            btn_Jeu.setEnabled(false);
+            btn_Jeu.setClickable(false);
+        } else{btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_off);}
     }
 
 
@@ -235,8 +227,6 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
             menuOpen = true;
         }
     }
-
-
 
     /**
      * Cette méthode anime les différents boutons
@@ -283,6 +273,9 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
     public void setGameBtnValidate() {
         btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_on);
         gameChecked = true;
+        btn_Jeu.setEnabled(false);
+        btn_Jeu.setClickable(false);
+
     }
 
     /**
@@ -307,6 +300,7 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         btn_Photos.setClickable(canClick);
 
     }
+
 
 
     // ---------------

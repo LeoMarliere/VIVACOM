@@ -140,7 +140,7 @@ public class ViewAnimations {
             @Override public void onAnimationCancel(Animator animator) {}
             @Override public void onAnimationRepeat(Animator animator) {}
         });
-        animator.setDuration(1000).start();
+        animator.setDuration(750).start();
     }
 
     /**

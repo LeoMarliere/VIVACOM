@@ -7,9 +7,10 @@
     android:background="@drawable/background_teamcreation">
 
     <TextView
+        android:id="@+id/rulesExplication_Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="35sp"
+        android:textSize="38sp"
         android:layout_marginTop="30dp"
         android:layout_marginLeft="50dp"
         android:text="RÈGLES DU JEU :"
@@ -32,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="40sp"
-            android:layout_marginLeft="50dp"
+            android:layout_gravity="center_horizontal"
             android:text="@string/rules_title_carte"
             android:textColor="@color/noir" />
 
@@ -142,8 +143,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="40sp"
-            android:layout_marginLeft="50dp"
             android:text="@string/rules_title_interface"
+            android:layout_gravity="center_horizontal"
             android:textColor="@color/noir" />
 
         <LinearLayout
@@ -248,14 +249,14 @@
         android:background="@drawable/background_selectionjoueur"
         android:padding="20dp"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="invisible">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="40sp"
-            android:layout_marginLeft="50dp"
             android:text="@string/rules_title_jeu"
+            android:layout_gravity="center_horizontal"
             android:textColor="@color/noir" />
 
         <LinearLayout
@@ -301,7 +302,7 @@
                 android:layout_width="65dp"
                 android:layout_height="65dp"
                 android:layout_margin="15dp"
-                android:background="@drawable/btn_carnet_on"/>
+                android:background="@drawable/icon_type_game"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -348,6 +349,116 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/rules_Party"
+        android:layout_width="match_parent"
+        android:layout_height="570dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/background_selectionjoueur"
+        android:padding="20dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:text="@string/rules_title_deroulement"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/noir" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_margin="15dp"
+                android:background="@drawable/icon_personnage"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:text="@string/deroulement_Game_1"
+                android:textAlignment="center"
+                android:textSize="30sp"
+                android:textColor="@color/noir"/>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_margin="15dp"
+                android:background="@drawable/icon_restart"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:text="@string/deroulement_Game_2"
+                android:textAlignment="center"
+                android:textSize="30sp"
+                android:textColor="@color/noir"/>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_margin="15dp"
+                android:background="@drawable/icon_startgame"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:text="@string/deroulement_Game_3"
+                android:textAlignment="center"
+                android:textSize="30sp"
+                android:textColor="@color/noir"/>
+
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/btn_precedent"
@@ -368,7 +479,12 @@
         android:background="@drawable/btn_action_suivant"
         android:layout_margin="50dp"/>
 
-
+    <RelativeLayout
+        android:id="@+id/rules_blackScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/noir"
+        android:visibility="invisible"/>
 
 
 </RelativeLayout>

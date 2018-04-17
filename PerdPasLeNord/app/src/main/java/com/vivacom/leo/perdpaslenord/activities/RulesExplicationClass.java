@@ -2,18 +2,25 @@ package com.vivacom.leo.perdpaslenord.activities;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
 import com.vivacom.leo.perdpaslenord.objects.TeamClass;
+
+import static android.view.View.GONE;
 
 /**
  * Created by Leo on 20/02/2018.
@@ -27,8 +34,10 @@ public class RulesExplicationClass extends Activity {
     ViewAnimations animator = new ViewAnimations();
 
     // Graphique
-    LinearLayout  explicationLayout_Map, explicationLayout_UI, explicationLayout_Game;
+    RelativeLayout lBlckScreen;
+    LinearLayout  explicationLayout_Map, explicationLayout_UI, explicationLayout_Game, explicationLayout_Party;
     Button backButton, nextButton;
+    TextView title;
 
     // Variable
     int numLayout = 1;
@@ -61,14 +70,28 @@ public class RulesExplicationClass extends Activity {
 
         // ------- On prépare les layout et les boutons -------
         explicationLayout_Map.setVisibility(View.VISIBLE);
-        explicationLayout_UI.setVisibility(View.GONE);
-        explicationLayout_Game.setVisibility(View.GONE);
+        explicationLayout_UI.setVisibility(GONE);
+        explicationLayout_Game.setVisibility(GONE);
+        explicationLayout_Party.setVisibility(GONE);
 
-        backButton.setVisibility(View.GONE);
+        backButton.setVisibility(GONE);
         nextButton.setVisibility(View.VISIBLE);
+
+        lBlckScreen.setVisibility(View.VISIBLE);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                animator.fadeOutAnimation(lBlckScreen);
+            }
+        },1000);
 
         // ------- On créer nos Listener -------
         createBtnAction();
+
+        // ----- On place notre Font -----
+        Typeface type = Typeface.createFromAsset(getApplication().getAssets(),"fonts/steinem.ttf");
+        title.setTypeface(type);
     }
 
 
@@ -82,6 +105,10 @@ public class RulesExplicationClass extends Activity {
         explicationLayout_Game = findViewById(R.id.rules_Jeu);
         explicationLayout_Map = findViewById(R.id.rules_Carte);
         explicationLayout_UI = findViewById(R.id.rules_Interface);
+        explicationLayout_Party  = findViewById(R.id.rules_Party);
+
+        title = findViewById(R.id.rulesExplication_Title);
+        lBlckScreen= findViewById(R.id.rules_blackScreen);
     }
 
     /**
@@ -101,6 +128,10 @@ public class RulesExplicationClass extends Activity {
                     animator.fadeInAnimation(explicationLayout_UI);
                     animator.fadeOutAnimation(explicationLayout_Game);
                     numLayout = 2;
+                } else if(numLayout == 4){
+                    animator.fadeInAnimation(explicationLayout_Game);
+                    animator.fadeOutAnimation(explicationLayout_Party);
+                    numLayout = 3;
                 }
             }
         });
@@ -120,8 +151,33 @@ public class RulesExplicationClass extends Activity {
                     animator.fadeOutAnimation(explicationLayout_UI);
                     numLayout = 3;
                 } else if(numLayout == 3){
-                    Intent goToInGameActivity = new Intent (getApplicationContext(), InGameActivityClass.class);
-                    startActivity(goToInGameActivity);
+                    animator.fadeInAnimation(explicationLayout_Party);
+                    animator.fadeOutAnimation(explicationLayout_Game);
+                    numLayout = 4;
+                } else if (numLayout == 4){
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(RulesExplicationClass.this);
+
+                    builder.setMessage("Êtes-vous sur de vouloir commencer ?")
+                            .setTitle("Lancement du jeu :");
+
+                    builder.setPositiveButton("Oui, allons-y !!", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Intent goToInGameActivity = new Intent (getApplicationContext(), InGameActivityClass.class);
+                                    startActivity(goToInGameActivity);
+                                }
+                            });
+
+                    builder.setNegativeButton("Peu être plus tard ...", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
                 }
             }
         });

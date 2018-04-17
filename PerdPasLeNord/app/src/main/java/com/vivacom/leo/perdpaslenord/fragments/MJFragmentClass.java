@@ -115,15 +115,12 @@ public class MJFragmentClass extends Fragment {
 
         Log.d(TAG, "Activity onStart");
 
-
         lMJ_Screen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Nothing
             }
         });
-
-
         lMJ_Bandeau.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -195,18 +195,16 @@ public class ConstantInfos {
 
     //   ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
 
-    private static final String SECRET_BEHINDTREILLE1 = "Vous avez bien fait de venir dans ce coin !! \n \n C'est l'un de mes endroits préférés de la ville.";
-    private static final String SECRET_BEHINDTREILLE2 = "Vous y découvrirez de charmantes maisons d’un autre temps, aux façades colorées.";
-    private static final String SECRET_BEHINDTREILLE3 = "Un coin méconnu qui vaut le détour et un endroit idéal pour manger un sandwich en profitant de l’ombre de la cathédrale lors des jours de canicule.";
+    public static final String SECRET_BEHINDTREILLE1 = "Vous avez bien fait de venir dans ce coin !! \n \n C'est l'un de mes endroits préférés de la ville.";
+    public static final String SECRET_BEHINDTREILLE2 = "Vous y découvrirez de charmantes maisons d’un autre temps, aux façades colorées.";
+    public static final String SECRET_BEHINDTREILLE3 = "Un coin méconnu qui vaut le détour et un endroit idéal pour manger un sandwich en profitant de l’ombre de la cathédrale lors des jours de canicule.";
 
-    public static String SECRETLIST_BEHINHTREILLE[] = {"Le Flanc caché de la Cathédrale", SECRET_BEHINDTREILLE1, SECRET_BEHINDTREILLE2, SECRET_BEHINDTREILLE3};
 
     //   ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
 
-    private static final String SECRET_COMPOSTELLE1 = "Mohohoh !!! Ce restaurant, plutôt chic, est en réalité l'ancien \"Hôtel de Beaurepaire\", maison close pendant la dernière guerre.";
-    private static final String SECRET_COMPOSTELLE2 = "Vous y sentirez peut-être encore le parfum de \"Eva, la slave\", l'ancienne madone du lieu, très connue dans la région.";
+    public static final String SECRET_COMPOSTELLE1 = "Mohohoh !!! Ce restaurant, plutôt chic, est en réalité l'ancien \"Hôtel de Beaurepaire\", maison close pendant la dernière guerre.";
+    public static final String SECRET_COMPOSTELLE2 = "Vous y sentirez peut-être encore le parfum de \"Eva, la slave\", l'ancienne madone du lieu, très connue dans la région.";
 
-    public static String SECRETLIST_COMPOSTELLE[] = {"Le Compostelle", SECRET_COMPOSTELLE1, SECRET_COMPOSTELLE2};
 
 
 
@@ -217,17 +215,17 @@ public class ConstantInfos {
     // ------ Vrai-Faux -------
     public static final String CONSIGNE_VRAIFAUX = "! VRAI ou FAUX ! \n \n  Vous allez devoir répondre à 3 questions à la suite. \n Pour réussir, il vous faudra au minimum 2 réponses correctes." +
             "\n Pour chaque question, vous n'aurez que 10 secondes pour répondre. Il est donc conseillé de lire la question à voix haute et de faire un choix rapide. \n" +
-            "\n Le chrono commencera directement une fois le jeu démarré.\n Attention, une fois le jeu démarré, vous ne pourrez plus changer de rubrique et serez obligé de finir le jeu.";
+            "\n Le chrono commencera directement une fois le jeu démarré.";
 
     public static final String WINMESSAGE_VRAIFAUX = " Bravo !! Vous avez eu plus de bonnes réponses que de mauvaises. \n Vous débloquer un nouveau mot. \n \n Cliquer sur l'écran pour terminer le jeu.  ";
     public static final String LOOSEMESSAGE_VRAIFAUX = "Dommage !! Vous avez fait trop d'erreurs ...  \n Vous ne débloquez pas de mot ce coup ci. \n \n Cliquer sur l'écran pour terminer le jeu. ";
 
     // ------- QCM -------
-
     public static final String CONSIGNE_QCM = "Ce jeu prend la forme d'un QCM classique. \n" +
-            "\n Vous allez avoir 3 questions, avec pour chaque question 5 réponses possible. \n Le but est bien sur d'avoir au minimum 2 bonnes réponses. \n A vous d'ouvrir l'oeil pour être en mesure de gagner." +
-            "\n Attention, une fois le jeu démarré, vous ne pourrez plus changer de rubrique et serez obligé de finir le jeu. \n" +
-            "\n Cliquez sur l'écran pour commencer ....";
+            "\n Vous allez avoir 3 questions, avec pour chaque question 5 réponses possible. Rien de bien complexe. \n \n Le but est bien sur d'avoir au minimum 2 bonnes réponses. \n A vous d'ouvrir l'oeil pour être en mesure de gagner." +
+            "\n \n Cliquez sur l'écran pour commencer ....";
+
+
 
 
     // ------- Association -------

@@ -4,6 +4,7 @@ package com.vivacom.leo.perdpaslenord.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -42,7 +44,7 @@ public class RoadBookFragmentClass extends Fragment {
 
     // ----------- Nos Elements Graphiques -----------
     LinearLayout lSucces;
-    TextView txtV_stats_Km , txtV_stats_pointPassage , txtV_stats_pointCulture, txtV_stats_pointSecret , txtV_stats_zone  , txtV_stats_jeu;
+    TextView txtV_stats_Km , txtV_stats_pointPassage , txtV_stats_pointCulture, txtV_stats_pointSecret , txtV_stats_zone  , txtV_stats_jeu, txtV_title;
 
     RelativeLayout lPhotoGalery;
     ImageView mPhoto1,mPhoto2,mPhoto3;
@@ -61,6 +63,8 @@ public class RoadBookFragmentClass extends Fragment {
     ArrayList<Bitmap> playersPhotoList = new ArrayList<>();
     ArrayList<ImageView> listImageView = new ArrayList<>();
     ArrayList<TextView> phraseMystereList = new ArrayList<>();
+    ArrayList<Integer> list_motsDecouvert = new ArrayList<>();
+    ArrayList<Integer> list_motsNonDecouvert = new ArrayList<>();
 
     // ---------- Element Globaux ------------
 
@@ -82,7 +86,6 @@ public class RoadBookFragmentClass extends Fragment {
      * Interface de CallBack pour utiliser des méthodes de la class principale depuis le fragment
      */
     public interface RoadBookFragmentClassCallBack{
-        TeamClass getTeamFromGame();
     }
 
     @Override
@@ -115,8 +118,9 @@ public class RoadBookFragmentClass extends Fragment {
     @Override
     public  void onResume(){
         super.onResume();
+        getTeamFromBDD();
         setUpStatistiques();
-        setUpPhotos();
+        showDiscoverdedWord();
         Log.d(TAG, "Activity onResume");
     }
 
@@ -140,6 +144,7 @@ public class RoadBookFragmentClass extends Fragment {
         mPhoto2 = mView.findViewById(R.id.rb_photo2);
         mPhoto3 = mView.findViewById(R.id.rb_photo3);
 
+        txtV_title = mView.findViewById(R.id.RB_title);
 
         bSendMail = mView.findViewById(R.id.sendMail);
 
@@ -166,7 +171,6 @@ public class RoadBookFragmentClass extends Fragment {
         return mView;
     }
 
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -179,79 +183,19 @@ public class RoadBookFragmentClass extends Fragment {
 
         getTeamFromBDD();
 
-        bSendMail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String teamName = theTeam.getmTeamName();
-                String body = getMailBody();
+        Typeface type = Typeface.createFromAsset(getActivity().getAssets(),"fonts/steinem.ttf");
+        txtV_title.setTypeface(type);
 
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"leomarliere@hotmail.fr"});
-                //emailIntent.putExtra(Intent.EXTRA_CC, new String[]{"leomarliere@hotmail.fr"});
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Récapitulatif de l'équipe : "+teamName);
-                emailIntent.putExtra(Intent.EXTRA_TEXT, body);
-                emailIntent.setType("message/rfc822");
-                startActivity(Intent.createChooser(emailIntent, "Choose email client ...."));
-
-                delateAlldataFromBDD();
-
-            }
-        });
-
-
-
-
+       showDiscoverdedWord();
 
     }
 
     // -------------- Méthode de controle des STATISTIQUES ---------------
 
+
     /**
-     * Cette méthode met a jours les TextView STATISTIQUE
+     * Cette méthode va récupérer otre objet Team dans la BDD
      */
-    public void setUpStatistiques(){
-
-        txtV_stats_pointPassage.setText("Nombre de Point de Passage Terminé : "+nb_pointPassage+" / 19");
-        txtV_stats_zone.setText("Nombre de Zone Terminé : "+nb_zone+ " / 4");
-        txtV_stats_Km.setText("Nombre de mètre parcourus : "+ nb_Metre);
-        txtV_stats_jeu.setText("Nombre de Jeu Gagné : "+nb_Jeu+" / 20");
-        txtV_stats_pointCulture.setText("Nombre de Point Mystère Terminé : "+ nb_pointCulture +" / 10");
-        txtV_stats_pointSecret.setText("Nombre de Point Secret Terminé : "+nb_pointSecret+" / 5");
-
-    }
-
-    public void increase_Metre(int nbMetre){
-        nb_Metre = nb_Metre + nbMetre;
-        setUpStatistiques();
-    }
-
-    public void increase_Jeu(){
-        nb_Jeu++;
-        setUpStatistiques();
-    }
-
-    public void increase_zone(){
-        nb_zone++;
-        setUpStatistiques();
-    }
-
-    public void increase_pointPassage(){
-        nb_pointPassage++;
-        setUpStatistiques();
-    }
-
-    public void increase_pointCulture(){
-        nb_pointCulture++;
-        setUpStatistiques();
-    }
-
-    public void increase_pointSecret(){
-        nb_pointSecret++;
-        setUpStatistiques();
-    }
-
-    // --------------------
-
     public void getTeamFromBDD(){
         realm = Realm.getDefaultInstance();
 
@@ -259,6 +203,18 @@ public class RoadBookFragmentClass extends Fragment {
             TeamClass team = realm.where(TeamClass.class).findFirst();
             if(team != null){
                 theTeam = new TeamClass(team.getmTeamName(), team.getMembersList(), team.getNumInsinge());
+
+                RealmList<Integer> listMots = team.getList_DiscoverWord();
+                list_motsDecouvert.addAll(listMots);
+                RealmList<Integer> listNonMots = team.getList_UnDiscoverWord();
+                list_motsNonDecouvert.addAll(listNonMots);
+
+                nb_Jeu = theTeam.getStats_NbVictoire();
+                nb_Metre = theTeam.getStats_NbMetre();
+                nb_pointPassage = theTeam.getStats_NbSpot1();
+                nb_pointCulture = theTeam.getStats_NbSpot2();
+                nb_pointSecret = theTeam.getStats_NbSpot3();
+                nb_zone = theTeam.getStats_NbZones();
             }
 
         } finally {
@@ -266,27 +222,20 @@ public class RoadBookFragmentClass extends Fragment {
         }
     }
 
-    public String getMailBody(){
-        getTeamFromBDD();
+    /**
+     * Cette méthode met a jours les TextView STATISTIQUE
+     */
+    public void setUpStatistiques(){
 
-        String teamMember = "";
-        for(int i =0; i<theTeam.getMembersList().size(); i++){
-            teamMember = teamMember + "\n " + theTeam.getMembersList().get(i) + "";
-        }
-
-        return "Membres de l'équipe : " +
-                ""+ teamMember + "" +
-                "\n     --------    "+
-                "\n Récapitulatifs des succès de l'équipe :" +
-                "\n Point de Passage Complété : "+nb_pointPassage+""+
-                "\n Point Culture Complété : "+nb_pointPassage+""+
-                "\n Point Secret découvert : "+nb_pointSecret+""+
-                "\n Zone Terminé : "+ nb_zone +"" +
-                "\n Mètre Parcourus : "+ nb_Metre +"" +
-                "\n Jeu gagné : "+nb_Jeu+"" +
-                "\n     --------    ";
+        txtV_stats_pointPassage.setText("Nombre de Point Princiaux Terminé : "+nb_pointPassage+" / 19");
+        txtV_stats_zone.setText("Nombre de Zone Terminé : "+nb_zone+ " / 4");
+        txtV_stats_Km.setText("Nombre de mètre parcourus : "+ nb_Metre);
+        txtV_stats_jeu.setText("Nombre de Jeu Gagné : "+nb_Jeu+" / 20");
+        txtV_stats_pointCulture.setText("Nombre de Point Secondaire Terminé : "+ nb_pointCulture +" / 10");
+        txtV_stats_pointSecret.setText("Nombre de Point Secret Terminé : "+nb_pointSecret+" / 5");
 
     }
+
 
     // ------- Méthode de gestion des PHOTOS  -------
 
@@ -512,6 +461,9 @@ public class RoadBookFragmentClass extends Fragment {
 
     // ------- Méthode de gestion de la phrase  -------
 
+    /**
+     * Cette méthode place nos TextView dans notre listView
+     */
     private void setUpListForPhrase(){
         // On ajoute tout nos TextView a notre list
         phraseMystereList.add(pm_0);
@@ -535,6 +487,10 @@ public class RoadBookFragmentClass extends Fragment {
         phraseMystereList.add(pm_18);
     }
 
+    /**
+     * Cette méthode va rendre le mot corerespondant à l'index visible et rouge
+     * @param index
+     */
     public void showOneWord(int index){
         TextView mot = phraseMystereList.get(index);
         String texte = "ERROR";
@@ -602,6 +558,97 @@ public class RoadBookFragmentClass extends Fragment {
 
         mot.setText(texte);
         mot.setTextColor(getResources().getColor(R.color.rouge));
+    }
+
+    /**
+     * Cette méthode va rendre le mot corerespondant à l'index visible et rouge
+     * @param index
+     */
+    public void hideOneWord(int index){
+        TextView mot = phraseMystereList.get(index);
+        String texte = "ERROR";
+
+        switch (index){
+            case 0 :
+                texte = "****";
+                break;
+            case 1 :
+                texte = "**";
+                break;
+            case 2 :
+                texte = "**";
+                break;
+            case 3 :
+                texte = "****";
+                break;
+            case 4 :
+                texte = "****,";
+                break;
+            case 5 :
+                texte = "********";
+                break;
+            case 6 :
+                texte = "**";
+                break;
+            case 7 :
+                texte = "**";
+                break;
+            case 8 :
+                texte = "****";
+                break;
+            case 9 :
+                texte = "****.";
+                break;
+            case 10 :
+                texte = "*'**";
+                break;
+            case 11 :
+                texte = "*'*******";
+                break;
+            case 12 :
+                texte = "**";
+                break;
+            case 13 :
+                texte = "****";
+                break;
+            case 14 :
+                texte = "******";
+                break;
+            case 15 :
+                texte = "\"*****";
+                break;
+            case 16 :
+                texte = "***********";
+                break;
+            case 17 :
+                texte = "***";
+                break;
+            case 18 :
+                texte = "********\".";
+                break;
+
+        }
+
+        mot.setText(texte);
+        mot.setTextColor(getResources().getColor(R.color.rouge));
+    }
+
+    /**
+     * Cette méthode va appeler la méthode showOneWord pour chaque mot présent dans notre liste
+     */
+    public void showDiscoverdedWord(){
+
+        if(list_motsDecouvert.size() != 0){
+            for(Integer nb : list_motsDecouvert ){
+                showOneWord(nb);
+            }
+        }
+
+        if(list_motsNonDecouvert.size() != 0){
+            for(Integer nb : list_motsNonDecouvert ){
+                hideOneWord(nb);
+            }
+        }
     }
 
 }
