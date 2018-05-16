@@ -2,8 +2,10 @@ package com.vivacom.leo.perdpaslenord.fragments;
 
 
 import android.app.Activity;
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,10 +18,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.Marker;
 import com.vivacom.leo.perdpaslenord.OnSwipeTouchListener;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.objects.MarkerOptionRealm;
@@ -27,10 +27,8 @@ import com.vivacom.leo.perdpaslenord.objects.SpotClass;
 import com.vivacom.leo.perdpaslenord.objects.TeamClass;
 import com.vivacom.leo.perdpaslenord.objects.ZoneClass;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -46,21 +44,22 @@ public class RoadBookFragmentClass extends Fragment {
     LinearLayout lSucces;
     TextView txtV_stats_Km , txtV_stats_pointPassage , txtV_stats_pointCulture, txtV_stats_pointSecret , txtV_stats_zone  , txtV_stats_jeu, txtV_title;
 
-    RelativeLayout lPhotoGalery;
+    LinearLayout lPhotoGalery;
     ImageView mPhoto1,mPhoto2,mPhoto3;
 
-    Button bSendMail;
+    Button btn_FinishGame;
 
     View mView;
     TextView pm_0, pm_1, pm_2, pm_3, pm_4, pm_5, pm_6, pm_7, pm_8, pm_9, pm_10, pm_11, pm_12, pm_13, pm_14, pm_15, pm_16, pm_17, pm_18;
 
     // ------- Nos paramètres -------
-    int nb_Metre, nb_pointPassage, nb_pointCulture, nb_pointSecret, nb_Jeu, nb_zone = 0;
+    int nb_Metre, nb_pointPrincipaux, nb_pointSecondaire, nb_pointSecret, nb_Jeu, nb_zone = 0;
     int numPhoto = 0;
     boolean canMoove = true;
 
     // ------- Nos Listes -------
-    ArrayList<Bitmap> playersPhotoList = new ArrayList<>();
+    ArrayList<Bitmap> listPhoto_Bitmap = new ArrayList<>();
+    ArrayList<byte[]> listPhoto_Byte = new ArrayList<>();
     ArrayList<ImageView> listImageView = new ArrayList<>();
     ArrayList<TextView> phraseMystereList = new ArrayList<>();
     ArrayList<Integer> list_motsDecouvert = new ArrayList<>();
@@ -68,25 +67,29 @@ public class RoadBookFragmentClass extends Fragment {
 
     // ---------- Element Globaux ------------
 
-    public TeamClass theTeam;
     Realm realm;
     public final String TAG= "ROADBOOK";
 
     RoadBookFragmentClassCallBack roadBookFragmentClassCallBack;
 
+    // ---------------------------------------------------------
 
-    /**
-     * Constructeur vide
-     */
+    // Require empty public constructor
     public RoadBookFragmentClass(){
-        // Require empty public constructor
+
     }
 
-    /**
-     * Interface de CallBack pour utiliser des méthodes de la class principale depuis le fragment
-     */
+    //Interface de CallBack pour utiliser des méthodes de la class principale depuis le fragment
     public interface RoadBookFragmentClassCallBack{
     }
+
+    // Instance
+    public static RoadBookFragmentClass newInstance(){
+        RoadBookFragmentClass fragment = new RoadBookFragmentClass();
+        return fragment;
+    }
+
+    // ---------------------------------------------------------
 
     @Override
     public void onAttach(Activity activity) {
@@ -103,12 +106,6 @@ public class RoadBookFragmentClass extends Fragment {
         Log.d(TAG, "Activity onDetach");
     }
 
-
-    public static RoadBookFragmentClass newInstance(){
-        RoadBookFragmentClass fragment = new RoadBookFragmentClass();
-        return fragment;
-    }
-
     @Override
     public void onPause(){
         super.onPause();
@@ -118,12 +115,11 @@ public class RoadBookFragmentClass extends Fragment {
     @Override
     public  void onResume(){
         super.onResume();
-        getTeamFromBDD();
-        setUpStatistiques();
-        showDiscoverdedWord();
         Log.d(TAG, "Activity onResume");
+        getTeamFromBDD();
     }
 
+    // ---------------------------------------------------------
 
     @Nullable
     @Override
@@ -138,7 +134,6 @@ public class RoadBookFragmentClass extends Fragment {
         txtV_stats_pointCulture = mView.findViewById(R.id.stats_pointCulture);
         txtV_stats_pointSecret = mView.findViewById(R.id.stats_pointSecret);
 
-
         lPhotoGalery = mView.findViewById(R.id.rb_photographie);
         mPhoto1 = mView.findViewById(R.id.rb_photo1);
         mPhoto2 = mView.findViewById(R.id.rb_photo2);
@@ -146,7 +141,7 @@ public class RoadBookFragmentClass extends Fragment {
 
         txtV_title = mView.findViewById(R.id.RB_title);
 
-        bSendMail = mView.findViewById(R.id.sendMail);
+        btn_FinishGame = mView.findViewById(R.id.finishGame);
 
         pm_0 = mView.findViewById(R.id.pm_0);
         pm_1 = mView.findViewById(R.id.pm_1);
@@ -177,49 +172,82 @@ public class RoadBookFragmentClass extends Fragment {
 
         Log.d(TAG, "Activity onStart");
 
-        setUpStatistiques();
+        createBtnListener();
+
         setUpPhotos();
         setUpListForPhrase();
 
-        getTeamFromBDD();
-
         Typeface type = Typeface.createFromAsset(getActivity().getAssets(),"fonts/steinem.ttf");
         txtV_title.setTypeface(type);
+        txtV_title.setText(txtV_title.getText().toString().toUpperCase());
 
        showDiscoverdedWord();
+
+
+        lPhotoGalery.setOnTouchListener(new OnSwipeTouchListener(this.getContext()){
+            @Override
+            public void onSwipeRight() {mooveOnRight();}
+
+            @Override
+            public void onSwipeLeft() {mooveOnLeft();}
+
+        });
 
     }
 
     // -------------- Méthode de controle des STATISTIQUES ---------------
 
-
     /**
      * Cette méthode va récupérer otre objet Team dans la BDD
      */
     public void getTeamFromBDD(){
-        realm = Realm.getDefaultInstance();
 
-        try{
-            TeamClass team = realm.where(TeamClass.class).findFirst();
-            if(team != null){
-                theTeam = new TeamClass(team.getmTeamName(), team.getMembersList(), team.getNumInsinge());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-                RealmList<Integer> listMots = team.getList_DiscoverWord();
-                list_motsDecouvert.addAll(listMots);
-                RealmList<Integer> listNonMots = team.getList_UnDiscoverWord();
-                list_motsNonDecouvert.addAll(listNonMots);
+                realm = Realm.getDefaultInstance();
 
-                nb_Jeu = theTeam.getStats_NbVictoire();
-                nb_Metre = theTeam.getStats_NbMetre();
-                nb_pointPassage = theTeam.getStats_NbSpot1();
-                nb_pointCulture = theTeam.getStats_NbSpot2();
-                nb_pointSecret = theTeam.getStats_NbSpot3();
-                nb_zone = theTeam.getStats_NbZones();
+                try{
+
+                    TeamClass team = realm.where(TeamClass.class).findFirst();
+                    if(team != null){
+
+                        RealmList<Integer> listMots = team.getList_DiscoverWord();
+                        list_motsDecouvert.clear();
+                        list_motsDecouvert.addAll(listMots);
+                        Log.i(TAG, "Récupération de "+list_motsDecouvert.size()+" mots découvert");
+
+                        RealmList<Integer> listNonMots = team.getList_UnDiscoverWord();
+                        list_motsNonDecouvert.clear();
+                        list_motsNonDecouvert.addAll(listNonMots);
+                        Log.i(TAG, "Récupération de "+list_motsNonDecouvert.size()+" mots non découvert");
+
+                        RealmList<byte[]> listBitmap = team.getList_photos();
+                        listPhoto_Byte.clear();
+                        listPhoto_Byte.addAll(listBitmap);
+                        Log.i(TAG, "Récupération de "+listPhoto_Byte.size()+" photos prises");
+
+                        nb_Jeu = team.getStats_NbVictoire();
+                        nb_Metre = team.getStats_NbMetre();
+                        nb_pointPrincipaux = team.getStats_NbSpot1();
+                        nb_pointSecondaire = team.getStats_NbSpot2();
+                        nb_pointSecret = team.getStats_NbSpot3();
+                        nb_zone = team.getStats_NbZones();
+                        Log.i(TAG, "Statistiques : " + nb_pointPrincipaux + " / " + nb_pointSecondaire + " / " + nb_pointSecret);
+
+                        setUpStatistiques();
+                        showDiscoverdedWord();
+                        setPhotoGaleryVisible();
+                    }
+
+                } finally {
+                    realm.close();
+                }
+
             }
+        }).start();
 
-        } finally {
-            realm.close();
-        }
     }
 
     /**
@@ -227,15 +255,28 @@ public class RoadBookFragmentClass extends Fragment {
      */
     public void setUpStatistiques(){
 
-        txtV_stats_pointPassage.setText("Nombre de Point Princiaux Terminé : "+nb_pointPassage+" / 19");
-        txtV_stats_zone.setText("Nombre de Zone Terminé : "+nb_zone+ " / 4");
-        txtV_stats_Km.setText("Nombre de mètre parcourus : "+ nb_Metre);
-        txtV_stats_jeu.setText("Nombre de Jeu Gagné : "+nb_Jeu+" / 20");
-        txtV_stats_pointCulture.setText("Nombre de Point Secondaire Terminé : "+ nb_pointCulture +" / 10");
-        txtV_stats_pointSecret.setText("Nombre de Point Secret Terminé : "+nb_pointSecret+" / 5");
+        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txtV_stats_pointPassage.setText("Nombre de Point Princiaux Terminé : "+ nb_pointPrincipaux +" / 20");
+                txtV_stats_zone.setText("Nombre de Zone Terminé : "+nb_zone+ " / 4");
+                txtV_stats_Km.setText("Nombre de mètre parcourus : "+ nb_Metre);
+                txtV_stats_jeu.setText("Nombre de Jeu Gagné : "+nb_Jeu+" / 19");
+                txtV_stats_pointCulture.setText("Nombre de Point Secondaire Terminé : "+ nb_pointSecondaire +" / 10");
+                txtV_stats_pointSecret.setText("Nombre de Point Secret Terminé : "+nb_pointSecret+" / 5");
+            }
+        });
+
+
+        listPhoto_Bitmap.clear();
+        for(byte[] data : listPhoto_Byte){
+            BitmapFactory.Options options=new BitmapFactory.Options();// Create object of bitmapfactory's option method for further option use
+            options.inPurgeable = true; // inPurgeable is used to free up memory while required
+            Bitmap bmp = BitmapFactory.decodeByteArray(data,0, data.length,options);//Decode image, "thumbnail" is the object of image file
+            listPhoto_Bitmap.add(bmp);
+        }
 
     }
-
 
     // ------- Méthode de gestion des PHOTOS  -------
 
@@ -244,6 +285,7 @@ public class RoadBookFragmentClass extends Fragment {
      */
     private void setUpPhotos() {
         // On ajoute nos imageView dans la liste
+        listImageView.clear();
         listImageView.add(mPhoto1);
         listImageView.add(mPhoto2);
         listImageView.add(mPhoto3);
@@ -259,26 +301,6 @@ public class RoadBookFragmentClass extends Fragment {
         lPhotoGalery.setVisibility(View.GONE);
 
         numPhoto = 0;
-
-        if (playersPhotoList.size() == 0){
-            lPhotoGalery.setClickable(false);
-        } else if (playersPhotoList.size() == 1){
-            mPhoto1.setImageBitmap(playersPhotoList.get(numPhoto));
-            lPhotoGalery.setClickable(false);
-        } else {
-            mPhoto1.setImageBitmap(playersPhotoList.get(numPhoto));
-            lPhotoGalery.setClickable(true);
-
-            lPhotoGalery.setOnTouchListener(new OnSwipeTouchListener(this.getContext()){
-                @Override
-                public void onSwipeRight() {mooveOnRight();}
-
-                @Override
-                public void onSwipeLeft() {mooveOnLeft();}
-
-            });
-        }
-
     }
 
     /**
@@ -294,7 +316,7 @@ public class RoadBookFragmentClass extends Fragment {
 
             // On passse a la photo précédente
             numPhoto--;
-            if(numPhoto == -1){numPhoto = playersPhotoList.size()-1;}
+            if(numPhoto == -1){numPhoto = listPhoto_Bitmap.size()-1;}
 
             // On récupère nos imageView que on associe
             for(int i = 0; i<listImageView.size(); i++){
@@ -309,7 +331,7 @@ public class RoadBookFragmentClass extends Fragment {
             }
 
             // On affecte l'image qui va s'afficher
-            imageLeft.setImageBitmap(playersPhotoList.get(numPhoto));
+            imageLeft.setImageBitmap(listPhoto_Bitmap.get(numPhoto));
 
             // On modifie les visibilités
             imageCenter.setVisibility(View.VISIBLE);
@@ -351,7 +373,7 @@ public class RoadBookFragmentClass extends Fragment {
 
             // On passse a la photo précédente
             numPhoto++;
-            if (numPhoto == playersPhotoList.size()){numPhoto=0;}
+            if (numPhoto == listPhoto_Bitmap.size()){numPhoto=0;}
 
             // On récupère nos imageView que on associe
             for(int i = 0; i<listImageView.size(); i++){
@@ -366,7 +388,7 @@ public class RoadBookFragmentClass extends Fragment {
             }
 
             // On affecte l'image qui va s'afficher
-            imageRight.setImageBitmap(playersPhotoList.get(numPhoto));
+            imageRight.setImageBitmap(listPhoto_Bitmap.get(numPhoto));
 
             // On modifie les visibilités
             imageCenter.setVisibility(View.VISIBLE);
@@ -396,21 +418,289 @@ public class RoadBookFragmentClass extends Fragment {
     }
 
     /**
-     * Cette méthode recoie une ImageView et l'ajoute à la liste
-     * @param bmc
+     * Cette méthode va afficher les photos si il y en a
      */
-    public void addPhotoToList(Bitmap bmc){
-        playersPhotoList.add(bmc);
-        Log.i(TAG, "ImageView reçu et ajouté");
-        Log.i(TAG, "Nombre de photos enregistré : "+ playersPhotoList.size());
+    private void setPhotoGaleryVisible(){
+
+        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(listPhoto_Bitmap.size() == 0){
+                    lPhotoGalery.setVisibility(View.GONE);
+                    lPhotoGalery.setClickable(false);
+                } else if (listPhoto_Bitmap.size() == 1){
+                    lPhotoGalery.setVisibility(View.VISIBLE);
+                    mPhoto1.setImageBitmap(listPhoto_Bitmap.get(0));
+                    lPhotoGalery.setClickable(false);
+                } else {
+                    lPhotoGalery.setVisibility(View.VISIBLE);
+                    mPhoto1.setImageBitmap(listPhoto_Bitmap.get(numPhoto));
+                    lPhotoGalery.setClickable(true);
+                }
+            }
+        });
+
     }
 
 
-    public void setPhotoVisible(){
-        lPhotoGalery.setVisibility(View.VISIBLE);
+    // ------- Méthode de gestion de la phrase  -------
+
+    /**
+     * Cette méthode place nos TextView dans notre listView
+     */
+    private void setUpListForPhrase(){
+        // On ajoute tout nos TextView a notre list
+        phraseMystereList.add(pm_0);
+        phraseMystereList.add(pm_1);
+        phraseMystereList.add(pm_2);
+        phraseMystereList.add(pm_3);
+        phraseMystereList.add(pm_4);
+        phraseMystereList.add(pm_5);
+        phraseMystereList.add(pm_6);
+        phraseMystereList.add(pm_7);
+        phraseMystereList.add(pm_8);
+        phraseMystereList.add(pm_9);
+        phraseMystereList.add(pm_10);
+        phraseMystereList.add(pm_11);
+        phraseMystereList.add(pm_12);
+        phraseMystereList.add(pm_13);
+        phraseMystereList.add(pm_14);
+        phraseMystereList.add(pm_15);
+        phraseMystereList.add(pm_16);
+        phraseMystereList.add(pm_17);
+        phraseMystereList.add(pm_18);
     }
 
+    /**
+     * Cette méthode va rendre le mot corerespondant à l'index visible et rouge
+     * @param index
+     */
+    public void showOneWord(int index){
 
+        if(index <= 18) {
+
+            final TextView mot = phraseMystereList.get(index);
+            String texte = "ERROR";
+
+            switch (index) {
+                case 0:
+                    texte = "Seul";
+                    break;
+                case 1:
+                    texte = "on";
+                    break;
+                case 2:
+                    texte = "va";
+                    break;
+                case 3:
+                    texte = "plus";
+                    break;
+                case 4:
+                    texte = "vite,";
+                    break;
+                case 5:
+                    texte = "Ensemble";
+                    break;
+                case 6:
+                    texte = "on";
+                    break;
+                case 7:
+                    texte = "va";
+                    break;
+                case 8:
+                    texte = "plus";
+                    break;
+                case 9:
+                    texte = "loin.";
+                    break;
+                case 10:
+                    texte = "J'ai";
+                    break;
+                case 11:
+                    texte = "l'honneur";
+                    break;
+                case 12:
+                    texte = "de";
+                    break;
+                case 13:
+                    texte = "vous";
+                    break;
+                case 14:
+                    texte = "nommer";
+                    break;
+                case 15:
+                    texte = "\"Grand";
+                    break;
+                case 16:
+                    texte = "Explorateur";
+                    break;
+                case 17:
+                    texte = "des";
+                    break;
+                case 18:
+                    texte = "Flandres\".";
+                    break;
+                default:
+                    break;
+
+            }
+
+            final String text = texte;
+            Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mot.setText(text);
+                    mot.setTextColor(getResources().getColor(R.color.rouge));
+                }
+            });
+
+
+        }
+    }
+
+    /**
+     * Cette méthode va rendre le mot corerespondant à l'index visible et rouge
+     * @param index
+     */
+    public void hideOneWord(int index){
+
+        if(index <= 18) {
+
+
+            final TextView mot = phraseMystereList.get(index);
+            String texte = "ERROR";
+
+            switch (index) {
+                case 0:
+                    texte = "****";
+                    break;
+                case 1:
+                    texte = "**";
+                    break;
+                case 2:
+                    texte = "**";
+                    break;
+                case 3:
+                    texte = "****";
+                    break;
+                case 4:
+                    texte = "****,";
+                    break;
+                case 5:
+                    texte = "********";
+                    break;
+                case 6:
+                    texte = "**";
+                    break;
+                case 7:
+                    texte = "**";
+                    break;
+                case 8:
+                    texte = "****";
+                    break;
+                case 9:
+                    texte = "****.";
+                    break;
+                case 10:
+                    texte = "*'**";
+                    break;
+                case 11:
+                    texte = "*'*******";
+                    break;
+                case 12:
+                    texte = "**";
+                    break;
+                case 13:
+                    texte = "****";
+                    break;
+                case 14:
+                    texte = "******";
+                    break;
+                case 15:
+                    texte = "\"*****";
+                    break;
+                case 16:
+                    texte = "***********";
+                    break;
+                case 17:
+                    texte = "***";
+                    break;
+                case 18:
+                    texte = "********\".";
+                    break;
+
+            }
+
+            final String text = texte;
+            Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mot.setText(text);
+                    mot.setTextColor(getResources().getColor(R.color.rouge));
+                }
+            });
+
+        }
+    }
+
+    /**
+     * Cette méthode va appeler la méthode showOneWord pour chaque mot présent dans notre liste
+     */
+    public void showDiscoverdedWord(){
+
+        if(list_motsDecouvert.size() != 0){
+            for(Integer nb : list_motsDecouvert ){
+                showOneWord(nb);
+            }
+        }
+
+        if(list_motsNonDecouvert.size() != 0){
+            for(Integer nb : list_motsNonDecouvert ){
+                hideOneWord(nb);
+            }
+        }
+    }
+
+    // ------- Méthode de gestion du btn_Terminer -------
+
+    /**
+     * Cette méthode va créer les OnClickListener du btn_FinishGame
+     */
+    private void createBtnListener(){
+
+        btn_FinishGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(RoadBookFragmentClass.this.getContext());
+
+                builder.setMessage("Êtes-vous sur d'avoir fini de jouer ?")
+                        .setTitle("Terminer le jeu :");
+
+                builder.setPositiveButton("Oui, nous avons fini !!", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        delateAlldataFromBDD();
+                        Objects.requireNonNull(getActivity()).finish();
+                        System.exit(0);
+                    }
+                });
+
+                builder.setNegativeButton("Nous allons continuer de jouer ...", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }
+
+    /**
+     * Cette méthode va supprimer toutes les données présente en BDD
+     */
     private void delateAlldataFromBDD(){
         realm = Realm.getDefaultInstance();
 
@@ -458,199 +748,6 @@ public class RoadBookFragmentClass extends Fragment {
 
 
     }
-
-    // ------- Méthode de gestion de la phrase  -------
-
-    /**
-     * Cette méthode place nos TextView dans notre listView
-     */
-    private void setUpListForPhrase(){
-        // On ajoute tout nos TextView a notre list
-        phraseMystereList.add(pm_0);
-        phraseMystereList.add(pm_1);
-        phraseMystereList.add(pm_2);
-        phraseMystereList.add(pm_3);
-        phraseMystereList.add(pm_4);
-        phraseMystereList.add(pm_5);
-        phraseMystereList.add(pm_6);
-        phraseMystereList.add(pm_7);
-        phraseMystereList.add(pm_8);
-        phraseMystereList.add(pm_9);
-        phraseMystereList.add(pm_10);
-        phraseMystereList.add(pm_11);
-        phraseMystereList.add(pm_12);
-        phraseMystereList.add(pm_13);
-        phraseMystereList.add(pm_14);
-        phraseMystereList.add(pm_15);
-        phraseMystereList.add(pm_16);
-        phraseMystereList.add(pm_17);
-        phraseMystereList.add(pm_18);
-    }
-
-    /**
-     * Cette méthode va rendre le mot corerespondant à l'index visible et rouge
-     * @param index
-     */
-    public void showOneWord(int index){
-        TextView mot = phraseMystereList.get(index);
-        String texte = "ERROR";
-
-        switch (index){
-            case 0 :
-                texte = "Seul";
-                break;
-            case 1 :
-                texte = "on";
-                break;
-            case 2 :
-                texte = "va";
-                break;
-            case 3 :
-                texte = "plus";
-                break;
-            case 4 :
-                texte = "loin,";
-                break;
-            case 5 :
-                texte = "Ensemble";
-                break;
-            case 6 :
-                texte = "on";
-                break;
-            case 7 :
-                texte = "va";
-                break;
-            case 8 :
-                texte = "plus";
-                break;
-            case 9 :
-                texte = "loin.";
-                break;
-            case 10 :
-                texte = "J'ai";
-                break;
-            case 11 :
-                texte = "l'honneur";
-                break;
-            case 12 :
-                texte = "de";
-                break;
-            case 13 :
-                texte = "vous";
-                break;
-            case 14 :
-                texte = "nommer";
-                break;
-            case 15 :
-                texte = "\"Grand";
-                break;
-            case 16 :
-                texte = "Explorateur";
-                break;
-            case 17 :
-                texte = "des";
-                break;
-            case 18 :
-                texte = "Flandres\".";
-                break;
-
-        }
-
-        mot.setText(texte);
-        mot.setTextColor(getResources().getColor(R.color.rouge));
-    }
-
-    /**
-     * Cette méthode va rendre le mot corerespondant à l'index visible et rouge
-     * @param index
-     */
-    public void hideOneWord(int index){
-        TextView mot = phraseMystereList.get(index);
-        String texte = "ERROR";
-
-        switch (index){
-            case 0 :
-                texte = "****";
-                break;
-            case 1 :
-                texte = "**";
-                break;
-            case 2 :
-                texte = "**";
-                break;
-            case 3 :
-                texte = "****";
-                break;
-            case 4 :
-                texte = "****,";
-                break;
-            case 5 :
-                texte = "********";
-                break;
-            case 6 :
-                texte = "**";
-                break;
-            case 7 :
-                texte = "**";
-                break;
-            case 8 :
-                texte = "****";
-                break;
-            case 9 :
-                texte = "****.";
-                break;
-            case 10 :
-                texte = "*'**";
-                break;
-            case 11 :
-                texte = "*'*******";
-                break;
-            case 12 :
-                texte = "**";
-                break;
-            case 13 :
-                texte = "****";
-                break;
-            case 14 :
-                texte = "******";
-                break;
-            case 15 :
-                texte = "\"*****";
-                break;
-            case 16 :
-                texte = "***********";
-                break;
-            case 17 :
-                texte = "***";
-                break;
-            case 18 :
-                texte = "********\".";
-                break;
-
-        }
-
-        mot.setText(texte);
-        mot.setTextColor(getResources().getColor(R.color.rouge));
-    }
-
-    /**
-     * Cette méthode va appeler la méthode showOneWord pour chaque mot présent dans notre liste
-     */
-    public void showDiscoverdedWord(){
-
-        if(list_motsDecouvert.size() != 0){
-            for(Integer nb : list_motsDecouvert ){
-                showOneWord(nb);
-            }
-        }
-
-        if(list_motsNonDecouvert.size() != 0){
-            for(Integer nb : list_motsNonDecouvert ){
-                hideOneWord(nb);
-            }
-        }
-    }
-
 }
 
 

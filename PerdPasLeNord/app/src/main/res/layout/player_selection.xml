@@ -12,7 +12,8 @@
     android:visibility="visible">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/selection_title"
+            android:layout_width="700dp"
             android:layout_height="wrap_content"
             android:textSize="35sp"
             android:layout_marginTop="2dp"

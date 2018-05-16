@@ -36,7 +36,6 @@
             android:visibility="visible">
 
             <RelativeLayout
-                android:id="@+id/left_side"
                 android:layout_width="550dp"
                 android:layout_height="625dp"
                 android:gravity="center_horizontal"

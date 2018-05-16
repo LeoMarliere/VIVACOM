@@ -43,6 +43,7 @@ import static android.view.View.GONE;
 /**
  * Created by Leo on 07/09/2017.
  * Classe permettant de gérer le comportement de l'activity acceuil
+ * CodeRevue 14/05
  */
 
 public class AcceuilActivityClass extends Activity {
@@ -65,17 +66,12 @@ public class AcceuilActivityClass extends Activity {
     Realm realm;
     TeamClass theTeam;
 
-
     // ------- Nos Paramètres -------
-    int numText = 1;
-    int nbMember = 0;
-    int numInsigneSelected = 0;
-
+    int numText = 1, nbMember = 0, numInsigneSelected = 0;
     boolean insigneSelected = false;
     boolean canChange = true;
 
     String membresList = "";
-
     private static final String TAG = "Acceuil";
 
     // ----------------------------------------------------
@@ -101,9 +97,7 @@ public class AcceuilActivityClass extends Activity {
         Log.d(TAG, "Activity onStop");
     }
 
-
     // ----------------------------------------------------
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,29 +108,28 @@ public class AcceuilActivityClass extends Activity {
         // ------- On init Realm -------
         initRealmBDD();
 
-        // ------
+        // --- Association des éléments graphiques ---
         associateElement();
 
-        // ------
+        // --- SetUp du MJ ---
         lMJ_Introduction.setVisibility(GONE);
         lMJ_textBox.setVisibility(GONE);
 
-        // ------
+        // --- SetUp de l'écran de création d'équipe ---
         lTeam_Creation.setVisibility(GONE);
         lTeam_Creation.animate().translationX(1500).withLayer();
         lTeam_Creation.setClickable(false);
-        // ------
+
+        // --- SetUp des background du lancement du jeu ---
         lMainScreen.setBackground(getResources().getDrawable(R.drawable.logo_flamantrosefull));
         startAnimation();
-        // -----
+
+        // --- Parametrage Bitmap ---
         Bitmap myImage = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.acceuil_ecran_ppln);
         Bitmap myBtm = Bitmap.createScaledBitmap(myImage,(int)(myImage.getWidth()*0.5), (int)(myImage.getHeight()*0.5), true);
         image = new BitmapDrawable(getResources(), myBtm);
 
-        // ------- On vérifie si on possède des donnée -------
-        checkTeamInBDD();
-
-
+        // --- Parametrage du clavier ---
         eMemberName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -149,7 +142,8 @@ public class AcceuilActivityClass extends Activity {
                 return false;
             }
         });
-                                              }
+
+    }
 
     // ------- Méthode de setUp -------
     /**
@@ -182,12 +176,9 @@ public class AcceuilActivityClass extends Activity {
         btn_Insigne_List.add(btn_insigne5);
 
         tTeamCreation_Title = findViewById(R.id.creationTeam_title);
-
-
-
-
     }
 
+    // ------- Méthode de gestion de la BDD -------
     /**
      * Cette méthode va init Realm et vérifier si des données existe
      */
@@ -204,46 +195,50 @@ public class AcceuilActivityClass extends Activity {
                 realm = Realm.getDefaultInstance();
 
                 try {
-                    // ------- On regarde si il existe déja des données dans la base --------
-                    ZoneClass zoneTheatreTest = realm.where(ZoneClass.class).equalTo("mZoneId", 1).findFirst();
-                    if (zoneTheatreTest == null){
-                        Log.i(TAG, "Aucune donnée PLACE DU THEATRE, lancement de la création de la zone");
-                        createZonePlaceTheatreInRealm();
-                    } else {Log.i(TAG, "Donnée trouvé pour : PLACE DU THEATRE");}
 
-                    ZoneClass zoneLilleCentreTest = realm.where(ZoneClass.class).equalTo("mZoneId", 2).findFirst();
-                    if (zoneLilleCentreTest == null){
-                        Log.i(TAG, "Aucune donnée LILLE CENTRE, lancement de la création de la zone");
-                        createZoneLilleCentreInRealm();
-                    } else {Log.i(TAG, "Donnée trouvé pour : LILLE CENTRE");}
+                    // ----- Si il existe une équipe, on passe directement à l'écran jeu -----
+                    TeamClass team = realm.where(TeamClass.class).findFirst();
+                    if (team != null){
+                        Log.i(TAG, "Donnée de Team trouvé : lancement du jeu");
+                        Intent goToingameActivity = new Intent (getApplicationContext(), InGameActivityClass.class);
+                        startActivity(goToingameActivity);
+                    } else { // Sinon
+                        Log.i(TAG, "Aucune donnée Team : nouvelle partie");
+                        // ------- On regarde si il existe déja des données dans la base --------
+                        ZoneClass zoneTheatreTest = realm.where(ZoneClass.class).equalTo("mZoneId", 1).findFirst();
+                        if (zoneTheatreTest == null){
+                            Log.i(TAG, "Aucune donnée PLACE DU THEATRE, lancement de la création de la zone");
+                            createZonePlaceTheatreInRealm();
+                        } else {Log.i(TAG, "Donnée trouvé pour : PLACE DU THEATRE");}
 
-                    ZoneClass zoneGrandPlaceTest = realm.where(ZoneClass.class).equalTo("mZoneId", 3).findFirst();
-                    if (zoneGrandPlaceTest == null){
-                        Log.i(TAG, "Aucune donnée GRAND PLACE, lancement de la création de la zone");
-                        createZoneGrandPlaceInRealm();
-                    } else {Log.i(TAG, "Donnée trouvé pour : GRAND PLACE");}
+                        ZoneClass zoneLilleCentreTest = realm.where(ZoneClass.class).equalTo("mZoneId", 2).findFirst();
+                        if (zoneLilleCentreTest == null){
+                            Log.i(TAG, "Aucune donnée LILLE CENTRE, lancement de la création de la zone");
+                            createZoneLilleCentreInRealm();
+                        } else {Log.i(TAG, "Donnée trouvé pour : LILLE CENTRE");}
 
-                    ZoneClass zoneVieuxLilleTest = realm.where(ZoneClass.class).equalTo("mZoneId", 4).findFirst();
-                    if (zoneVieuxLilleTest == null){
-                        Log.i(TAG, "Aucune donnée VIEUX LILLE, lancement de la création de la zone");
-                        createZoneVieuxLilleInRealm();
-                    } else {Log.i(TAG, "Donnée trouvé pour : VIEUX LILLE");}
+                        ZoneClass zoneGrandPlaceTest = realm.where(ZoneClass.class).equalTo("mZoneId", 3).findFirst();
+                        if (zoneGrandPlaceTest == null){
+                            Log.i(TAG, "Aucune donnée GRAND PLACE, lancement de la création de la zone");
+                            createZoneGrandPlaceInRealm();
+                        } else {Log.i(TAG, "Donnée trouvé pour : GRAND PLACE");}
 
-                    SpotClass spotSecret = realm.where(SpotClass.class).equalTo("mZoneName", "Secret").findFirst();
-                    if (spotSecret == null){
-                        Log.i(TAG, "Aucune donnée Spot Secret, lancement de la création des Spot");
-                        createSecretSpotInRealm();
-                    } else {Log.i(TAG, "Donnée trouvé pour : SPOT SECRET");}
+                        ZoneClass zoneVieuxLilleTest = realm.where(ZoneClass.class).equalTo("mZoneId", 4).findFirst();
+                        if (zoneVieuxLilleTest == null){
+                            Log.i(TAG, "Aucune donnée VIEUX LILLE, lancement de la création de la zone");
+                            createZoneVieuxLilleInRealm();
+                        } else {Log.i(TAG, "Donnée trouvé pour : VIEUX LILLE");}
 
+                        SpotClass spotSecret = realm.where(SpotClass.class).equalTo("mZoneName", "Secret").findFirst();
+                        if (spotSecret == null){
+                            Log.i(TAG, "Aucune donnée Spot Secret, lancement de la création des Spot");
+                            createSecretSpotInRealm();
+                        } else {Log.i(TAG, "Donnée trouvé pour : SPOT SECRET");}
+                    }
                 } finally {realm.close();}
 
             }
         }).start();
-
-
-
-
-
     }
 
     /**
@@ -294,12 +289,12 @@ public class AcceuilActivityClass extends Activity {
 
         // ----
 
-        final SpotClass spotLaVieilleBourse = new SpotClass(1,0, zonePlaceDuTheatre.getmZoneName(), "La Vieille Bourse", "Calcul Mentaux", 3, ConstantInfos.INFO_LAVIEILLEBOURSE1, ConstantInfos.INFO_LAVIEILLEBOURSE2, ConstantInfos.INFO_LAVIEILLEBOURSE3, photoGalleryLaVieilleBourse);
-        final SpotClass spotLeRangDuBeauregard = new SpotClass(1,15, zonePlaceDuTheatre.getmZoneName(), "Le Rang Du Beauregard","Photo !!", 3, ConstantInfos.INFO_LERANGBEAUREGARD1, ConstantInfos.INFO_LERANGBEAUREGARD2, ConstantInfos.INFO_LERANGBEAUREGARD3, photoGalleryLeRangBeauxregard);
-        final SpotClass spotLeBeffroi = new SpotClass(1,7, zonePlaceDuTheatre.getmZoneName(), "Le Beffroi","Le Beffroi", 3,  ConstantInfos.INFO_LEBEFFROI1, ConstantInfos.INFO_LEBEFFROI2, ConstantInfos.INFO_LEBEFFROI3, photoGalleryLeBeffroi);
-        final SpotClass spotLOpera = new SpotClass(1,9, zonePlaceDuTheatre.getmZoneName(), "L'Opera De Lille" ,"Pièce de Théatre", 3, ConstantInfos.INFO_OPERA1, ConstantInfos.INFO_OPERA2, ConstantInfos.INFO_OPERA3, photoGalleryLOpera);
+        final SpotClass spotLaVieilleBourse = new SpotClass(1,0, zonePlaceDuTheatre.getmZoneName(), ConstantInfos.NAME_VIEILLEBOURSE, "Calcul Mentaux", 3, ConstantInfos.INFO_LAVIEILLEBOURSE1, ConstantInfos.INFO_LAVIEILLEBOURSE2, ConstantInfos.INFO_LAVIEILLEBOURSE3, photoGalleryLaVieilleBourse);
+        final SpotClass spotLeRangDuBeauregard = new SpotClass(1,15, zonePlaceDuTheatre.getmZoneName(), ConstantInfos.NAME_RANG,"Photo !!", 3, ConstantInfos.INFO_LERANGBEAUREGARD1, ConstantInfos.INFO_LERANGBEAUREGARD2, ConstantInfos.INFO_LERANGBEAUREGARD3, photoGalleryLeRangBeauxregard);
+        final SpotClass spotLeBeffroi = new SpotClass(1,7, zonePlaceDuTheatre.getmZoneName(), ConstantInfos.NAME_BEFFROI,"Le Beffroi", 3,  ConstantInfos.INFO_LEBEFFROI1, ConstantInfos.INFO_LEBEFFROI2, ConstantInfos.INFO_LEBEFFROI3, photoGalleryLeBeffroi);
+        final SpotClass spotLOpera = new SpotClass(1,9, zonePlaceDuTheatre.getmZoneName(), ConstantInfos.NAME_OPERA ,"Pièce de Théatre", 3, ConstantInfos.INFO_OPERA1, ConstantInfos.INFO_OPERA2, ConstantInfos.INFO_OPERA3, photoGalleryLOpera);
 
-        final SpotClass spotChambreCommerce = new SpotClass(2, 21, zonePlaceDuTheatre.getmZoneName(), "La Chambre des Commerces" , "PAS DE JEU", 1, ConstantInfos.CULTURE_CHAMBRECOMMERCE, null, null, photoGalleryChambreCommerce);
+        final SpotClass spotChambreCommerce = new SpotClass(2, 21, zonePlaceDuTheatre.getmZoneName(), ConstantInfos.NAME_CHAMBRECOMMERCE , "PAS DE JEU", 1, ConstantInfos.CULTURE_CHAMBRECOMMERCE, null, null, photoGalleryChambreCommerce);
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -344,6 +339,7 @@ public class AcceuilActivityClass extends Activity {
         photoGaleryStatueQuinquin.add(R.drawable.pht_quinquin2);
         photoGaleryStatueQuinquin.add(R.drawable.pht_quinquin3);
         photoGaleryStatueQuinquin.add(R.drawable.pht_quinquin4);
+        photoGaleryStatueQuinquin.add(R.drawable.pht_quinquin5);
 
         photoGaleryRueNationale.add(R.drawable.pht_ruenatio1);
         photoGaleryRueNationale.add(R.drawable.pht_ruenatio2);
@@ -365,13 +361,13 @@ public class AcceuilActivityClass extends Activity {
 
         // -----
 
-        final SpotClass spotRueNationale = new SpotClass(1, 1, zoneLilleCentre.getmZoneName(), "Rue Nationale","Fête du Nord", 1,  ConstantInfos.INFO_RUENATIONALE, null, null, photoGaleryRueNationale);
-        final SpotClass spotStatueQuinQuin = new SpotClass(1, 6, zoneLilleCentre.getmZoneName(), "La Statue du Ptit Quinquin","Ptit Quinquin", 3,  ConstantInfos.INFO_LASTATUEDUPTITQUINQUIN1, ConstantInfos.INFO_LASTATUEDUPTITQUINQUIN2, ConstantInfos.INFO_LASTATUEDUPTITQUINQUIN3 ,photoGaleryStatueQuinquin);
-        final SpotClass spotNouveauSiecle = new SpotClass(1, 18, zoneLilleCentre.getmZoneName(), "Le Nouveau Siecle", "Question d'Observation", 3, ConstantInfos.INFO_LENOUVEAUSIECLE1, ConstantInfos.INFO_LENOUVEAUSIECLE2, ConstantInfos.INFO_LENOUVEAUSIECLE3, photoGaleryNouveauSiecle);
+        final SpotClass spotRueNationale = new SpotClass(1, 1, zoneLilleCentre.getmZoneName(), ConstantInfos.NAME_NATIO,"Fête du Nord", 1,  ConstantInfos.INFO_RUENATIONALE, null, null, photoGaleryRueNationale);
+        final SpotClass spotStatueQuinQuin = new SpotClass(1, 6, zoneLilleCentre.getmZoneName(), ConstantInfos.NAME_QUINQUIN,"Ptit Quinquin", 3,  ConstantInfos.INFO_LASTATUEDUPTITQUINQUIN1, ConstantInfos.INFO_LASTATUEDUPTITQUINQUIN2, ConstantInfos.INFO_LASTATUEDUPTITQUINQUIN3 ,photoGaleryStatueQuinquin);
+        final SpotClass spotNouveauSiecle = new SpotClass(1, 18, zoneLilleCentre.getmZoneName(), ConstantInfos.NAME_NOUVEAUSIECLE, "Question d'Observation", 3, ConstantInfos.INFO_LENOUVEAUSIECLE1, ConstantInfos.INFO_LENOUVEAUSIECLE2, ConstantInfos.INFO_LENOUVEAUSIECLE3, photoGaleryNouveauSiecle);
 
-        final SpotClass spotStatueFoch = new SpotClass(2, 22,  zoneLilleCentre.getmZoneName(), "La Statue du General Foch","PAS DE JEU", 1, ConstantInfos.CULTURE_STATUEFOCH, null, null, photoGaleryStatueFoch );
-        final SpotClass spotLe28 = new SpotClass(2, 23,  zoneLilleCentre.getmZoneName(), "Le 28 Thiers", "PAS DE JEU", 1, ConstantInfos.CULTURE_LE28, null, null, photoGaleryLe28 );
-        final SpotClass spotQuaiDuWault = new SpotClass(2, 24, zoneLilleCentre.getmZoneName(), "Quai Du Wault", "PAS DE JEU", 1,  ConstantInfos.CULTURE_QUAIDUWAULT, null, null, photoGaleryQuaiDuWault );
+        final SpotClass spotStatueFoch = new SpotClass(2, 22,  zoneLilleCentre.getmZoneName(), ConstantInfos.NAME_FOCH,"PAS DE JEU", 1, ConstantInfos.CULTURE_STATUEFOCH, null, null, photoGaleryStatueFoch );
+        final SpotClass spotLe28 = new SpotClass(2, 23,  zoneLilleCentre.getmZoneName(), ConstantInfos.NAME_LE28, "PAS DE JEU", 1, ConstantInfos.CULTURE_LE28, null, null, photoGaleryLe28 );
+        final SpotClass spotQuaiDuWault = new SpotClass(2, 24, zoneLilleCentre.getmZoneName(), ConstantInfos.NAME_QUAIDUWAULT, "PAS DE JEU", 1,  ConstantInfos.CULTURE_QUAIDUWAULT, null, null, photoGaleryQuaiDuWault );
 
 
         realm.executeTransaction(new Realm.Transaction() {
@@ -444,13 +440,13 @@ public class AcceuilActivityClass extends Activity {
 
         // -----------
 
-        final SpotClass spotLeFuretDuNord = new SpotClass(1, 2, zoneGrandPlace.getmZoneName(), "Le Furet Du Nord","Culture Générale", 3, ConstantInfos.INFO_FURETDUNORD1, ConstantInfos.INFO_FURETDUNORD2, ConstantInfos.INFO_FURETDUNORD3,  photoGaleryFuretDuNord);
-        final SpotClass spotLaGrandGarde = new SpotClass(1, 17, zoneGrandPlace.getmZoneName(), "La Grand'Garde","Garde À Vous !!", 3, ConstantInfos.INFO_LAGRANDGARDE1, ConstantInfos.INFO_LAGRANDGARDE2, ConstantInfos.INFO_LAGRANDGARDE3, photoGaleryGrandGarde);
-        final SpotClass spotLaVoixDuNord = new SpotClass(1, 5, zoneGrandPlace.getmZoneName(), "La Voix Du Nord","Le jeu des blasons", 3, ConstantInfos.INFO_LAVOIXDUNORD1, ConstantInfos.INFO_LAVOIXDUNORD2, ConstantInfos.INFO_LAVOIXDUNORD3,  photoGaleryVoixDuNord);
-        final SpotClass spotLaColonneDeLaDeese = new SpotClass(1, 13, zoneGrandPlace.getmZoneName(), "La Colonne De La Deesse","Statue", 3,  ConstantInfos.INFO_LACOLONNEDELADEESSE1,  ConstantInfos.INFO_LACOLONNEDELADEESSE2,  ConstantInfos.INFO_LACOLONNEDELADEESSE3,  photoGaleryColonneDeLaDeesse);
-        final SpotClass spotPalaisRihour = new SpotClass(1, 11, zoneGrandPlace.getmZoneName(), "Le Palais Rihour", "Vrai ou Feu ?", 3, ConstantInfos.INFO_PALAISRIHOUR1, ConstantInfos.INFO_PALAISRIHOUR2, ConstantInfos.INFO_PALAISRIHOUR3,  photoGaleryPalaisRihour);
+        final SpotClass spotLeFuretDuNord = new SpotClass(1, 2, zoneGrandPlace.getmZoneName(), ConstantInfos.NAME_FURET,"Culture Générale", 3, ConstantInfos.INFO_FURETDUNORD1, ConstantInfos.INFO_FURETDUNORD2, ConstantInfos.INFO_FURETDUNORD3,  photoGaleryFuretDuNord);
+        final SpotClass spotLaGrandGarde = new SpotClass(1, 17, zoneGrandPlace.getmZoneName(), ConstantInfos.NAME_GRANDGARDE,"Garde À Vous !!", 3, ConstantInfos.INFO_LAGRANDGARDE1, ConstantInfos.INFO_LAGRANDGARDE2, ConstantInfos.INFO_LAGRANDGARDE3, photoGaleryGrandGarde);
+        final SpotClass spotLaVoixDuNord = new SpotClass(1, 5, zoneGrandPlace.getmZoneName(), ConstantInfos.NAME_VOIXDUNORD,"Le jeu des blasons", 3, ConstantInfos.INFO_LAVOIXDUNORD1, ConstantInfos.INFO_LAVOIXDUNORD2, ConstantInfos.INFO_LAVOIXDUNORD3,  photoGaleryVoixDuNord);
+        final SpotClass spotLaColonneDeLaDeese = new SpotClass(1, 13, zoneGrandPlace.getmZoneName(), ConstantInfos.NAME_COLONNE,"Statue", 3,  ConstantInfos.INFO_LACOLONNEDELADEESSE1,  ConstantInfos.INFO_LACOLONNEDELADEESSE2,  ConstantInfos.INFO_LACOLONNEDELADEESSE3,  photoGaleryColonneDeLaDeesse);
+        final SpotClass spotPalaisRihour = new SpotClass(1, 11, zoneGrandPlace.getmZoneName(), ConstantInfos.NAME_PALAIS, "Vrai ou Feu ?", 3, ConstantInfos.INFO_PALAISRIHOUR1, ConstantInfos.INFO_PALAISRIHOUR2, ConstantInfos.INFO_PALAISRIHOUR3,  photoGaleryPalaisRihour);
 
-        final SpotClass spotPyramideRihour = new SpotClass(2, 25,  zoneGrandPlace.getmZoneName(), "La Pyramide de Rihour","PAS DE JEU",  1, ConstantInfos.CULTURE_PYRAMIDE, null, null, photoGaleryPyramide);
+        final SpotClass spotPyramideRihour = new SpotClass(2, 25,  zoneGrandPlace.getmZoneName(), ConstantInfos.NAME_PYRAMIDE,"PAS DE JEU",  1, ConstantInfos.CULTURE_PYRAMIDE, null, null, photoGaleryPyramide);
 
 
         realm.executeTransaction(new Realm.Transaction() {
@@ -518,7 +514,7 @@ public class AcceuilActivityClass extends Activity {
         photoGaleryHospiceComtesse.add(R.drawable.pht_hospice6);
 
         photoGaleryRueEsquermoise.add(R.drawable.pht_esquermoise1);
-        photoGaleryRueEsquermoise.add(R.drawable.pht_esquermoise2);
+        //photoGaleryRueEsquermoise.add(R.drawable.pht_esquermoise2);
 
         photoGaleryRueGrandeChaussee.add(R.drawable.pht_ruechaussee1);
         photoGaleryRueGrandeChaussee.add(R.drawable.pht_ruechaussee2);
@@ -552,18 +548,18 @@ public class AcceuilActivityClass extends Activity {
 
         // -------
 
-        final SpotClass spotPlaceAuxOignons = new SpotClass(1, 3, zoneVieuxLille.getmZoneName(), "La Place aux Oignons", "Questions aux petits Oignons",3, ConstantInfos.INFO_LAPLACEAUXOIGNONS1,ConstantInfos.INFO_LAPLACEAUXOIGNONS2, ConstantInfos.INFO_LAPLACEAUXOIGNONS3 ,  photoGaleryPlaceAuxOignons);
-        final SpotClass spotPlaceLouiseDeBettignies = new SpotClass(1,4, zoneVieuxLille.getmZoneName(), "La Place Louise De Bettignies","INFO ou INTOX ?", 1, ConstantInfos.INFO_PLACELOUISEDEBETTIGNIES, null, null , photoGaleryPlaceLouiseDeBettignies);
-        final SpotClass spotIlotComtesse = new SpotClass(1, 8, zoneVieuxLille.getmZoneName(), "L'Ilot Comtesse","Tape la pose !!", 1, ConstantInfos.INFO_LILOTCOMTESSE, null, null, photoGaleryIlotComtesse);
-        final SpotClass spotHospiceComtesse = new SpotClass(1, 10, zoneVieuxLille.getmZoneName(), "L'Hospice Comtesse","La Bière du Ch'Nord", 3,  ConstantInfos.INFO_LHOSPICECOMTESSE1,  ConstantInfos.INFO_LHOSPICECOMTESSE2,  ConstantInfos.INFO_LHOSPICECOMTESSE3,  photoGaleryHospiceComtesse);
-        final SpotClass spotRueEsquermoise = new SpotClass(1, 12, zoneVieuxLille.getmZoneName(), "Rue Esquermoise","Ki C ?", 1, ConstantInfos.INFO_LARUEESQUERMOISE, null, null,  photoGaleryRueEsquermoise);
-        final SpotClass spotRueGrandeChaussee = new SpotClass(1,  14, zoneVieuxLille.getmZoneName(), "Rue Grande Chaussee","Lille Mystère",3, ConstantInfos.INFO_LARUEGRANDECHAUSSEE1, ConstantInfos.INFO_LARUEGRANDECHAUSSEE2, ConstantInfos.INFO_LARUEGRANDECHAUSSEE3,  photoGaleryRueGrandeChaussee);
-        final SpotClass spotNotreDameDeLaTreille = new SpotClass(1, 16, zoneVieuxLille.getmZoneName(), "Notre Dame De La Treille","Ca.Thé.Dra.Le", 3, ConstantInfos.INFO_NOTREDAMEDELATREILLE1, ConstantInfos.INFO_NOTREDAMEDELATREILLE2, ConstantInfos.INFO_NOTREDAMEDELATREILLE3,  photoGaleryNotreDameDeLaTreille);
+        final SpotClass spotPlaceAuxOignons = new SpotClass(1, 3, zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_PLACEAUXOIGNONS, "Questions aux petits Oignons",3, ConstantInfos.INFO_LAPLACEAUXOIGNONS1,ConstantInfos.INFO_LAPLACEAUXOIGNONS2, ConstantInfos.INFO_LAPLACEAUXOIGNONS3 ,  photoGaleryPlaceAuxOignons);
+        final SpotClass spotPlaceLouiseDeBettignies = new SpotClass(1,4, zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_PLACELOUISE,"INFO ou INTOX ?", 1, ConstantInfos.INFO_PLACELOUISEDEBETTIGNIES, null, null , photoGaleryPlaceLouiseDeBettignies);
+        final SpotClass spotIlotComtesse = new SpotClass(1, 8, zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_ILOT,"Tape la pose !!", 1, ConstantInfos.INFO_LILOTCOMTESSE, null, null, photoGaleryIlotComtesse);
+        final SpotClass spotHospiceComtesse = new SpotClass(1, 10, zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_HOSPICE,"La Bière du Ch'Nord", 3,  ConstantInfos.INFO_LHOSPICECOMTESSE1,  ConstantInfos.INFO_LHOSPICECOMTESSE2,  ConstantInfos.INFO_LHOSPICECOMTESSE3,  photoGaleryHospiceComtesse);
+        final SpotClass spotRueEsquermoise = new SpotClass(1, 12, zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_RUEESQUERMOISE,"Ki C ?", 1, ConstantInfos.INFO_LARUEESQUERMOISE, null, null,  photoGaleryRueEsquermoise);
+        final SpotClass spotRueGrandeChaussee = new SpotClass(1,  14, zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_RUECHAUSSEE,"Lille Mystère",3, ConstantInfos.INFO_LARUEGRANDECHAUSSEE1, ConstantInfos.INFO_LARUEGRANDECHAUSSEE2, ConstantInfos.INFO_LARUEGRANDECHAUSSEE3,  photoGaleryRueGrandeChaussee);
+        final SpotClass spotNotreDameDeLaTreille = new SpotClass(1, 16, zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_TREILLE,"Ca.Thé.Dra.Le", 3, ConstantInfos.INFO_NOTREDAMEDELATREILLE1, ConstantInfos.INFO_NOTREDAMEDELATREILLE2, ConstantInfos.INFO_NOTREDAMEDELATREILLE3,  photoGaleryNotreDameDeLaTreille);
 
-        final SpotClass spotHuitriere = new SpotClass(2, 26, zoneVieuxLille.getmZoneName(), "(Anciennement) L'Huitriere","PAS DE JEU", 1,  ConstantInfos.CULTURE_HUITRIERE, null, null,   photoGaleryHuitriere);
-        final SpotClass spotMeert = new SpotClass(2, 27,zoneVieuxLille.getmZoneName(), "Meert","PAS DE JEU", 1,  ConstantInfos.CULTURE_MEERT, null,null,  photoGaleryMeert);
-        final SpotClass spotCourInt = new SpotClass(2,28, zoneVieuxLille.getmZoneName(), "Les Compagnons de la Grappe","PAS DE JEU", 1, ConstantInfos.CULTURE_COURINT, null, null,  photoGaleryCourInt);
-        final SpotClass spotRueWeppes = new SpotClass(2, 29,  zoneVieuxLille.getmZoneName(), "La rue Weppes","PAS DE JEU", 1, ConstantInfos.CULTURE_RUEWEPPES, null,  null ,photoGaleryRueWeppes);
+        final SpotClass spotHuitriere = new SpotClass(2, 26, zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_HUITRIERE,"PAS DE JEU", 1,  ConstantInfos.CULTURE_HUITRIERE, null, null,   photoGaleryHuitriere);
+        final SpotClass spotMeert = new SpotClass(2, 27,zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_MEERT,"PAS DE JEU", 1,  ConstantInfos.CULTURE_MEERT, null,null,  photoGaleryMeert);
+        final SpotClass spotCourInt = new SpotClass(2,28, zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_COMPAGNONS,"PAS DE JEU", 1, ConstantInfos.CULTURE_COURINT, null, null,  photoGaleryCourInt);
+        final SpotClass spotRueWeppes = new SpotClass(2, 29,  zoneVieuxLille.getmZoneName(), ConstantInfos.NAME_RUEWEPPES,"PAS DE JEU", 1, ConstantInfos.CULTURE_RUEWEPPES, null,  null ,photoGaleryRueWeppes);
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -597,10 +593,13 @@ public class AcceuilActivityClass extends Activity {
      * Cette méthode va créer dans la BDD les Spot Secret
      */
     private void createSecretSpotInRealm(){
-        final SpotClass spotSecret_Bras = new SpotClass(3, 41, "La Bras d'Or", 3,  ConstantInfos.SECRET_GOLDENARM1, ConstantInfos.SECRET_GOLDENARM2, ConstantInfos.SECRET_GOLDENARM3);
-        final SpotClass spotSecret_Macon = new SpotClass(3,43,  "Le Temple Maçonnique", 3, ConstantInfos.SECRET_FRANCMACON1, ConstantInfos.SECRET_FRANCMACON2, ConstantInfos.SECRET_FRANCMACON3);
-        final SpotClass spotSecter_Treille = new SpotClass(3, 44, "Le dos de la Cathédrale", 3, ConstantInfos.SECRET_BEHINDTREILLE1, ConstantInfos.SECRET_BEHINDTREILLE2,  ConstantInfos.SECRET_BEHINDTREILLE3);
-        final SpotClass spotSecret_Slave = new SpotClass(3, 44, "Le Compostelle", 2, ConstantInfos.SECRET_COMPOSTELLE1, ConstantInfos.SECRET_COMPOSTELLE2,  null);
+        final SpotClass spotSecret_Bras = new SpotClass(3, 41, "Le Bras d'Or", 3,
+                ConstantInfos.SECRET_GOLDENARM1, ConstantInfos.SECRET_GOLDENARM2, ConstantInfos.SECRET_GOLDENARM3);
+        final SpotClass spotSecret_Macon = new SpotClass(3,43,  "Temple Maconnique de Lille",
+                3, ConstantInfos.SECRET_FRANCMACON1, ConstantInfos.SECRET_FRANCMACON2, ConstantInfos.SECRET_FRANCMACON3);
+        final SpotClass spotSecter_Treille = new SpotClass(3, 44, "Le Flanc caché de la Cathédrale", 3, ConstantInfos.SECRET_BEHINDTREILLE1, ConstantInfos.SECRET_BEHINDTREILLE2,  ConstantInfos.SECRET_BEHINDTREILLE3);
+        final SpotClass spotSecret_Slave = new SpotClass(3, 44, "Le Compostelle", 2,
+                ConstantInfos.SECRET_COMPOSTELLE1, ConstantInfos.SECRET_COMPOSTELLE2,  null);
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -617,58 +616,41 @@ public class AcceuilActivityClass extends Activity {
     }
 
     /**
-     * Cette méthode va supprimer tout les objets présent dans la BDD Realm
+     * Cette méthode va crée un objet TeamClass et l'ajouter a notre BDD
      */
-    private void deleteAllDataFromRealm(){
-        realm = Realm.getDefaultInstance();
+    private void createTeamInBDD(){
 
-        try{
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    RealmResults<TeamClass> rows = realm.where(TeamClass.class).findAll();
-                    rows.deleteAllFromRealm();
-                    Log.i(TAG, "Tous les objets TEAMCLASS supprimés ");
+                // Get a Realm instance for this thread
+                realm = Realm.getDefaultInstance();
+
+                try{
+
+                    final TeamClass team = new TeamClass(eTeamName.getText().toString().toUpperCase(), memberList, numInsigneSelected);
+                    theTeam = team;
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            // This will create a new object in Realm or throw an exception if the
+                            // object already exists (same primary key)
+                            realm.copyToRealm(team);
+                            Log.i(TAG, "Création de l'équipe terminé");
+                        }
+                    });
+
+                } finally {
+                    realm.close();
                 }
-            });
-
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    RealmResults<SpotClass> rows = realm.where(SpotClass.class).findAll();
-                    rows.deleteAllFromRealm();
-                    Log.i(TAG, "Tous les objets SPOTCLASS supprimés ");
-                }
-            });
-
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    RealmResults<MarkerOptionRealm> rows = realm.where(MarkerOptionRealm.class).findAll();
-                    rows.deleteAllFromRealm();
-                    Log.i(TAG, "Tous les objets MARKEROPTIONREALM supprimés ");
-                }
-            });
-
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    RealmResults<ZoneClass> rows = realm.where(ZoneClass.class).findAll();
-                    rows.deleteAllFromRealm();
-                    Log.i(TAG, "Tous les objets ZONECLASS supprimés ");
-                }
-            });
 
 
-        } finally {
-            realm.close();
-        }
-
-
-
+            }
+        }).start();
 
     }
+
 
     // ------- Gestion des animations -------
     /**
@@ -703,7 +685,6 @@ public class AcceuilActivityClass extends Activity {
                 startMJExplication();
             }
         }, 8000);
-
     }
 
     /**
@@ -751,7 +732,7 @@ public class AcceuilActivityClass extends Activity {
 
         // On setUp le text
         numText = 0;
-        final String endMessage[] = {" Bravo !! \n Maintenant, vous êtes officielement : \n \n "+ theTeam.getmTeamName() + "","Vous allez bientôt pouvoir vous lancer dans l'aventure !! \n \n Juste avant ca, je vais vous expliquer les règles de ce jeu.", "Je vous conseille fortement de les lire, car sinon vous risquez d'être perdu une fois le jeu commencé. " };
+        final String endMessage[] = {" Bravo !! \n Maintenant, vous êtes officiellement : \n \n "+ theTeam.getmTeamName() + "","Vous allez bientôt pouvoir vous lancer dans l'aventure !! \n \n Juste avant ca, je vais vous expliquer les règles de ce jeu.", "Je vous conseille fortement de les lire, car sinon vous risquez d'être perdu une fois le jeu commencé. " };
         tConsigne.setText(endMessage[numText]);
 
         // On créer notre onClickListener
@@ -831,53 +812,6 @@ public class AcceuilActivityClass extends Activity {
 
     // ------- Gestion de la Création de l'équipe -------
 
-
-    /**
-     * Cette méthode modifie la couleur des boutons d'insigne
-     */
-    private void setClassicBtnBackground(Button btn, int btnTag){
-        switch (btnTag){
-            case 1:
-                btn.setBackgroundResource(R.drawable.btn_equipe_biere_off);
-                break;
-            case 2:
-                btn.setBackgroundResource(R.drawable.btn_equipe_frite_off);
-                break;
-            case 3:
-                btn.setBackgroundResource(R.drawable.btn_equipe_hein_off);
-                break;
-            case 4:
-                btn.setBackgroundResource(R.drawable.btn_equipe_chicon_off);
-                break;
-            case 5:
-                btn.setBackgroundResource(R.drawable.btn_equipe_moule_off);
-                break;
-        }
-    }
-
-    /**
-     * Cette méthode modifie la couleur des boutons d'insigne
-     */
-    private void setSelectedBtnBackground(View btn, int btnTag){
-        switch (btnTag){
-            case 1:
-                btn.setBackgroundResource(R.drawable.btn_equipe_biere_on);
-                break;
-            case 2:
-                btn.setBackgroundResource(R.drawable.btn_equipe_frite_on);
-                break;
-            case 3:
-                btn.setBackgroundResource(R.drawable.btn_equipe_hein_on);
-                break;
-            case 4:
-                btn.setBackgroundResource(R.drawable.btn_equipe_chicon_on);
-                break;
-            case 5:
-                btn.setBackgroundResource(R.drawable.btn_equipe_moule_on);
-                break;
-        }
-    }
-
     /**
      * Cette méthode prépare l'arrivé
      */
@@ -889,7 +823,7 @@ public class AcceuilActivityClass extends Activity {
         animator.fadeOutAnimation(lMJ_Introduction);
 
         // On prépare les textes
-        tComposition.setText("L'équipe ne possède pas de joueur pour le moment.");
+        tComposition.setText(R.string.noPlayer_message);
 
         Typeface type = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/steinem.ttf");
         tTeamCreation_Title.setTypeface(type);
@@ -948,7 +882,7 @@ public class AcceuilActivityClass extends Activity {
                 } else {
                     if (eTeamName.getText().toString().equals("")){
                         Toasty.error(getApplicationContext(), "Vous devez choisir un nom d'équipe.", Toast.LENGTH_SHORT, true).show();
-                    } else if (nbMember < 3){
+                    } else if (nbMember < 2){
                         Toasty.error(getApplicationContext(), "Vous devez ajouter des membres à votre équipe.", Toast.LENGTH_SHORT, true).show();
                     } else if (!insigneSelected){
                         Toasty.error(getApplicationContext(), "Vous devez séléctionner un insigne pour votre équipe.", Toast.LENGTH_SHORT, true).show();
@@ -972,67 +906,6 @@ public class AcceuilActivityClass extends Activity {
         btn_insigne3.setTag(3);
         btn_insigne4.setTag(4);
         btn_insigne5.setTag(5);
-    }
-
-    /**
-     * Cette méthode va crée un objet TeamClass et l'ajouter a notre BDD
-     */
-    private void createTeamInBDD(){
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                // Get a Realm instance for this thread
-                realm = Realm.getDefaultInstance();
-
-                try{
-
-                    final TeamClass team = new TeamClass(eTeamName.getText().toString().toUpperCase(), memberList, numInsigneSelected);
-                    theTeam = team;
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            // This will create a new object in Realm or throw an exception if the
-                            // object already exists (same primary key)
-                            realm.copyToRealm(team);
-                            Log.i(TAG, "Création de l'équipe terminé");
-                        }
-                    });
-
-                } finally {
-                    realm.close();
-                }
-
-
-            }
-        }).start();
-
-    }
-
-    /**
-     * Cette méthode va vérifié si un objet TeamClass existe
-     * Si oui, on passe directement a l'activity InGame
-     */
-    private void checkTeamInBDD(){
-
-
-        // Get a Realm instance for this thread
-        realm = Realm.getDefaultInstance();
-
-        try{
-
-            TeamClass team = realm.where(TeamClass.class).findFirst();
-            if (team != null){
-                Intent goToingameActivity = new Intent (getApplicationContext(), InGameActivityClass.class);
-                startActivity(goToingameActivity);
-            }
-
-
-        } finally {
-            realm.close();
-        }
-
     }
 
     /**
@@ -1082,6 +955,7 @@ public class AcceuilActivityClass extends Activity {
      * OnClickListener affecté aux bouton insigne
      */
     class MyClickListener implements View.OnClickListener {
+
         @Override
         public void onClick(View v) {
             for(Button theBtn : btn_Insigne_List){
@@ -1092,10 +966,56 @@ public class AcceuilActivityClass extends Activity {
             setSelectedBtnBackground(v, (int)v.getTag());
 
             insigneSelected = true;
-
             numInsigneSelected = (int) v.getTag();
 
         }
+
+        /**
+         * Cette méthode modifie la couleur des boutons d'insigne
+         */
+        private void setClassicBtnBackground(Button btn, int btnTag){
+            switch (btnTag){
+                case 1:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_biere_off);
+                    break;
+                case 2:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_frite_off);
+                    break;
+                case 3:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_hein_off);
+                    break;
+                case 4:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_chicon_off);
+                    break;
+                case 5:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_moule_off);
+                    break;
+            }
+        }
+
+        /**
+         * Cette méthode modifie la couleur des boutons d'insigne
+         */
+        private void setSelectedBtnBackground(View btn, int btnTag){
+            switch (btnTag){
+                case 1:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_biere_on);
+                    break;
+                case 2:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_frite_on);
+                    break;
+                case 3:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_hein_on);
+                    break;
+                case 4:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_chicon_on);
+                    break;
+                case 5:
+                    btn.setBackgroundResource(R.drawable.btn_equipe_moule_on);
+                    break;
+            }
+        }
+
     }
 
 

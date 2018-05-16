@@ -1,8 +1,6 @@
 package com.vivacom.leo.perdpaslenord.activities;
 
 import android.app.ProgressDialog;
-import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +19,7 @@ import android.widget.Toast;
 
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
+import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
 import com.vivacom.leo.perdpaslenord.fragments.MJFragmentClass;
 import com.vivacom.leo.perdpaslenord.fragments.MenuCircleButtonFragment;
 import com.vivacom.leo.perdpaslenord.fragments.NativeCameraFragment;
@@ -58,11 +57,8 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         InformationFragmentClass.InformationFragmentClassCallBack, MJFragmentClass.MJFragmentCallBack, DifferenceFragmentClass.DifferenceFragmentClassCallBack{
 
 
-
     // ------- Elements Graphiques -------
-    RelativeLayout mainLayout, lMJ_Fragment;
-    RelativeLayout layoutForAction, layoutForGame;
-    RelativeLayout layoutForRoadBook;
+    RelativeLayout mainLayout, lMJ_Fragment, layoutForAction, layoutForGame, layoutForRoadBook;
     LinearLayout layoutForMap, layoutForUnableMap, menu;
     View whiteView;
     ProgressDialog progress;
@@ -74,34 +70,26 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     SpotClass spotSelected;
     ZoneClass zoneSelected;
 
-
-    List<SpotClass> secretSpotList = new ArrayList<>();
-    ArrayList<String> spotCompletedList = new ArrayList<>();
+    // ------- Nos Listes -------
     ArrayList<Integer> listPhotoOfSpot = new ArrayList<>();
-
-    // ------- Notre Team -------
-    TeamClass theTeam;
     List<String> playerList = new ArrayList<>();
 
-    // -------- Mes boolean -------
+    // -------- Mes paramètres -------
     boolean menuOpen = false;
-    boolean interfaceVisible = false;
+    boolean interfaceVisible = false, roadBookVisisible = false;
     boolean whiteViewActive = false;
-    boolean firstGameWin = false;
     boolean interfaceWasVisible;
 
-    // -------- Elements pour les STATISTIQUES ------------
-    int nbSpotCompleted = 0;
-    int nbZoneCompleted = 0;
-    int nbGameWin = 0;
-    int currentFragment = 0;
-    int nbSecretDiscovered = 0;
-
-    String statsRecap = "";
+    int  currentFragment = 0, nbInsigne = 1;
     public final String TAG = "In_Game";
     String actualFragment = "NOTHING";
 
     // -------------------------------------------
+
+    @Override
+    public void onBackPressed() {
+        //Nothing
+    }
 
     @Override
     public  void onResume(){
@@ -179,15 +167,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     }
 
     /**
-     * Méthode controllant le bouton back de la tablette
-     * Ici, on ne mets rien a l'interieur afin de désactiver le bouton
-     */
-    @Override
-    public void onBackPressed() {
-        //Nothing
-    }
-
-    /**
      * Méthode controllant le bouton menu de la tablette
      * Ici, on ne mets rien a l'interieur afin de désactiver le bouton
      */
@@ -233,9 +212,9 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                         layoutForUnableMap.setVisibility(View.GONE);
                         // On place le RoadBook
                         setUpRoadBook();
-                        // On change le design du currentPositionMarker
                         GoogleMapFragment googleMapManager = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForMap);
-                        googleMapManager.changeCurrentPosMarkerIcon(theTeam.getNumInsinge());
+                        googleMapManager.changeCurrentPosMarkerIcon(nbInsigne);
+
                     }
                 });
             }
@@ -272,7 +251,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
       try{
           TeamClass team = realm.where(TeamClass.class).findFirst();
           if(team != null){
-              theTeam = new TeamClass(team.getmTeamName(), team.getMembersList(), team.getNumInsinge());
+              nbInsigne = team.getNumInsinge();
               playerList.addAll(team.getMembersList());
           }
 
@@ -290,19 +269,20 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      */
     public void hideInGameInterface(){
         // On fait disparaitre le carnet de bord si il est visible
-        MenuCircleButtonFragment menuCircleButtonManager = (MenuCircleButtonFragment) getSupportFragmentManager().findFragmentById(R.id.IG_fragment_menu);
-        if(menuCircleButtonManager.isCarnetVisible()){animator.fadeOutAnimation(layoutForRoadBook);}
+        hideRoadBookIfVisible();
         // On fait disparaitre "la couche" qui désactive la map
         animator.fadeOutAnimation(layoutForUnableMap);
         // On active la map et désactive le jeu
         layoutForGame.setClickable(false);
         layoutForMap.setClickable(true);
         if (whiteViewActive){setUpWhiteScreen(false);}
-        // On réactive le fragment
+        // On réactive le fragment GoogleMap
         GoogleMapFragment googleMapManager = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForMap);
         googleMapManager.onResume();
         activateMenuAnimation();
         reinitSpotName();
+
+
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -310,7 +290,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                 slideOutMenu();
                 slideMainScreenOut();
                 txtVSpotName.animate().translationX(-1500).setDuration(650).withLayer();
-                hideRoadBook();
             }
         }, 750);
         interfaceVisible = false;
@@ -380,7 +359,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                hideRoadBook();
+                hideRoadBookIfVisible();
                 layoutForAction.animate().translationX(-2000).setDuration(650);
 
                 final Handler handler = new Handler();
@@ -438,7 +417,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     }
 
 
-
     // ------------------------------------------------------------------------------------
     // ----------------- Méthodes controllant le menu et son affichage --------------------
 
@@ -479,11 +457,9 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             menuOpen = false;
         } else {
             menuCircleButtonManager.openMenu();
+            menuCircleButtonManager.changeGameBtnImage(spotSelected.getmSpotType());
             menuOpen = true;
         }
-
-        menuCircleButtonManager.changeBtnVisibility(spotSelected.getmSpotType());
-
 
     }
 
@@ -501,7 +477,10 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         menu.animate().translationX(0).withLayer();
     }
 
-
+    /**
+     * Cette méthode permet de controller le click des boutons du menu
+     * @param canClick
+     */
     public void handleBtnClick(boolean canClick){
         MenuCircleButtonFragment menuCircleButtonManager = (MenuCircleButtonFragment) getSupportFragmentManager().findFragmentById(R.id.IG_fragment_menu);
         menuCircleButtonManager.setBtnClickable(canClick);
@@ -531,7 +510,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Methode qui permet de passer du Carnet de Bord au Jeu
      */
     public void transitionRoadBookToGame(){
-        RoadBookFragmentClass roadBookManager = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
+        final RoadBookFragmentClass roadBookManager = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
         final MenuCircleButtonFragment menuCircleButtonManager = (MenuCircleButtonFragment) getSupportFragmentManager().findFragmentById(R.id.IG_fragment_menu);
 
         roadBookManager.onPause();
@@ -539,7 +518,10 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         Handler handler1 = new Handler();
         handler1.postDelayed(new Runnable() {
             @Override
-            public void run() {slideMainScreenIn();}}, 1000);
+            public void run() {
+                slideMainScreenIn();
+                roadBookVisisible = false;
+            }}, 1000);
 
         Handler handlerDelay = new Handler();
         handlerDelay.postDelayed(new Runnable() {
@@ -551,15 +533,19 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Methode qui permet de passer du jeu au Carnet de Bord
      */
     public void transitionGameToRoadBook(){
-        RoadBookFragmentClass roadBookManager = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
         final MenuCircleButtonFragment menuCircleButtonManager = (MenuCircleButtonFragment) getSupportFragmentManager().findFragmentById(R.id.IG_fragment_menu);
+        final RoadBookFragmentClass roadBookManager = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
 
-        roadBookManager.onResume();
         slideMainScreenOut();
+        roadBookManager.onResume();
+
         Handler handler1 = new Handler();
         handler1.postDelayed(new Runnable() {
             @Override
-            public void run() {animator.fadeInAnimation(layoutForRoadBook);}}, 1000);
+            public void run() {
+                animator.fadeInAnimation(layoutForRoadBook);
+                roadBookVisisible = true;
+            }}, 1000);
 
         Handler handlerDelay = new Handler();
         handlerDelay.postDelayed(new Runnable() {
@@ -571,28 +557,13 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Cette méthode fait disparaitre le layout du RoadBook
      * Si ce dernier est visible
      */
-    private void hideRoadBook(){
-        MenuCircleButtonFragment menuCircleButtonManager = (MenuCircleButtonFragment) getSupportFragmentManager().findFragmentById(R.id.IG_fragment_menu);
-        if(menuCircleButtonManager.isCarnetVisible()){transitionRoadBookToGame();}
+    private void hideRoadBookIfVisible(){
+        if(roadBookVisisible){
+            animator.fadeOutAnimation(layoutForRoadBook);
+            roadBookVisisible = false;
+        }
     }
 
-    /**
-     * Cette méthode ajoute une photo a la liste des photos
-     * Appelé depuis le fragment NativeCameraFragment
-     * @param btm
-     */
-    public void addPhotoToGalery(Bitmap btm){
-        RoadBookFragmentClass roadBookFragment = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
-        roadBookFragment.addPhotoToList(btm);
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RoadBookFragmentClass roadBookManager = (RoadBookFragmentClass) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForRoadBook);
-                roadBookManager.setPhotoVisible();
-            }
-        });
-    }
 
     // -----------------------------------------------------------------------------------
     // ------------------ Méthodes controllant l'affichage du guide ----------------------
@@ -664,8 +635,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             animator.fadeInAnimation(lMJ_Fragment);
         }
 
-
-
         Log.d(TAG, "Start MJ Message / InterfaceWasVisible :"+interfaceWasVisible);
     }
 
@@ -717,13 +686,14 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                         createListPhotoOfSpot(mySpot);
                     } else if (spotSelected.getmSpotType() == 3){getMessageForMJ();}
 
+                    // TODO : Modifier Typo
                     txtVSpotName.setText(spotSelected.getmSpotName());
+                    /*
                     Typeface type = Typeface.createFromAsset(getAssets(),"fonts/BeautyDemo.ttf");
                     txtVSpotName.setTypeface(type);
+                    */
 
-                } else {
-                    Log.e(TAG, "Impossible de récuperer le spot dans la BDD");
-                }
+                } else { Log.e(TAG, "Impossible de récuperer le spot dans la BDD"); }
             } finally {
                 realm.close();
             }
@@ -751,8 +721,8 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * @param spot
      */
     public void createListPhotoOfSpot(SpotClass spot){
-        listPhotoOfSpot.clear();
         // On créer une arrayList avec les photo de notre RealmList
+        listPhotoOfSpot.clear();
         RealmList<Integer> realmList = spot.getPhotoGallery();
         listPhotoOfSpot.addAll(realmList);
 
@@ -764,13 +734,13 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      */
     public void whenGameIsValidate(Boolean correct){
         MenuCircleButtonFragment menuCircleButtonManager = (MenuCircleButtonFragment) getSupportFragmentManager().findFragmentById(R.id.IG_fragment_menu);
-
         checkIfGameChecked(correct);
+
         if(interfaceVisible){slideOutLeftAndInRight(1);}
 
         // On check le gameBtn et on vérifie si le spot est complété
-        menuCircleButtonManager.setBtnClickable(true);
-        menuCircleButtonManager.setGameBtnValidate();
+        if(spotSelected.getmSpotType() == 1) { menuCircleButtonManager.setBtnClickable(true); }
+        menuCircleButtonManager.setGameBtnValidate(spotSelected.getmSpotType());
 
         // On désactive la view transparent si elle existe
         if (whiteViewActive){setUpWhiteScreen(false);}
@@ -819,14 +789,22 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
 
         try{
             boolean gameChecked = spotSelected.isGameChecked();
+
             if (!gameChecked){
                 spotSelected.setGameChecked();
                 setGameCheckedInBDD();
-                checkIfSpotCompleted();
-                if(correct){
+
+                if(correct && spotSelected.getmSpotType() == 1){
                     incrementStats_NbVictoire();
                     addNumberToList_listWord(spotSelected.getmSpotId());
-                } else { addNumberToList_UnlistWord(spotSelected.getmSpotId()); }
+                }
+
+                else if (!correct && spotSelected.getmSpotType() == 1) {
+                    addNumberToList_UnlistWord(spotSelected.getmSpotId());
+                    Toasty.error(getApplicationContext(), "Vous avez bloqué un mot, dommage ... " +spotSelected.getmSpotName()+" !", Toast.LENGTH_SHORT, true).show();
+                }
+
+                checkIfSpotCompleted();
             }
         } catch(Exception e){System.out.print(e.getMessage());}
 
@@ -837,57 +815,71 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Ne s'active qu'une seule fois
      */
     private void checkIfSpotCompleted(){
-        GoogleMapFragment googleMapManager = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForMap);
 
-        boolean infosChecked = spotSelected.isInfoChecked();
-        boolean imageChecked = spotSelected.isImageChecked();
-        boolean gameChecked = spotSelected.isGameChecked();
-        boolean spotCompleted = spotSelected.isSpotCompleted();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        if (infosChecked & gameChecked & imageChecked & !spotCompleted & spotSelected.getmSpotType() == 1)
-        {
-            spotSelected.setSpotCompleted();
-            setSpotCompletedInBDD();
-            nbSpotCompleted++;
-            spotCompletedList.add(spotSelected.getmSpotName());
-            googleMapManager.setMarkerCompleted(spotSelected);
-            googleMapManager.incrementNbPointLegendBot(spotSelected.getmSpotType());
-            incrementStats_PointPrincipaux();
-            checkIfZoneCompleted();
-            //if (interfaceVisible){hideInGameInterface();}
+                boolean infosChecked = spotSelected.isInfoChecked();
+                boolean imageChecked = spotSelected.isImageChecked();
+                boolean gameChecked = spotSelected.isGameChecked();
+                boolean spotCompleted = spotSelected.isSpotCompleted();
 
-            Toasty.success(getApplicationContext(), "Bravo, vous avez complété " +spotSelected.getmSpotName()+" !", Toast.LENGTH_SHORT, true).show();
-        }
+                if (infosChecked & gameChecked & imageChecked & !spotCompleted & spotSelected.getmSpotType() == 1)
+                {
+                    setSpotCompletedInBDD();
+                    spotSelected.setSpotCompleted();
+                    incrementStats_PointPrincipaux();
 
-        else if (infosChecked  & imageChecked & !spotCompleted & spotSelected.getmSpotType() == 2)
-        {
-            setSpotCompletedInBDD();
-            googleMapManager.setMarkerCompleted(spotSelected);
-            googleMapManager.incrementNbPointLegendBot(spotSelected.getmSpotType());
-            incrementStats_PointSecondaire();
-            //if (interfaceVisible){hideInGameInterface();}
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            GoogleMapFragment googleMapManager = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForMap);
+                            googleMapManager.setMarkerCompleted(spotSelected);
+                            googleMapManager.incrementNbPointLegendBot(1);
+                            Toasty.success(getApplicationContext(), "Bravo, vous avez complété " +spotSelected.getmSpotName()+" !", Toast.LENGTH_SHORT, true).show();
+                        }
+                    });
 
-            Toasty.success(getApplicationContext(), "Bravo, vous avez complété " +spotSelected.getmSpotName()+" !", Toast.LENGTH_SHORT, true).show();
-        }
+                    checkIfZoneCompleted();
+
+                }
+
+                else if (infosChecked  & imageChecked & !spotCompleted & spotSelected.getmSpotType() == 2)
+                {
+                    setSpotCompletedInBDD();
+                    spotSelected.setSpotCompleted();
+                    incrementStats_PointSecondaire();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            GoogleMapFragment googleMapManager = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForMap);
+                            googleMapManager.setMarkerCompleted(spotSelected);
+                            googleMapManager.incrementNbPointLegendBot(2);
+                            Toasty.success(getApplicationContext(), "Bravo, vous avez complété " +spotSelected.getmSpotName()+" !", Toast.LENGTH_SHORT, true).show();
+                        }
+                    });
+
+                    checkIfZoneCompleted();
+
+                }
+
+
+
+
+            }
+        }).start();
+
     }
 
     /**
      * Cette méthode vérifie si chaque spot de la list est complété
-     * Si oui, elle renvoie TRUE, sinon elle renvoie FALSE
-     * @param maListe
-     * @return
      */
-    private boolean checkIfAllSpotCompleted(List<SpotClass> maListe){
+    private void checkIfAllSpotCompleted(){
 
-        boolean allChecked = true;
 
-        // On regarde sur tout les psot de la liste
-        for(SpotClass monSpot : maListe){
-            // Si un spot n'est pas complété, on passe a false
-            if(!monSpot.isSpotCompleted()){allChecked = false;}
-        }
 
-        return allChecked;
     }
 
     /**
@@ -966,8 +958,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     }
 
     /**
-     * Méthode qui affiche la carte avec les spot completer en vert
-     * S'execute lorsque un spot est complete
+     * Méthode qui va placer la carte GoogleMap dans notre layout
      */
     private void setUpGoogleMapFragment(){
         new Thread(new Runnable() {
@@ -1088,19 +1079,22 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             public void run() {
                 GoogleMapFragment googleMapManager = (GoogleMapFragment) getSupportFragmentManager().findFragmentById(R.id.IG_layoutForMap);
                 if (googleMapManager.checkDistanceWithSpotForGameActivation(spotSelected)) {
-                    if (spotName.equals("La Vieille Bourse") || spotName.equals("Le Nouveau Siecle") || spotName.equals("Rue Grande Chaussee") || spotName.equals("La Place aux Oignons")) {
+                    if (spotName.equals(ConstantInfos.NAME_VIEILLEBOURSE) || spotName.equals(ConstantInfos.NAME_NOUVEAUSIECLE) || spotName.equals(ConstantInfos.NAME_RUECHAUSSEE) || spotName.equals(ConstantInfos.NAME_PLACEAUXOIGNONS)) {
                         actualFragment = "QCM";
                         setQCMGame(spotName);
-                    } else if (spotName.equals("La Colonne De La Deesse") || spotName.equals("Rue Nationale") || spotName.equals("La Voix Du Nord") ||  spotName.equals("L'Hospice Comtesse")) {
+                    } else if (spotName.equals(ConstantInfos.NAME_COLONNE) || spotName.equals(ConstantInfos.NAME_NATIO) || spotName.equals(ConstantInfos.NAME_VOIXDUNORD) ||  spotName.equals(ConstantInfos.NAME_HOSPICE)) {
                         actualFragment = "ASSO";
                         setDnDAssociationGame(spotName);
-                    } else if (spotName.equals("La Place Louise De Bettignies") || spotName.equals("Le Beffroi") || spotName.equals("Le Furet Du Nord") || spotName.equals("Le Palais Rihour") || spotName.equals("Rue Esquermoise")) {
+                    } else if (spotName.equals(ConstantInfos.NAME_PLACELOUISE) || spotName.equals(ConstantInfos.NAME_QUINQUIN) || spotName.equals(ConstantInfos.NAME_BEFFROI) || spotName.equals(ConstantInfos.NAME_FURET) || spotName.equals(ConstantInfos.NAME_PALAIS) || spotName.equals(ConstantInfos.NAME_RUEESQUERMOISE)) {
                         actualFragment = "VF";
                         setVraiFauxGame(spotName);
-                    } else if (spotName.equals("L'Opera De Lille") || spotName.equals("La Grand'Garde") || spotName.equals("Notre Dame De La Treille")) {
+                    } else if (spotName.equals(ConstantInfos.NAME_OPERA) || spotName.equals(ConstantInfos.NAME_GRANDGARDE) || spotName.equals(ConstantInfos.NAME_TREILLE)) {
                         actualFragment = "PUZZLE";
                         setDnDPuzzleGame(spotName);
-                    } else if (spotName.equals("L'Ilot Comtesse") || spotName.equals("La Statue du Ptit Quinquin") || spotName.equals("Le Rang Du Beauregard")) {
+                    } else if (spotName.equals(ConstantInfos.NAME_ILOT) || spotName.equals(ConstantInfos.NAME_RANG)) {
+                        actualFragment = "CAMERA";
+                        setNativePhotoFragment();
+                    } else if (spotSelected.getmSpotType() == 2){
                         actualFragment = "CAMERA";
                         setNativePhotoFragment();
                     } else {
@@ -1249,7 +1243,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         return playerList;
     }
 
-
     /**
      * Cette méthode renvoye le nom du jeu
      * @return
@@ -1340,14 +1333,18 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     public void setSpotCompletedInBDD(){
 
         final String spotName = spotSelected.getmSpotName();
+
+
         realm =  Realm.getDefaultInstance();
         try{
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     SpotClass mySpot = realm.where(SpotClass.class).equalTo("mSpotName", spotName).findFirst();
-                    if(mySpot != null){ mySpot.setSpotCompleted(); }
-
+                    if(mySpot != null){
+                        mySpot.setSpotCompleted();
+                        Log.d(TAG, "Spot "+mySpot.getmSpotName()+" complété in BDD");
+                    }
                 }
             });
         } finally {
@@ -1368,7 +1365,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             public void run() {
 
                 final String zoneName = zoneSelected.getmZoneName();
-                realm = Realm.getDefaultInstance();
+                Realm realm = Realm.getDefaultInstance();
                 try {
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
@@ -1398,7 +1395,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     public void getZoneSelectedFromBDD(){
         final String zoneName = spotSelected.getmZoneName();
 
-        realm = Realm.getDefaultInstance();
+        Realm realm = Realm.getDefaultInstance();
         try {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
@@ -1427,7 +1424,10 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                         @Override
                         public void execute(Realm realm) {
                             TeamClass team = realm.where(TeamClass.class).findFirst();
-                            if (team != null){ team.setStats_NbSpot1(team.getStats_NbSpot1()+1); }
+                            if (team != null){
+                                team.setStats_NbSpot1(team.getStats_NbSpot1()+1);
+                                Log.i(TAG, "STATS : Ajout d'un point principaux");
+                            }
                         }
                     });
                 } finally {
@@ -1443,7 +1443,10 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                         @Override
                         public void execute(Realm realm) {
                             TeamClass team = realm.where(TeamClass.class).findFirst();
-                            if (team != null){ team.setStats_NbSpot2(team.getStats_NbSpot2()+1); }
+                            if (team != null){
+                                team.setStats_NbSpot2(team.getStats_NbSpot2()+1);
+                                Log.i(TAG, "STATS : Ajout d'un point secondaire");
+                            }
                         }
                     });
                 } finally {
@@ -1459,7 +1462,9 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                         @Override
                         public void execute(Realm realm) {
                             TeamClass team = realm.where(TeamClass.class).findFirst();
-                            if (team != null) { team.setStats_NbZones(team.getStats_NbZones() + 1); }
+                            if (team != null) { team.setStats_NbZones(team.getStats_NbZones() + 1);
+                                Log.i(TAG, "STATS : Ajout d'un point Zone");
+                            }
                         }
                     });
                 } finally {
@@ -1476,7 +1481,9 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                         @Override
                         public void execute(Realm realm) {
                             TeamClass team = realm.where(TeamClass.class).findFirst();
-                            if (team != null){team.setStats_NbVictoire(team.getStats_NbVictoire()+1); }
+                            if (team != null){
+                                team.setStats_NbVictoire(team.getStats_NbVictoire()+1);
+                                Log.i(TAG, "STATS : Ajout d'un point Victoire");}
                         }
                     });
                 } finally {

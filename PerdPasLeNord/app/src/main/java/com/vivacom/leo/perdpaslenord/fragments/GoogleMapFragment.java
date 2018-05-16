@@ -5,7 +5,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
@@ -14,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,30 +37,35 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.vivacom.leo.perdpaslenord.CustomMapTileProvider;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
-import com.vivacom.leo.perdpaslenord.activities.InGameActivityClass;
+import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
 import com.vivacom.leo.perdpaslenord.constant.ConstantLatLng;
+import com.vivacom.leo.perdpaslenord.fragments.game.QCMFragmentClass;
 import com.vivacom.leo.perdpaslenord.objects.MarkerOptionRealm;
 import com.vivacom.leo.perdpaslenord.objects.SpotClass;
 import com.vivacom.leo.perdpaslenord.objects.TeamClass;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
@@ -72,98 +81,64 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
     GoogleMap mGoogleMap;
     MapView mMapView;
     View mView;
-    Button centerBtn;
+    Button centerBtn, legendTopBtn;
+    LinearLayout layoutForBlockMap, legendTopLayout, pointPassage, pointMystere, pointSecret, generalLegend, legendBotLayout;
+    TextView zoneNameTxtV, nbPointPassageTxtV, nbPointCultureTxtV, nbPointSecretTxtV;
 
-    LinearLayout layoutForBlockMap;
 
-    // ------------------ Objet pour la localisation ------------------
-
+    // ------------------ Objet ------------------
     private LocationManager mLocationManager = null;
     public Marker currentPositionMarker;
     public Realm realm;
-
-    private static final int LOCATION_INTERVAL = 400;
-    private static final float LOCATION_DISTANCE = 10f;
-
+    Polygon polygonOpera, polygonGrandPlace, polygonVieuxLille, polygonLilleCentre, polygonLille;
+    static GoogleMapFragmentCallBack googleMapFragmentCallBack;
     public Location mLastLocationGoogleMap;
+    ViewAnimations animator = new ViewAnimations();
 
     // --------- Notre listes de markers ---------
     public List<Marker> markerList_Actual = new ArrayList<>();
-
-    // -------- Nos listes de markersOption -----------
+    public List<MarkerOptions> markerOptionList_Pastille = new ArrayList<>(); // reçois les Pastilles
     public List<MarkerOptions> markerOptionList_Secret = new ArrayList<>(); // reçois les spots secret
     public List<MarkerOptions> markerOptionList_Completed = new ArrayList<>(); // reçois les spots completer
 
-    // ---- Polygon ----
-    Polygon polygonOpera, polygonGrandPlace, polygonVieuxLille, polygonLilleCentre, polygonLille;
-
-    // --------------------- Legendes -------------------------
-    // Legende 1
-    LinearLayout legendTopLayout, pointPassage, pointMystere, pointSecret, generalLegend;
-    Button legendTopBtn;
-    TextView zoneNameTxtV;
-    String currentZoneName = "";
-
-    // Legende 2
-    LinearLayout legendBotLayout;
-    TextView nbPointPassageTxtV, nbPointCultureTxtV, nbPointSecretTxtV;
-    String sNbPointPassage, sNbPointCulture, sNbPointSecret;
-    int iNbPointPassage, iNbPointCulture, iNbPointSecret = 0;
-
-    // ------- Variable -------
-
-    boolean legendVisible, centerBtnVisible = true;
+    // ---- Variables ----
+    private static final int LOCATION_INTERVAL = 400;
+    private static final float LOCATION_DISTANCE = 10f;
+    String sNbPointPassage, sNbPointCulture, sNbPointSecret, currentZoneName = "";
+    int iNbPointPrincipaux, iNbPointSecondaire, iNbPointSecret = 0, currentZone = 0, currentLegend = 1;
+    boolean legendVisible, centerBtnVisible, cameraMooveFinish = true;
     boolean zoneChanged = false;
-
-    int currentZone = 0;
-    int currentLegend = 1;
-
-    int spotState = 0;
-
-    boolean cameraMooveFinish = true;
-
-    ViewAnimations animator = new ViewAnimations();
     public static final String TAG = "GOOGLE_MAP";
-
-    static GoogleMapFragmentCallBack googleMapFragmentCallBack;
 
 
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    /**
-     * Call Back récupérant une action effectué dans la fragment
-     * pour ensuite l'envoyer a l'activity mère
-     */
+    // Call Back récupérant une action effectué dans la fragment pour ensuite l'envoyer a l'activity mère
     public interface GoogleMapFragmentCallBack {
         void whenMarkerIsSelected(String title);
+        void showMJFragment(final String[] messages, int numExpression);
     }
 
-    /**
-     * Instance GoogleMapFragment permettant de recréer le fragment depuis l'activity
-     * @return
-     */
+    // Instance GoogleMapFragment permettant de recréer le fragment depuis l'activity
     public static GoogleMapFragment newInstance() {
         GoogleMapFragment fragment = new GoogleMapFragment();
         return fragment;
     }
 
-    /**
-     * Constructeur vide
-     */
+    // Constructeur vide
     public GoogleMapFragment() {
         // require empty public constructor
     }
 
-
+    // Lance le fragment
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         Log.e(TAG, "Activity onCreate");
     }
 
-
+    // On y associe nos éléments graphiques
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_googlemap, container, false);
-
         legendTopBtn = mView.findViewById(R.id.legendBtn);
         legendTopLayout = mView.findViewById(R.id.layoutForLegend);
         pointPassage = mView.findViewById(R.id.legend_passage);
@@ -177,16 +152,17 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         nbPointPassageTxtV = mView.findViewById(R.id.legend_nbPointPassage);
         nbPointSecretTxtV = mView.findViewById(R.id.legend_nbPointSecret);
         layoutForBlockMap = mView.findViewById(R.id.layoutForBlockMap);
-
         return mView;
     }
+
+    // ------------------------------
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof GoogleMapFragmentCallBack)
-            googleMapFragmentCallBack = (GoogleMapFragmentCallBack) activity;
-        Log.d(TAG, "Activity onAttach");
+        if (activity instanceof GoogleMapFragment.GoogleMapFragmentCallBack)
+            googleMapFragmentCallBack = (GoogleMapFragment.GoogleMapFragmentCallBack) activity;
+        Log.d(TAG, "Fragment onAttach");
     }
 
     @Override
@@ -215,10 +191,9 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         Log.e(TAG, "Activity onViewCreated");
 
-
+        // Récupération de l'API googleMap
         mMapView = mView.findViewById(R.id.googleMap);
         if (mMapView != null) {
             mMapView.onCreate(null);
@@ -226,6 +201,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
             mMapView.getMapAsync(this);
         }
 
+        // OnClick du btn de la legende
         legendTopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -233,19 +209,15 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
             }
         });
 
+        // OnClick du btn positionActuelle
         centerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(currentPositionMarker.getPosition()).zoom(17.5f).bearing(0).tilt(30).build()), new GoogleMap.CancelableCallback() {
                     @Override
-                    public void onFinish() {
-
-                    }
-
+                    public void onFinish() { }
                     @Override
-                    public void onCancel() {
-
-                    }
+                    public void onCancel() { }
                 });
             }
         });
@@ -268,9 +240,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         mapConfiguration(googleMap);
         initMarker();
 
-        // -------- Placement des markers completed si il y en a --------
-        if(markerOptionList_Completed.size() != 0){placeMarkersOnTheMap(markerOptionList_Completed);}
-
         // -------------------- Géolocalisation ----------------------------
         createLocationListener();
 
@@ -282,7 +251,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         googleMap.setOnMarkerClickListener(this);
 
         // ------ On place la légende ----------
-        getTeamFromBDD();
         setUpLegendForGeneral();
         actualizeLegendBot();
         mooveLegend();
@@ -306,11 +274,12 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      */
     public void mapInitialisation(GoogleMap googleMap) {
         // On initialise l'objet googleMap
-        MapsInitializer.initialize(getContext());
+        MapsInitializer.initialize(Objects.requireNonNull(getContext()));
         mGoogleMap = googleMap;
         // On défini son style
-        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         googleMap.setMapStyle(new MapStyleOptions((getResources().getString(R.string.map_style))));
+        // On ajoute les images par dessus la carte
+        mGoogleMap.addTileOverlay(new TileOverlayOptions().tileProvider(new CustomMapTileProvider(getResources().getAssets())));
     }
 
     /**
@@ -322,6 +291,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         googleMap.getUiSettings().setZoomControlsEnabled(false);
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         googleMap.getUiSettings().setCompassEnabled(false);
+        googleMap.setBuildingsEnabled(true);
         googleMap.setMinZoomPreference(15f);
         googleMap.setMaxZoomPreference(20f);
         googleMap.getUiSettings().setZoomGesturesEnabled(true);
@@ -331,6 +301,11 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         legendTopBtn.setBackgroundResource(R.drawable.btn_legende_in);
 
         legendVisible = false;
+
+        // Limiter la map a la zone de Lille
+        final LatLngBounds LILLE = new LatLngBounds( new LatLng(50.62414739873161, 3.061429113149643), new LatLng(50.64794573000398, 3.0610161074305324));
+        googleMap.setLatLngBoundsForCameraTarget(LILLE);
+
     }
 
     /**
@@ -339,12 +314,14 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      * Si non, elle va les créer
      */
     public void initMarker(){
+
         realm = Realm.getDefaultInstance();
 
         try{
 
-            MarkerOptionRealm markerTest = realm.where(MarkerOptionRealm.class).equalTo("titre", "La Voix Du Nord").findFirst();
+            MarkerOptionRealm markerTest = realm.where(MarkerOptionRealm.class).equalTo("titre", ConstantInfos.NAME_VOIXDUNORD).findFirst();
 
+            // Si on n'arrive pas a le récupérer, c'est qu'il n'existe pas
             if (markerTest == null){
                 markerOptionList_Completed.clear();
                 createMarkerOptionForBDD();
@@ -352,6 +329,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
             putMarkerCompletedInTheGoodList();
             putSecretMarkerInTheGoodList();
+            putPastilleMarkerInTheGoodList();
 
         } finally{
             realm.close();
@@ -370,50 +348,59 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
     private void createMarkerOptionForBDD(){
 
         // ------- Grand Place -------
-        final MarkerOptionRealm markerOptionPalaisRihour = new MarkerOptionRealm(1, "Grand Place", ConstantLatLng.latlng_palaisRihour.latitude, ConstantLatLng.latlng_palaisRihour.longitude, "Le Palais Rihour", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLeFuretDuNord = new MarkerOptionRealm(2, "Grand Place", ConstantLatLng.latlng_furetDuNord.latitude, ConstantLatLng.latlng_furetDuNord.longitude, "Le Furet Du Nord", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLaGrandGare = new MarkerOptionRealm(3, "Grand Place", ConstantLatLng.latlng_laGrandGarde.latitude, ConstantLatLng.latlng_laGrandGarde.longitude, "La Grand'Garde", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLaVoixDuNord = new MarkerOptionRealm(4, "Grand Place", ConstantLatLng.latlng_laVoixDuNord.latitude, ConstantLatLng.latlng_laVoixDuNord.longitude, "La Voix Du Nord", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLaColonneDeLaDeesse = new MarkerOptionRealm(5, "Grand Place", ConstantLatLng.latlng_laColonneDeLaDeesse.latitude, ConstantLatLng.latlng_laColonneDeLaDeesse.longitude, "La Colonne De La Deesse", R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionPalaisRihour = new MarkerOptionRealm(1, "Grand Place", ConstantLatLng.latlng_palaisRihour.latitude, ConstantLatLng.latlng_palaisRihour.longitude, ConstantInfos.NAME_PALAIS, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLeFuretDuNord = new MarkerOptionRealm(2, "Grand Place", ConstantLatLng.latlng_furetDuNord.latitude, ConstantLatLng.latlng_furetDuNord.longitude, ConstantInfos.NAME_FURET, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLaGrandGare = new MarkerOptionRealm(3, "Grand Place", ConstantLatLng.latlng_laGrandGarde.latitude, ConstantLatLng.latlng_laGrandGarde.longitude, ConstantInfos.NAME_GRANDGARDE, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLaVoixDuNord = new MarkerOptionRealm(4, "Grand Place", ConstantLatLng.latlng_laVoixDuNord.latitude, ConstantLatLng.latlng_laVoixDuNord.longitude, ConstantInfos.NAME_VOIXDUNORD, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLaColonneDeLaDeesse = new MarkerOptionRealm(5, "Grand Place", ConstantLatLng.latlng_laColonneDeLaDeesse.latitude, ConstantLatLng.latlng_laColonneDeLaDeesse.longitude, ConstantInfos.NAME_COLONNE, R.drawable.marker_principal);
 
-        final MarkerOptionRealm markerOptionPyramide = new MarkerOptionRealm(6, "Grand Place", ConstantLatLng.latlng_pyramide.latitude, ConstantLatLng.latlng_pyramide.longitude, "La Pyramide de Rihour", R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionPyramide = new MarkerOptionRealm(101, "Grand Place", ConstantLatLng.latlng_pyramide.latitude, ConstantLatLng.latlng_pyramide.longitude, ConstantInfos.NAME_PYRAMIDE, R.drawable.marker_secondaire);
 
         // ------- Place du Théatre --------
-        final MarkerOptionRealm markerOptionLaVieilleBourse = new MarkerOptionRealm(7, "Place du Théatre", ConstantLatLng.latlng_laVieilleBourse.latitude, ConstantLatLng.latlng_laVieilleBourse.longitude, "La Vieille Bourse", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLeRangDuBeauxregard = new MarkerOptionRealm(8, "Place du Théatre", ConstantLatLng.latlng_leRangBeauxRegard.latitude, ConstantLatLng.latlng_leRangBeauxRegard.longitude, "Le Rang Du Beauregard", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLeBeffroi = new MarkerOptionRealm(9, "Place du Théatre", ConstantLatLng.latlng_leBeffroi.latitude, ConstantLatLng.latlng_leBeffroi.longitude, "Le Beffroi", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionOperaDeLille = new MarkerOptionRealm(10, "Place du Théatre", ConstantLatLng.latlng_opera.latitude, ConstantLatLng.latlng_opera.longitude, "L'Opera De Lille", R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLaVieilleBourse = new MarkerOptionRealm(7, "Place du Théatre", ConstantLatLng.latlng_laVieilleBourse.latitude, ConstantLatLng.latlng_laVieilleBourse.longitude, ConstantInfos.NAME_VIEILLEBOURSE, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLeRangDuBeauxregard = new MarkerOptionRealm(8, "Place du Théatre", ConstantLatLng.latlng_leRangBeauxRegard.latitude, ConstantLatLng.latlng_leRangBeauxRegard.longitude, ConstantInfos.NAME_RANG, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLeBeffroi = new MarkerOptionRealm(9, "Place du Théatre", ConstantLatLng.latlng_leBeffroi.latitude, ConstantLatLng.latlng_leBeffroi.longitude, ConstantInfos.NAME_BEFFROI, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionOperaDeLille = new MarkerOptionRealm(10, "Place du Théatre", ConstantLatLng.latlng_opera.latitude, ConstantLatLng.latlng_opera.longitude, ConstantInfos.NAME_OPERA, R.drawable.marker_principal);
 
-        final MarkerOptionRealm markerOptionChambreCommerce = new MarkerOptionRealm(11, "Place du Théatre", ConstantLatLng.LATLNG_COMMERCE.latitude, ConstantLatLng.LATLNG_COMMERCE.longitude, "La Chambre des Commerces", R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionChambreCommerce = new MarkerOptionRealm(102, "Place du Théatre", ConstantLatLng.LATLNG_COMMERCE.latitude, ConstantLatLng.LATLNG_COMMERCE.longitude, ConstantInfos.NAME_CHAMBRECOMMERCE, R.drawable.marker_secondaire);
 
         // ------- Lille Centre --------
-        final MarkerOptionRealm markerOptionLeNouveauSiecle = new MarkerOptionRealm(12, "Lille Centre", ConstantLatLng.latlng_leNouveauSiecle.latitude, ConstantLatLng.latlng_leNouveauSiecle.longitude, "Le Nouveau Siecle", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLaStatueDuPtitQuinquin = new MarkerOptionRealm(13, "Lille Centre", ConstantLatLng.latlng_ptitQuinquin.latitude, ConstantLatLng.latlng_ptitQuinquin.longitude, "La Statue du Ptit Quinquin", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionRueNationale = new MarkerOptionRealm(14, "Lille Centre", ConstantLatLng.latlng_rueNationale.latitude, ConstantLatLng.latlng_rueNationale.longitude, "Rue Nationale", R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLeNouveauSiecle = new MarkerOptionRealm(12, "Lille Centre", ConstantLatLng.latlng_leNouveauSiecle.latitude, ConstantLatLng.latlng_leNouveauSiecle.longitude, ConstantInfos.NAME_NOUVEAUSIECLE, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLaStatueDuPtitQuinquin = new MarkerOptionRealm(13, "Lille Centre", ConstantLatLng.latlng_ptitQuinquin.latitude, ConstantLatLng.latlng_ptitQuinquin.longitude, ConstantInfos.NAME_QUINQUIN, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionRueNationale = new MarkerOptionRealm(14, "Lille Centre", ConstantLatLng.latlng_rueNationale.latitude, ConstantLatLng.latlng_rueNationale.longitude, ConstantInfos.NAME_NATIO, R.drawable.marker_principal);
 
-        final MarkerOptionRealm markerOptionLe28 = new MarkerOptionRealm(15, "Lille Centre", ConstantLatLng.LATLNG_LE28.latitude, ConstantLatLng.LATLNG_LE28.longitude, "Le 28 Thiers", R.drawable.marker_secondaire);
-        final MarkerOptionRealm markerOptionStatueFoch = new MarkerOptionRealm(16, "Lille Centre", ConstantLatLng.LATLNG_STATUEFOCH.latitude, ConstantLatLng.LATLNG_STATUEFOCH.longitude, "La Statue du General Foch", R.drawable.marker_secondaire);
-        final MarkerOptionRealm markerOptionQuaiDuWault = new MarkerOptionRealm(17, "Lille Centre", ConstantLatLng.LATLNG_QUAIDUWAULT.latitude, ConstantLatLng.LATLNG_QUAIDUWAULT.longitude, "Quai Du Wault", R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionLe28 = new MarkerOptionRealm(103, "Lille Centre", ConstantLatLng.LATLNG_LE28.latitude, ConstantLatLng.LATLNG_LE28.longitude, ConstantInfos.NAME_LE28, R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionStatueFoch = new MarkerOptionRealm(104, "Lille Centre", ConstantLatLng.LATLNG_STATUEFOCH.latitude, ConstantLatLng.LATLNG_STATUEFOCH.longitude, ConstantInfos.NAME_FOCH, R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionQuaiDuWault = new MarkerOptionRealm(105, "Lille Centre", ConstantLatLng.LATLNG_QUAIDUWAULT.latitude, ConstantLatLng.LATLNG_QUAIDUWAULT.longitude, ConstantInfos.NAME_QUAIDUWAULT, R.drawable.marker_secondaire);
 
         // ------- Vieux Lille --------
-        final MarkerOptionRealm markerOptionLaPlaceAuxOignons = new MarkerOptionRealm(18, "Vieux Lille", ConstantLatLng.latlng_placeAuxOignons.latitude, ConstantLatLng.latlng_placeAuxOignons.longitude, "La Place aux Oignons", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLaPlaceLouiseDeBettignies = new MarkerOptionRealm(19, "Vieux Lille", ConstantLatLng.latlng_placeLouiseDeBettignies.latitude, ConstantLatLng.latlng_placeLouiseDeBettignies.longitude, "La Place Louise De Bettignies", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionIlotComtesse = new MarkerOptionRealm(20, "Vieux Lille", ConstantLatLng.latlng_ilotComtesse.latitude, ConstantLatLng.latlng_ilotComtesse.longitude, "L'Ilot Comtesse", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionHospiceComtesse = new MarkerOptionRealm(21, "Vieux Lille", ConstantLatLng.latlng_hospiceComtesse.latitude, ConstantLatLng.latlng_hospiceComtesse.longitude, "L'Hospice Comtesse", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLaRueEsquermoise = new MarkerOptionRealm(22, "Vieux Lille", ConstantLatLng.latlng_rueEsquermoise.latitude, ConstantLatLng.latlng_rueEsquermoise.longitude, "Rue Esquermoise", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionLaRueGrandeChaussee = new MarkerOptionRealm(23, "Vieux Lille", ConstantLatLng.latlng_rueGrandeChaussee.latitude, ConstantLatLng.latlng_rueGrandeChaussee.longitude, "Rue Grande Chaussee", R.drawable.marker_principal);
-        final MarkerOptionRealm markerOptionNotreDameDeLaTreille = new MarkerOptionRealm(24, "Vieux Lille", ConstantLatLng.latlng_notreDameDeLaTreille.latitude, ConstantLatLng.latlng_notreDameDeLaTreille.longitude, "Notre Dame De La Treille", R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLaPlaceAuxOignons = new MarkerOptionRealm(18, "Vieux Lille", ConstantLatLng.latlng_placeAuxOignons.latitude, ConstantLatLng.latlng_placeAuxOignons.longitude, ConstantInfos.NAME_PLACEAUXOIGNONS, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLaPlaceLouiseDeBettignies = new MarkerOptionRealm(19, "Vieux Lille", ConstantLatLng.latlng_placeLouiseDeBettignies.latitude, ConstantLatLng.latlng_placeLouiseDeBettignies.longitude, ConstantInfos.NAME_PLACELOUISE, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionIlotComtesse = new MarkerOptionRealm(20, "Vieux Lille", ConstantLatLng.latlng_ilotComtesse.latitude, ConstantLatLng.latlng_ilotComtesse.longitude, ConstantInfos.NAME_ILOT, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionHospiceComtesse = new MarkerOptionRealm(21, "Vieux Lille", ConstantLatLng.latlng_hospiceComtesse.latitude, ConstantLatLng.latlng_hospiceComtesse.longitude, ConstantInfos.NAME_HOSPICE, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLaRueEsquermoise = new MarkerOptionRealm(22, "Vieux Lille", ConstantLatLng.latlng_rueEsquermoise.latitude, ConstantLatLng.latlng_rueEsquermoise.longitude, ConstantInfos.NAME_RUEESQUERMOISE, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionLaRueGrandeChaussee = new MarkerOptionRealm(23, "Vieux Lille", ConstantLatLng.latlng_rueGrandeChaussee.latitude, ConstantLatLng.latlng_rueGrandeChaussee.longitude, ConstantInfos.NAME_RUECHAUSSEE, R.drawable.marker_principal);
+        final MarkerOptionRealm markerOptionNotreDameDeLaTreille = new MarkerOptionRealm(24, "Vieux Lille", ConstantLatLng.latlng_notreDameDeLaTreille.latitude, ConstantLatLng.latlng_notreDameDeLaTreille.longitude, ConstantInfos.NAME_TREILLE, R.drawable.marker_principal);
 
-        final MarkerOptionRealm markerOptionHuitriere = new MarkerOptionRealm(25, "Vieux Lille", ConstantLatLng.LATLNG_HUITRIERE.latitude, ConstantLatLng.LATLNG_HUITRIERE.longitude, "(Anciennement) L'Huitriere", R.drawable.marker_secondaire);
-        final MarkerOptionRealm markerOptionMeert = new MarkerOptionRealm(26, "Vieux Lille", ConstantLatLng.LATLNG_MEERT.latitude, ConstantLatLng.LATLNG_MEERT.longitude, "Meert", R.drawable.marker_secondaire);
-        final MarkerOptionRealm markerOptionCour = new MarkerOptionRealm(27, "Vieux Lille", ConstantLatLng.LATLNG_COURSINTERIEURE.latitude, ConstantLatLng.LATLNG_COURSINTERIEURE.longitude, "Les Compagnons de la Grappe", R.drawable.marker_secondaire);
-        final MarkerOptionRealm markerOptionRueWeppes = new MarkerOptionRealm(28, "Vieux Lille", ConstantLatLng.LATLNG_RUEWEPPES.latitude, ConstantLatLng.LATLNG_RUEWEPPES.longitude, "Rue Weppes", R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionHuitriere = new MarkerOptionRealm(106, "Vieux Lille", ConstantLatLng.LATLNG_HUITRIERE.latitude, ConstantLatLng.LATLNG_HUITRIERE.longitude, ConstantInfos.NAME_HUITRIERE, R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionMeert = new MarkerOptionRealm(107, "Vieux Lille", ConstantLatLng.LATLNG_MEERT.latitude, ConstantLatLng.LATLNG_MEERT.longitude, ConstantInfos.NAME_MEERT, R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionCour = new MarkerOptionRealm(108, "Vieux Lille", ConstantLatLng.LATLNG_COURSINTERIEURE.latitude, ConstantLatLng.LATLNG_COURSINTERIEURE.longitude, ConstantInfos.NAME_COMPAGNONS, R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionRueWeppes = new MarkerOptionRealm(109, "Vieux Lille", ConstantLatLng.LATLNG_RUEWEPPES.latitude, ConstantLatLng.LATLNG_RUEWEPPES.longitude, ConstantInfos.NAME_RUEWEPPES, R.drawable.marker_secondaire);
 
         // ------- Secret --------
-        final MarkerOptionRealm secretMarker_goldenArm = new MarkerOptionRealm(29, "Secret", ConstantLatLng.LATLNG_GOLDENARM.latitude, ConstantLatLng.LATLNG_GOLDENARM.longitude, "Le Bras d'Or", R.drawable.marker_secret);
-        final MarkerOptionRealm secretMarker_Francmacon = new MarkerOptionRealm(30, "Secret", ConstantLatLng.LATLNG_FRANCMACON.latitude, ConstantLatLng.LATLNG_FRANCMACON.longitude, "Temple Maconnique de Lille", R.drawable.marker_secret);
-        final MarkerOptionRealm secretMarker_BehindTreille = new MarkerOptionRealm(31, "Secret", ConstantLatLng.LATLNG_BEHINDTREILLE.latitude, ConstantLatLng.LATLNG_BEHINDTREILLE.longitude, "Le Flanc caché de la Cathédrale", R.drawable.marker_secret);
-        final MarkerOptionRealm secretMarker_Compostelle = new MarkerOptionRealm(32, "Secret", ConstantLatLng.LATLNG_COMPOSTELLE.latitude, ConstantLatLng.LATLNG_COMPOSTELLE.longitude, "Le Compostelle", R.drawable.marker_secret);
+        final MarkerOptionRealm secretMarker_goldenArm = new MarkerOptionRealm(10001, "Secret", ConstantLatLng.LATLNG_GOLDENARM.latitude, ConstantLatLng.LATLNG_GOLDENARM.longitude, "Le Bras d'Or", R.drawable.marker_secret);
+        final MarkerOptionRealm secretMarker_Francmacon = new MarkerOptionRealm(1002, "Secret", ConstantLatLng.LATLNG_FRANCMACON.latitude, ConstantLatLng.LATLNG_FRANCMACON.longitude, "Temple Maconnique de Lille", R.drawable.marker_secret);
+        final MarkerOptionRealm secretMarker_BehindTreille = new MarkerOptionRealm(1003, "Secret", ConstantLatLng.LATLNG_BEHINDTREILLE.latitude, ConstantLatLng.LATLNG_BEHINDTREILLE.longitude, "Le Flanc caché de la Cathédrale", R.drawable.marker_secret);
+        final MarkerOptionRealm secretMarker_Compostelle = new MarkerOptionRealm(1004, "Secret", ConstantLatLng.LATLNG_COMPOSTELLE.latitude, ConstantLatLng.LATLNG_COMPOSTELLE.longitude, "Le Compostelle", R.drawable.marker_secret);
+
+        // ------- Pastille --------
+        final MarkerOptionRealm pastille_testporte = new MarkerOptionRealm(10005, "Pastille", ConstantLatLng.LATLNG_PASTILLE_PORTE.latitude, ConstantLatLng.LATLNG_PASTILLE_PORTE.longitude, "TestPorte", R.drawable.marker_secret);
+        final MarkerOptionRealm pastille_testparking1 = new MarkerOptionRealm(1006, "Pastille", ConstantLatLng.LATLNG_PASTILLE_PARK1.latitude, ConstantLatLng.LATLNG_PASTILLE_PARK1.longitude, "TestParking", R.drawable.marker_secret);
+        final MarkerOptionRealm pastille_testparking2= new MarkerOptionRealm(1007, "Pastille", ConstantLatLng.LATLNG_PASTILLE_PARK2.latitude, ConstantLatLng.LATLNG_PASTILLE_PARK2.longitude, "testParking2", R.drawable.marker_secret);
+        final MarkerOptionRealm pastille_testcoussin = new MarkerOptionRealm(1008, "Pastille", ConstantLatLng.LATLNG_PASTILLE_COUSSIN.latitude, ConstantLatLng.LATLNG_PASTILLE_COUSSIN.longitude, "testCoussin", R.drawable.marker_secret);
+
+
+
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -457,6 +444,11 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                 realm.copyToRealm(secretMarker_BehindTreille);
                 realm.copyToRealm(secretMarker_Compostelle);
 
+                realm.copyToRealm(pastille_testcoussin);
+                realm.copyToRealm(pastille_testparking1);
+                realm.copyToRealm(pastille_testparking2);
+                realm.copyToRealm(pastille_testporte);
+
                 Log.i(TAG, "Création des données MarkerOptionRealm terminé");
 
             }
@@ -478,9 +470,32 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         RealmResults<MarkerOptionRealm> markerList = query.findAll();
 
         for(MarkerOptionRealm markerRealm : markerList){
-            MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(BitmapDescriptorFactory.fromResource(markerRealm.getIconPath()));
-            markerOptionList_Completed.add(markerOption);
+
+            if(markerRealm.getId() < 100){
+                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(bitmapDescriptorFromVector(getActivity(),R.drawable.marker_principal_valide));
+                markerOptionList_Completed.add(markerOption);
+                iNbPointPrincipaux++;
+            } else if(markerRealm.getId() < 999){
+                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(bitmapDescriptorFromVector(getActivity(),R.drawable.marker_secondaire_valide));
+                markerOptionList_Completed.add(markerOption);
+                iNbPointSecondaire++;
+            } else if(markerRealm.getId() > 1000){
+                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(bitmapDescriptorFromVector(getActivity(),R.drawable.marker_secret));
+                markerOptionList_Completed.add(markerOption);
+                iNbPointSecret++;
+            }
         }
+
+        // -------- Placement des markers completed si il y en a --------
+        if(markerOptionList_Completed.size() != 0){placeMarkersOnTheMap(markerOptionList_Completed);}
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                updateNumberSpotDiscoverd();
+            }
+        }).start();
+
     }
 
     /**
@@ -496,13 +511,37 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         RealmResults<MarkerOptionRealm> markerList = query.findAll();
 
         for(MarkerOptionRealm markerRealm : markerList){
-            MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(BitmapDescriptorFactory.fromResource(markerRealm.getIconPath()));
-            markerOptionList_Secret.add(markerOption);
+            if(!markerRealm.isCompleted()) {
+                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(bitmapDescriptorFromVector(getActivity(), R.drawable.marker_secret));
+                markerOptionList_Secret.add(markerOption);
+            }
         }
 
     }
 
     /**
+     * Cette méthode va récuperer tout les markerOptionRealm dans la BDD qui sont Pastille
+     * Puis va créer des markerOption et les mettre dans la liste markerOptionList_Secret
+     */
+    private void putPastilleMarkerInTheGoodList(){
+
+        markerOptionList_Pastille.clear();
+
+        RealmQuery<MarkerOptionRealm> query = realm.where(MarkerOptionRealm.class);
+        query.equalTo("zoneName", "Pastille");
+        RealmResults<MarkerOptionRealm> markerList = query.findAll();
+
+        for(MarkerOptionRealm markerRealm : markerList){
+            if(!markerRealm.isCompleted()) {
+                MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(bitmapDescriptorFromVector(getActivity(), R.drawable.marker_secret));
+                markerOptionList_Pastille.add(markerOption);
+            }
+        }
+
+    }
+
+    /**
+     *
      * Cette méthode va récuperer dans la base tout les markerOptionRealm ayant le même zoneName
      * Puis va créer des markerOption pour les placer dans une liste
      * La méthode fini par renvoyer la liste
@@ -522,8 +561,15 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
             for(MarkerOptionRealm markerRealm : markerList) {
                 if (!markerRealm.isCompleted()) {
-                    MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(BitmapDescriptorFactory.fromResource(markerRealm.getIconPath()));
-                    maListe.add(markerOption);
+
+                    if(markerRealm.getId() < 100){
+                        MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(bitmapDescriptorFromVector(getActivity(),R.drawable.marker_principal));
+                        maListe.add(markerOption);
+                    } else if(markerRealm.getId() < 999){
+                        MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(bitmapDescriptorFromVector(getActivity(),R.drawable.marker_secondaire));
+                        maListe.add(markerOption);
+                    }
+
                 }
             }
 
@@ -535,6 +581,9 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         return maListe;
     }
 
+
+    // ------- Modification en BDD -------
+
     /**
      * Cette méthode passe le marker du spot passé en paramètre en vert
      * @param spot
@@ -543,23 +592,33 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
         final int typeSpot = spot.getmSpotType();
         final String spotName = spot.getmSpotName();
-        realm = Realm.getDefaultInstance();
+        List<Marker> toRemove = new ArrayList<>();
 
-        try {
 
-            // Parmis les markers actuel, on passe celui séléctionné en vert
-            for (Marker theMarker : markerList_Actual) {
-                if (spotName.equalsIgnoreCase(theMarker.getTitle())) {
-                    if(typeSpot == 1){theMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_principal_valide));}
-                    if(typeSpot == 2){theMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_secondaire_valide));}
-                    markerList_Actual.remove(theMarker);
-                }
+        // Parmis les markers actuel, on passe celui séléctionné en vert
+        Iterator<Marker> it = markerList_Actual.iterator();
+        while(it.hasNext()){
+            Marker theMarker = it.next();
+            if (spotName.equalsIgnoreCase(theMarker.getTitle())) {
+                if (typeSpot == 1) { theMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_principal_valide)); }
+                if (typeSpot == 2) { theMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_secondaire_valide)); }
+                toRemove.add(theMarker); // Le marker est ensuite ajouté a ma liste toRemove
             }
-        } catch (Exception e){
-            System.out.print(e.getMessage());
-        } finally {
-            realm.close();
         }
+
+        // Je supprime ensuite de ma list markerList_Actual le marker stocké dans ma liste toRemove
+        markerList_Actual.removeAll(toRemove);
+        toRemove.clear();
+
+        /*
+        for (Marker theMarker : markerList_Actual) {
+            if (spotName.equalsIgnoreCase(theMarker.getTitle())) {
+                if (typeSpot == 1) { theMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_principal_valide)); }
+                if (typeSpot == 2) { theMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_secondaire_valide)); }
+                markerList_Actual.remove(theMarker);
+            }
+        }
+        */
 
         setMarkerCompletedInBDD(spot);
 
@@ -587,11 +646,12 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                 public void execute(Realm realm) {
                     MarkerOptionRealm markerRealm = realm.where(MarkerOptionRealm.class).equalTo("titre", spotName).findFirst();
                     if (markerRealm != null) {
-                        markerRealm.setCompleted(true);
                         if (typeSpot == 1){markerRealm.setIconPath(R.drawable.marker_principal_valide);}
                         if (typeSpot == 2){markerRealm.setIconPath(R.drawable.marker_secondaire_valide);}
+                        markerRealm.setCompleted();
                         MarkerOptions markerOption = new MarkerOptions().position(new LatLng(markerRealm.getPositionX(), markerRealm.getPositionY())).title(markerRealm.getTitre()).icon(BitmapDescriptorFactory.fromResource(markerRealm.getIconPath()));
                         markerOptionList_Completed.add(markerOption);
+                        Log.i(TAG, "Marker "+markerRealm.getTitre()+ "complété en BDD");
                     }
 
                 }
@@ -633,27 +693,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
 
 
-    /**
-     * Cette méthode va récupérer otre objet Team dans la BDD
-     */
-    public void getTeamFromBDD(){
-        realm = Realm.getDefaultInstance();
-
-        try{
-            TeamClass team = realm.where(TeamClass.class).findFirst();
-            if(team != null){
-                iNbPointPassage = team.getStats_NbSpot1();
-                iNbPointCulture = team.getStats_NbSpot2();
-                iNbPointSecret = team.getStats_NbSpot3();
-            }
-
-        } finally {
-            realm.close();
-        }
-
-        actualizeLegendBot();
-    }
-
     // ------- Méthode de gestion de la localisation -------
 
     /**
@@ -693,7 +732,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      */
     public void addCurrentPositionMarker() {
         // On vérifie si la tablette a la permission d'utiliser les fonctionnalitées GPS
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             mGoogleMap.setMyLocationEnabled(true);
             return;
@@ -726,13 +765,14 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      * @return
      */
     private Location getLastKnownLocation(LocationManager mLocationManager) {
+
         List<String> providers = mLocationManager.getProviders(true);
         Location bestLocation = null;
+
         for (String provider : providers) {
-            @SuppressLint("MissingPermission") Location l = mLocationManager.getLastKnownLocation(provider);
-            if (l == null) {
-                continue;
-            }
+            @SuppressLint("MissingPermission")
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) { continue; }
             if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
                 // Found best last known location: %s", l);
                 bestLocation = l;
@@ -745,15 +785,12 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      * Cette méthode lance un premier calcul de distance fictif pour initialiser la position
      */
     private void initLocation(){
-
         MarkerOptions markerOptionOperaDeLille = (new MarkerOptions().position(ConstantLatLng.latlng_opera).title("L'Opéra De Lille"));
         Location markerLocation = new Location("");
         markerLocation.setLatitude(markerOptionOperaDeLille.getPosition().latitude);
         markerLocation.setLongitude(markerOptionOperaDeLille.getPosition().longitude);
         float distance = markerLocation.distanceTo(mLastLocationGoogleMap);
         Log.d(TAG, "Initialisation de la distance / distance : "+ distance);
-
-
     }
 
     /**
@@ -784,7 +821,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                 break;
         }
     }
-
 
         // ----------- Placement -------------------
 
@@ -834,26 +870,47 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      */
     public void placeMarkersOnTheMap(final List<MarkerOptions> markerOptionList){
 
-        if(markerOptionList.size() != 0) {
-            long time = 3000 / markerOptionList.size();
-            long delay = 0;
-            float index = 0;
-            for (final MarkerOptions theMarker : markerOptionList) {
-                index++;
-                delay = delay + time;
-                final float myIndex = index;
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Marker marker = getGoogleMap().addMarker(theMarker.zIndex(myIndex));
-                        animator.fadeInMarkerAnimation(marker);
-                        if (markerOptionList != markerOptionList_Completed) {
-                            markerList_Actual.add(marker);
+        try{
+            if(markerOptionList.size() != 0) {
+                long time = 3000 / markerOptionList.size();
+                long delay = 0;
+                float index = 0;
+                for (final MarkerOptions theMarker : markerOptionList) {
+                    index++;
+                    final float myIndex = index;
+                    delay = delay + time;
+
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                           // Marker marker = getGoogleMap().addMarker(theMarker.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.marker_principal_valide)));
+                            Marker marker = getGoogleMap().addMarker(theMarker);
+                            animator.fadeInMarkerAnimation(marker);
+                            if (markerOptionList != markerOptionList_Completed) {
+                                markerList_Actual.add(marker);
+                            }
                         }
-                    }
-                }, delay);
+                    }, delay);
+                }
             }
+        } catch (Exception e){
+            throw e;
         }
+
+
+    }
+
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+
+        //Drawable vectorDrawable = ContextCompat.getDrawable(context, R.drawable.marker_principal);
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
 
     }
 
@@ -944,10 +1001,10 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
     public void incrementNbPointLegendBot(int spotType){
         switch (spotType){
             case 1 :
-                iNbPointPassage++;
+                iNbPointPrincipaux++;
                 break;
             case 2 :
-                iNbPointCulture++;
+                iNbPointSecondaire++;
                 break;
             case 3 :
                 iNbPointSecret++;
@@ -961,13 +1018,13 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      */
     public void actualizeLegendBot(){
         // Point Passage
-        sNbPointPassage = ""+iNbPointPassage+" / 19";
+        sNbPointPassage = ""+ iNbPointPrincipaux +" / 20";
         nbPointPassageTxtV.setText(sNbPointPassage);
         // Point Mystere
-        sNbPointCulture =""+ iNbPointCulture +" / 8";
+        sNbPointCulture =""+ iNbPointSecondaire +" / 10";
         nbPointCultureTxtV.setText(sNbPointCulture);
         // Point Secret
-        sNbPointSecret=""+iNbPointSecret+" / 4";
+        sNbPointSecret=""+iNbPointSecret+" / 5";
         nbPointSecretTxtV.setText(sNbPointSecret);
     }
 
@@ -1023,8 +1080,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         polygonVieuxLille.setStrokeWidth(3);
         polygonVieuxLille.setStrokeColor(getResources().getColor(R.color.vert));
         polygonVieuxLille.setFillColor(getResources().getColor(R.color.vert_trans));
-
-
 
         // ------------- Lille Centre ------------
         polygonLilleCentre = getGoogleMap().addPolygon(new PolygonOptions().clickable(true).add(
@@ -1225,7 +1280,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                 googleMapFragmentCallBack.whenMarkerIsSelected(marker.getTitle());
                 if (legendVisible) {mooveLegend();}
             }
-
             return true;
         } else {
             return false;
@@ -1284,28 +1338,111 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      */
     public void checkDistanceWithSecretSpot() {
 
-        for ( MarkerOptions myMarkerOption : markerOptionList_Secret) {
-            Location markerLocation = new Location("");
-            markerLocation.setLatitude(myMarkerOption.getPosition().latitude);
-            markerLocation.setLongitude(myMarkerOption.getPosition().longitude);
-            // On calcul la distance
-            Log.d(TAG, "Distance du spot "+ myMarkerOption.getTitle() + " : " + mLastLocationGoogleMap.distanceTo(markerLocation));
-            if ((int) mLastLocationGoogleMap.distanceTo(markerLocation) < 25) {
-                // On fait apparaitre la marker
-                markerOptionList_Secret.remove(myMarkerOption);
-                markerOptionList_Completed.add(myMarkerOption);
-                getGoogleMap().addMarker(myMarkerOption);
-                incrementStats_PointSecret();
-                changeSecretSpotStatusInBDD(myMarkerOption.getTitle());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-                // On joue notre son
-                final MediaPlayer mp = MediaPlayer.create(getContext(), R.raw.noise1);
-                mp.start();
-                mp.release();
+                boolean secretFind = false;
 
+                //for ( MarkerOptions myMarkerOption : markerOptionList_Secret) {
+
+                for(int i = 0; i<markerOptionList_Secret.size(); i++) {
+
+                    final MarkerOptions myMarkerOption = markerOptionList_Secret.get(i);
+
+                    Location markerLocation = new Location("");
+                    markerLocation.setLatitude(myMarkerOption.getPosition().latitude);
+                    markerLocation.setLongitude(myMarkerOption.getPosition().longitude);
+
+                    // On calcul la distance
+                    Log.d(TAG, "Distance du spot "+ myMarkerOption.getTitle() + " : " + mLastLocationGoogleMap.distanceTo(markerLocation));
+                    if ((int) mLastLocationGoogleMap.distanceTo(markerLocation) < 15) {
+
+                        secretFind = true;
+
+                        // On fait apparaitre la marker
+                        markerOptionList_Secret.remove(myMarkerOption);
+                        markerOptionList_Completed.add(myMarkerOption);
+
+                        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getGoogleMap().addMarker(myMarkerOption);
+                                incrementStats_PointSecret();
+                                changeSecretSpotStatusInBDD(myMarkerOption.getTitle());
+                            }
+                        });
+
+
+
+                    }
+                }
+
+                if(secretFind){
+                    // On joue notre son
+                    final MediaPlayer mp = MediaPlayer.create(getContext(), R.raw.noise1);
+                    mp.start();
+                }
 
             }
-        }
+
+        }).start();
+
+    }
+
+    /**
+     * Méthode vérifiant si la position actuelle est proche d'une pastille
+     * Si oui, on affiche un message pour prévenir l'utilisateur
+     */
+    public void checkDistanceWithPastille() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                boolean pastilleFind = false;
+
+                //for ( MarkerOptions myMarkerOption : markerOptionList_Secret) {
+
+                for(int i = 0; i<markerOptionList_Pastille.size(); i++) {
+
+                    final MarkerOptions myMarkerOption = markerOptionList_Pastille.get(i);
+
+                    Location markerLocation = new Location("");
+                    markerLocation.setLatitude(myMarkerOption.getPosition().latitude);
+                    markerLocation.setLongitude(myMarkerOption.getPosition().longitude);
+
+                    // On calcul la distance
+                    Log.d(TAG, "Distance de la pastille "+ myMarkerOption.getTitle() + " : " + mLastLocationGoogleMap.distanceTo(markerLocation));
+                    if ((int) mLastLocationGoogleMap.distanceTo(markerLocation) < 12) {
+
+                        pastilleFind = true;
+
+                        // On fait apparaitre la marker
+                        markerOptionList_Pastille.remove(myMarkerOption);
+                        markerOptionList_Completed.add(myMarkerOption);
+
+                        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String[] messages = getListMessageForPopUp(myMarkerOption.getTitle());
+                                googleMapFragmentCallBack.showMJFragment(messages, 3);
+                                changeSecretSpotStatusInBDD(myMarkerOption.getTitle());
+                            }
+                        });
+                    }
+                }
+
+                if(pastilleFind){
+                    // On joue notre son
+                    final MediaPlayer mp = MediaPlayer.create(getContext(), R.raw.noise1);
+                    mp.start();
+                }
+
+            }
+
+        }).start();
+
     }
 
     /**
@@ -1340,14 +1477,13 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
         if (distance != 0) {
 
-            proche = distance < 750000;  // inferieur a 40m
+            proche = distance < 450000000;  // inferieur a 40m
             Log.w(TAG, "Distance du spot "+ spotName + " : "+ distance + " / "+ proche + " / Précision : "+ mLastLocationGoogleMap.getAccuracy() );
 
         }
 
         return proche;
     }
-
 
     /**
      * Lorsque que un secret est découvert, on le mets en Completed = true en BDD
@@ -1356,27 +1492,22 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      */
     public void changeSecretSpotStatusInBDD(final String spotName){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                realm =  Realm.getDefaultInstance();
-                try{
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            MarkerOptionRealm marker = realm.where(MarkerOptionRealm.class).equalTo("spotName", spotName).findFirst();
-                            if (marker != null){
-                                marker.setCompleted(true);
-                                marker.setZoneName("SECRET_DONE");
-                            }
-                        }
-                    });
-                } finally {
-                    realm.close();
+        realm =  Realm.getDefaultInstance();
+        try{
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    MarkerOptionRealm marker = realm.where(MarkerOptionRealm.class).equalTo("titre", spotName).findFirst();
+                    if (marker != null){
+                        marker.setCompleted();
+                        Log.i(TAG, "Marker Secret "+spotName+" complété en BDD");
+                    }
                 }
-            }
-        }).start();
+            });
+        } finally {
+            realm.close();
+        }
+
     }
 
 
@@ -1399,28 +1530,44 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
     }
 
     /**
+     * Cette méthode va nous retourner une liste de message correspondant a la pastille
+     * @param spotName
+     * @return
+     */
+    private String[] getListMessageForPopUp(String spotName){
+        // TODO compléter les différentes possibilités
+        // TODO rajouter des pastilles un peu partout
+
+        String[] messages = new String[2];
+
+        switch (spotName){
+            case "" :
+                break;
+        }
+
+        return messages;
+    }
+
+    /**
      * Cette méthode augmente en BDD le nombre de secret découvert
      */
     public void incrementStats_PointSecret(){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        Realm realm =  Realm.getDefaultInstance();
+        try{
 
-                realm =  Realm.getDefaultInstance();
-                try{
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            TeamClass team = realm.where(TeamClass.class).findFirst();
-                            if (team != null){ team.setStats_NbSpot3(team.getStats_NbSpot3()+1); }
-                        }
-                    });
-                } finally {
-                    realm.close();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    TeamClass team = realm.where(TeamClass.class).findFirst();
+                    if (team != null){ team.setStats_NbSpot3(team.getStats_NbSpot3()+1); }
                 }
-            }
-        }).start();
+            });
+
+        } finally {
+            realm.close();
+        }
+
     }
 
     /**
@@ -1428,26 +1575,46 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      */
     public void incrementStats_nbMetre(final int metre){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                realm =  Realm.getDefaultInstance();
-                try{
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            TeamClass team = realm.where(TeamClass.class).findFirst();
-                            if (team != null){ team.setStats_NbMetre(team.getStats_NbMetre()+metre); }
-                        }
-                    });
-                } finally {
-                    realm.close();
+        Realm realm =  Realm.getDefaultInstance();
+        try{
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    TeamClass team = realm.where(TeamClass.class).findFirst();
+                    if (team != null){ team.setStats_NbMetre(team.getStats_NbMetre()+metre); }
                 }
-            }
-        }).start();
+            });
+        } finally {
+            realm.close();
+        }
+
     }
 
+    /**
+     * Cette méthode va mettre a jour dans la BDD
+     * Le nombre de spot découvert
+     */
+    private void updateNumberSpotDiscoverd(){
+
+        Realm realm =  Realm.getDefaultInstance();
+
+        try{
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    TeamClass team = realm.where(TeamClass.class).findFirst();
+                    if (team != null){
+                        team.setStats_NbSpot1(iNbPointPrincipaux);
+                        team.setStats_NbSpot2(iNbPointSecondaire);
+                        team.setStats_NbSpot3(iNbPointSecret);
+                    }
+                }
+            });
+        } finally {
+            realm.close();
+        }
+
+    }
 
 
     // ------- LocationListener -------
@@ -1485,12 +1652,15 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                 mLastLocation.set(location);
                 mLastLocationGoogleMap = mLastLocation;
 
-                Log.e(TAG, nbChangementPosition+" = onLocationChanged: Accuracy : " + location.getAccuracy() + " / Distance parcouru :" + distance + " / Provider : " + mLastLocation.getProvider() );
-
                 // On vérifie les spots secrets
                 checkDistanceWithSecretSpot();
+                // On vérifie les pastilles
+                checkDistanceWithPastille();
+
+                Log.e(TAG, nbChangementPosition+" = onLocationChanged: Accuracy : " + location.getAccuracy() + " / Distance parcouru :" + distance + " / Provider : " + mLastLocation.getProvider() );
+
             } else {
-                Toasty.error(getActivity().getApplicationContext(), "Impossible de récupérer une position GPS précise.", Toast.LENGTH_SHORT, true).show();
+                Toasty.error(Objects.requireNonNull(getActivity()).getApplicationContext(), "Impossible de récupérer une position GPS précise.", Toast.LENGTH_SHORT, true).show();
                 Log.e(TAG, "onLocationChanged: Accuracy : " + location.getAccuracy());
             }
         }

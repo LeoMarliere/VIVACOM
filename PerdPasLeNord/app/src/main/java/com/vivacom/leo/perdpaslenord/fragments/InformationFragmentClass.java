@@ -127,6 +127,12 @@ public class InformationFragmentClass extends Fragment {
 
         layout2.animate().translationY(1000).withLayer().setDuration(10);
 
+        // On affecte la bonne typo aux textes
+        Typeface type2 = Typeface.createFromAsset(getActivity().getAssets(),"fonts/AppleGaramond-Light.ttf");
+        informations.setTypeface(type2);
+        moreInfo1.setTypeface(type2);
+        moreInfo2.setTypeface(type2);
+
         moreInformation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -177,6 +183,7 @@ public class InformationFragmentClass extends Fragment {
         moreInfo2.setTextSize(28);
 
         moreInformation.setVisibility(View.VISIBLE);
+
     }
 
 

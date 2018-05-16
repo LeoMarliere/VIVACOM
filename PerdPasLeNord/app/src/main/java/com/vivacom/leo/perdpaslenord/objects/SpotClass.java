@@ -49,7 +49,7 @@ public class SpotClass extends RealmObject {
         this.imageChecked = false;
     }
 
-    // Point de passage -- Type 1
+    // Point de passage -- Type 2
     public SpotClass(int type, int id, String zoneName, String name,  String gameTitle, int nbInfos, String infos1, String infos2, String infos3 , RealmList<Integer> photoGallery, boolean isInfoCheck, boolean isPhotoCheck, boolean isGameCheck, boolean isSpotCompleted){
         this.mSpotType = type;
         this.mSpotId = id;
@@ -79,8 +79,6 @@ public class SpotClass extends RealmObject {
         this.mSpotInformation3 = infos3;
         this.isSpotCompleted = false;
     }
-
-
 
 
     // Getter and Setter

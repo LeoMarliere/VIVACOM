@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -47,6 +48,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
     // ------------------------------------------------------------------
     // -------------------- Elements graphiques -------------------------
     TextView txtVConsigne;
+    TextView selection_title;
     LinearLayout layoutForGame;
 
     LinearLayout layoutOneTop,layoutTwoTop,layoutThreeTop,layoutFourTop;
@@ -89,6 +91,8 @@ public class DragNDropAssociationFragmentClass extends Fragment {
 
     public final String TAG = "ASSO";
 
+
+
     // ------------------------------------------------------------------------------
 
 
@@ -100,6 +104,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         void whenGameIsValidate(Boolean correct);
         List<String> getPlayerName();
         String getGameTitle();
+        void handleBtnClick(boolean canClick);
     }
 
     public static DragNDropAssociationFragmentClass newInstance(String spotName){
@@ -154,6 +159,9 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         // Sélection du joueur
         setUpGamerSelection();
 
+
+
+
     }
 
     // ----------------------------------------------------------------------------
@@ -195,6 +203,10 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         tGameName = view.findViewById(R.id.gamerName);
         tGameTitle = view.findViewById(R.id.gameTitle);
         tContinue = view.findViewById(R.id.blink_continue);
+
+        selection_title = view.findViewById(R.id.selection_title);
+        Typeface type = Typeface.createFromAsset(getActivity().getAssets(),"fonts/steinem.ttf");
+        selection_title.setTypeface(type);
     }
 
     /**
@@ -228,16 +240,16 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         if (getArguments() != null) {
             Bundle args = getArguments();
             if (args.containsKey(TXT_INFOS)){
-                if (Objects.equals(args.getString(TXT_INFOS), "La Colonne De La Deesse")){
+                if (Objects.equals(args.getString(TXT_INFOS), ConstantInfos.NAME_COLONNE)){
                     affectImageAndAnswerForSpotColonneDeLaDeesse();
                     nbRoatationPlayerSelection = 17;
-                } else if (Objects.equals(args.getString(TXT_INFOS), "Rue Nationale")){
+                } else if (Objects.equals(args.getString(TXT_INFOS), ConstantInfos.NAME_NATIO)){
                     affectImageAndAnswerForSpotRueNationale();
                     nbRoatationPlayerSelection = 18;
-                } else if (Objects.equals(args.getString(TXT_INFOS), "L'Hospice Comtesse")){
+                } else if (Objects.equals(args.getString(TXT_INFOS), ConstantInfos.NAME_HOSPICE)){
                     affectImageAndAnswerForSpotHospice();
                     nbRoatationPlayerSelection = 19;
-                } else if (Objects.equals(args.getString(TXT_INFOS), "La Voix Du Nord")){
+                } else if (Objects.equals(args.getString(TXT_INFOS), ConstantInfos.NAME_VOIXDUNORD)){
                     affectImageAndAnswerForSpotVoixDuNord();
                     nbRoatationPlayerSelection = 20;
                 }
@@ -253,6 +265,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!gamefinish) {
+                    dragNDropAssociationFragmentClassCallBack.handleBtnClick(false);
                     animator.fadeOutFadeInAnimation(txtVConsigne,layoutForGame);
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -308,7 +321,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         imageThree.setImageResource(R.drawable.photo_statue_ptitquinquin);
         imageFour.setImageResource(R.drawable.photo_statue_pigeonvoyageur);
 
-        txtVConsigne.setText("Ce jeu est très simple. \n  \n Vous devez associer chaque statue à son nom. \n Une fois cela fait, appuyer sur le bouton 'Valider', mais attention, vous n'avez pas le droit a l'erreur. \n \n Toucher l'écran pour continuer");
+        txtVConsigne.setText("Ce jeu est très simple. \n  \n Vous devez associer chaque statue à son nom. \n Une fois cela fait, appuyer sur le bouton TERMINER, mais attention, vous n'avez pas le droit a l'erreur. \n \n Toucher l'écran pour continuer");
 
         txtVOne.setText("La Statue Du Ptit Quinquin");
         txtVTwo.setText("La Colonne De La Déesse");
@@ -335,7 +348,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         imageThree.setImageResource(R.drawable.photo_fete_ducasse);
         imageFour.setImageResource(R.drawable.photo_fete_carnaval);
 
-        txtVConsigne.setText("Comme tout le monde le sait, le Nord organise de nombreuses fêtes populaires. \n  \n Vous devez associer chaque photo d'un de ses fêtes à son nom. \n Une fois cela fait, appuyer sur le bouton 'Valider', mais attention, vous n'avez pas le droit a l'erreur. \n \n Toucher l'écran pour continuer");
+        txtVConsigne.setText("Comme tout le monde le sait, le Nord organise de nombreuses fêtes populaires. \n  \n Vous devez associer chaque photo d'un de ses fêtes à son nom. \n Une fois cela fait, appuyer sur le bouton TERMINER, mais attention, vous n'avez pas le droit a l'erreur. \n \n Toucher l'écran pour continuer");
 
         txtVOne.setText("La Braderie de Lille");
         txtVTwo.setText("Le Carnaval de Dunkerque");
@@ -361,7 +374,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         imageThree.setImageResource(R.drawable.photo_biere_chti);//chti
         imageFour.setImageResource(R.drawable.photo_biere_goudale);//goudale
 
-        txtVConsigne.setText("Le Nord et la bière, toute une histoire !! \n \n Vous devez associer chaque bière à son nom. \n Une fois cela fait, appuyer sur le bouton 'Valider', mais attention, vous n'avez pas le droit a l'erreur. \n \n Toucher l'écran pour continuer");
+        txtVConsigne.setText("Le Nord et la bière, toute une histoire !! \n \n Vous devez associer chaque bière à son nom. \n Une fois cela fait, appuyer sur le bouton TERMINER, mais attention, vous n'avez pas le droit a l'erreur. \n \n Toucher l'écran pour continuer");
 
         txtVOne.setText("La Ch'ti");
         txtVTwo.setText("La Goudale");
@@ -387,8 +400,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         imageThree.setImageResource(R.drawable.jeu_asso_blason_saintomer);
         imageFour.setImageResource(R.drawable.jeu_asso_blason_tourcoin);
 
-        txtVConsigne.setText("La Voix du Nord est publiée dans de nombreuses communes de la métropole Lilloise. " +
-                "\n \n Vous devez associer chaque blason à sa commune. \n Vous trouverez des indices sur la façade du bâtiment. \n Une fois cela fait, appuyer sur le bouton 'Valider', mais attention, vous n'avez pas le droit a l'erreur. \n \n Toucher l'écran pour continuer");
+        txtVConsigne.setText("La Voix du Nord est publiée dans de nombreuses communes de la métropole Lilloise. \n Vous devez associer chaque blason à sa commune. \n Vous trouverez des indices sur la façade du bâtiment. \n \n Une fois cela fait, appuyer sur le bouton TERMINER, mais attention, vous n'avez pas le droit a l'erreur. \n \n Toucher l'écran pour continuer");
 
         txtVOne.setText("Douai");
         txtVTwo.setText("Saint-Omer");

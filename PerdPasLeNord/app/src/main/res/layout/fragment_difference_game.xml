@@ -49,7 +49,6 @@
         android:visibility="visible">
 
         <LinearLayout
-            android:id="@+id/dif_succesScreen"
             android:layout_width="120dp"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -117,7 +116,6 @@
                 android:visibility="visible">
 
                 <LinearLayout
-                    android:id="@+id/dif_Zero"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="0"
@@ -125,7 +123,6 @@
                     android:orientation="vertical"
                     android:background="@drawable/drag_n_drop_layout_style"/>
                 <LinearLayout
-                    android:id="@+id/dif_HUn"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="1"
@@ -133,7 +130,6 @@
                     android:orientation="vertical"
                     android:background="@drawable/drag_n_drop_layout_style"/>
                 <LinearLayout
-                    android:id="@+id/dif_HDeux"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="2"
@@ -141,7 +137,6 @@
                     android:orientation="vertical"
                     android:background="@drawable/drag_n_drop_layout_style"/>
                 <LinearLayout
-                    android:id="@+id/dif_HTrois"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="3"
@@ -149,7 +144,6 @@
                     android:orientation="vertical"
                     android:background="@drawable/drag_n_drop_layout_style"/>
                 <LinearLayout
-                    android:id="@+id/dif_HQuatre"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="4"
@@ -157,7 +151,6 @@
                     android:orientation="vertical"
                     android:background="@drawable/drag_n_drop_layout_style"/>
                 <LinearLayout
-                    android:id="@+id/dif_HCinq"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="5"
@@ -165,7 +158,6 @@
                     android:orientation="vertical"
                     android:background="@drawable/drag_n_drop_layout_style"/>
                 <LinearLayout
-                    android:id="@+id/dif_HSix"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="6"
@@ -173,7 +165,6 @@
                     android:orientation="vertical"
                     android:background="@drawable/drag_n_drop_layout_style"/>
                 <LinearLayout
-                    android:id="@+id/dif_HSept"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="7"
@@ -181,7 +172,6 @@
                     android:orientation="vertical"
                     android:background="@drawable/drag_n_drop_layout_style"/>
                 <LinearLayout
-                    android:id="@+id/dif_HHuit"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="8"
@@ -189,7 +179,6 @@
                     android:orientation="vertical"
                     android:background="@drawable/drag_n_drop_layout_style"/>
                 <LinearLayout
-                    android:id="@+id/dif_HNeuf"
                     android:layout_width="80dp"
                     android:layout_height="60dp"
                     android:layout_column="9"
@@ -320,7 +309,6 @@
 
 
         <LinearLayout
-            android:id="@+id/dif_errorScreen"
             android:layout_width="120dp"
             android:layout_height="match_parent"
             android:orientation="vertical">

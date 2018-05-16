@@ -239,5 +239,44 @@ public class ConstantInfos {
     public static final String ASSO_LOOSEMESSAGE= "Dommage !! \n Il faut dire que ce n'était pas si simple que ca. \n Vous pouvez voir les bonnes réponses ci dessous. \n \n Appuyer sur TERMINER pour continuer.";
 
 
+    // ------- Nom des lieux -------
+    public static final String NAME_OPERA = "L'Opera de Lille";
+    public static final String NAME_VIEILLEBOURSE = "La Vieille Bourse";
+    public static final String NAME_RANG = "Le Rang Beauregard";
+    public static final String NAME_BEFFROI = "Le Beffroi";
+    public static final String NAME_CHAMBRECOMMERCE = "La Chambre des Commerces";
+
+    public static final String NAME_FURET = "Le Furet du Nord";
+    public static final String NAME_VOIXDUNORD = "La Voix du Nord";
+    public static final String NAME_GRANDGARDE = "La Grand Garde";
+    public static final String NAME_COLONNE = "La Colonne de la Deese";
+    public static final String NAME_PALAIS = "Le Palais de Rihour";
+    public static final String NAME_PYRAMIDE = "La Pyramide de Rihour";
+
+    public static final String NAME_QUINQUIN = "La statue du Ptit Quinquin";
+    public static final String NAME_NOUVEAUSIECLE = "Le Nouveau Siecle";
+    public static final String NAME_NATIO = "La rue Nationale";
+    public static final String NAME_FOCH = "La statue du General Foch";
+    public static final String NAME_QUAIDUWAULT = "Quai du Wault";
+    public static final String NAME_LE28 = "Le 28 Thiers";
+
+
+    public static final String NAME_ILOT = "L'Ilot Comtesse";
+    public static final String NAME_HOSPICE = "L'Hospice Comtesse";
+    public static final String NAME_TREILLE = "La Cathedrale de la Treille";
+    public static final String NAME_PLACEAUXOIGNONS = "La Place aux Oignons";
+    public static final String NAME_PLACELOUISE = "La place Louise de Bettignies";
+    public static final String NAME_RUECHAUSSEE = "La rue Grande Chaussee ";
+    public static final String NAME_RUEESQUERMOISE = "La rue Esquermoise";
+    public static final String NAME_HUITRIERE = "Anciennement : L'Huitriere";
+    public static final String NAME_MEERT = "Meert";
+    public static final String NAME_RUEWEPPES = "La rue Weppes";
+    public static final String NAME_COMPAGNONS = "Les Compagnons de la Grappe";
+
+
+
+
+
+
 
 }

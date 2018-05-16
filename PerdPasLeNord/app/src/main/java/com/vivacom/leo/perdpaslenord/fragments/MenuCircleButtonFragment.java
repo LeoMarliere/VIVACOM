@@ -10,8 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.vivacom.leo.perdpaslenord.R;
+
+import java.util.Objects;
+
+import es.dmoral.toasty.Toasty;
 
 
 /**
@@ -25,20 +30,17 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
     Button btn_Infos, btn_Photos, btn_Jeu, btn_Carnet, btn_Carte;
 
     // ---- Parametre -----
-    boolean infosChecked, galleryChecked, gameChecked;
-
+    boolean infosChecked, galleryChecked, gameFinish;
+    boolean carnetVisible = false, menuOpen = false, carnetAnimationOver = true, actionPossible = true;
     int currentFragment = 1;
-    boolean carnetVisible = false;
-    boolean carnetAnimationOver = true;
-    boolean menuOpen = false;
 
     // ---- CallBack -----
     MenuCircleButtonFragmentCallBack menuCircleButtonFragmentCallBack;
-
     static final String TAG = "MENU";
 
     // ------------------------------------------------------------
 
+    // Interface CallBack
     public interface MenuCircleButtonFragmentCallBack {
         void slideOutLeftAndInRight(final int currentFragment);
         void hideInGameInterface();
@@ -46,6 +48,7 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         void transitionGameToRoadBook();
     }
 
+    // Instance
     public static MenuCircleButtonFragment newInstance(Boolean infosChecked, Boolean galleryChecked, Boolean gameChecked, int currentFragment){
         MenuCircleButtonFragment fragment = new MenuCircleButtonFragment();
         Bundle args = new Bundle();
@@ -57,9 +60,12 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         return fragment;
     }
 
+    // Require empty public constructor
     public MenuCircleButtonFragment() {
-        // Require empty public constructor
+
     }
+
+    // ------------------------------------------------------------
 
     @Override
     public void onAttach(Activity activity) {
@@ -74,44 +80,55 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         menuCircleButtonFragmentCallBack = null;
     }
 
+
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView =  inflater.inflate(R.layout.fragment_menu_circlebutton, container, false);
-
         btn_Carnet = mView.findViewById(R.id.menuBtn_Carnet);
         btn_Carte = mView.findViewById(R.id.menuBtn_Carte);
         btn_Infos = mView.findViewById(R.id.menuBtn_Infos);
         btn_Photos = mView.findViewById(R.id.menuBtn_Photos);
         btn_Jeu = mView.findViewById(R.id.menuBtn_Jeu);
-
         return mView;
     }
+
+    // ------------------------------------------------------------
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // On récupère nos arguments
         if (getArguments() != null) {
             Bundle args = getArguments();
             infosChecked = args.getBoolean("1");
             galleryChecked = args.getBoolean("2");
-            gameChecked = args.getBoolean("3");
+            gameFinish = args.getBoolean("3");
             currentFragment = args.getInt("4");
         }
 
         setBtnClickable(true);
-        setUpBackgroundBtn();
+        createBtnListener();
+
+    }
+
+    // ----------- Méthodes de SETUP --------------
+
+    /**
+     * Cette méthode va créer nos OnClickListener nde nos 5 boutons
+     */
+    private void createBtnListener(){
 
         // Bouton Info
         btn_Infos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentFragment != 1){
+                if (currentFragment != 1 && actionPossible){
+                    setActionPossibleAfterTime();
                     currentFragment = 1;
                     menuCircleButtonFragmentCallBack.slideOutLeftAndInRight(currentFragment);
                     if (carnetVisible){carnetVisible=false;}
@@ -123,10 +140,12 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         btn_Photos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentFragment != 2){
+                if (currentFragment != 2 && actionPossible){
+                    setActionPossibleAfterTime();
                     currentFragment = 2;
                     menuCircleButtonFragmentCallBack.slideOutLeftAndInRight(currentFragment);
                     if (carnetVisible){carnetVisible=false;}
+
                 }
             }
         });
@@ -135,12 +154,28 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         btn_Jeu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentFragment != 3 && !gameChecked){
-                    currentFragment = 3;
-                    setBtnClickable(false);
-                    menuCircleButtonFragmentCallBack.slideOutLeftAndInRight(currentFragment);
-                    if (carnetVisible){carnetVisible=false;}
+
+                // Point Principaux
+                if (btn_Jeu.getTag() == "PP" && currentFragment != 3 && actionPossible) {
+                    if (gameFinish) {
+                        Toasty.error(Objects.requireNonNull(getContext()), "Vous avez déja terminé ce jeu.", Toast.LENGTH_SHORT, true).show();
+                    } else {
+                        setActionPossibleAfterTime();
+                        currentFragment = 3;
+                        menuCircleButtonFragmentCallBack.slideOutLeftAndInRight(currentFragment);
+                        if (carnetVisible) {
+                            carnetVisible = false;
+                        }
+                    }
                 }
+
+                // Point Secondaire
+                if (btn_Jeu.getTag() == "PS" && currentFragment != 3 && actionPossible) {
+                    setActionPossibleAfterTime();
+                    currentFragment = 3;
+                    menuCircleButtonFragmentCallBack.slideOutLeftAndInRight(currentFragment);
+                }
+
             }
         });
 
@@ -148,20 +183,11 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         btn_Carte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                menuCircleButtonFragmentCallBack.hideInGameInterface();
-                btn_Carte.setClickable(false);
-                btn_Carte.setEnabled(false);
-                if (carnetVisible){carnetVisible=false;}
-
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        btn_Carte.setClickable(true);
-                        btn_Carte.setEnabled(true);
-                    }
-                }, 5000);
-
+                if (actionPossible) {
+                    setActionPossibleAfterTime();
+                    menuCircleButtonFragmentCallBack.hideInGameInterface();
+                    setBtnClickable(false);
+                }
             }
         });
 
@@ -169,12 +195,11 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         btn_Carnet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(carnetAnimationOver){
-                    carnetAnimationOver = false;
+                if(actionPossible){
+                    setActionPossibleAfterTime();
                     if (carnetVisible){
                         menuCircleButtonFragmentCallBack.transitionRoadBookToGame();
                         carnetVisible = false;
-                        //btn_Carnet.setBackgroundResource(R.drawable);
                     } else {
                         menuCircleButtonFragmentCallBack.transitionGameToRoadBook();
                         carnetVisible = true;
@@ -186,14 +211,12 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
 
     }
 
-    // ----------- Méthodes de SETUP --------------
-
     /**
      * Méthode modifiant le background des boutons
      * En fonction de si les actions ont déja été réalisé
      */
     private void setUpBackgroundBtn(){
-        // TODO : Modifier les images
+
         // Si les photos ont déja été regardé, le boutons passe au vert
         if (galleryChecked){btn_Photos.setBackgroundResource(R.drawable.btn_photo_on);}
         else{btn_Photos.setBackgroundResource(R.drawable.btn_photo_off);}
@@ -203,11 +226,13 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
         else{btn_Infos.setBackgroundResource(R.drawable.btn_info_off);}
 
         // Si le jeu a déja été fait, le boutons passe au vert
-        if (gameChecked){
-            btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_on);
-            btn_Jeu.setEnabled(false);
-            btn_Jeu.setClickable(false);
-        } else{btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_off);}
+        if (gameFinish){
+            if(btn_Jeu.getTag() == "PP"){ btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_on);}
+            if(btn_Jeu.getTag() == "PS"){ btn_Jeu.setBackgroundResource(R.drawable.btn_prisephoto);}
+        } else{
+            if(btn_Jeu.getTag() == "PP"){ btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_off);}
+            if(btn_Jeu.getTag() == "PS"){ btn_Jeu.setBackgroundResource(R.drawable.btn_prisephoto_off);}
+        }
     }
 
 
@@ -270,12 +295,14 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
     /**
      * Cette méthode change le background du bouton Jeu
      */
-    public void setGameBtnValidate() {
-        btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_on);
-        gameChecked = true;
-        btn_Jeu.setEnabled(false);
-        btn_Jeu.setClickable(false);
-
+    public void setGameBtnValidate(int type) {
+        currentFragment = 1;
+        if(type == 1 ){
+            btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_on);
+            gameFinish = true;
+        } else if (type == 2){
+            btn_Jeu.setBackgroundResource(R.drawable.btn_prisephoto);
+        }
     }
 
     /**
@@ -301,8 +328,6 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
 
     }
 
-
-
     // ---------------
 
     /**
@@ -311,6 +336,21 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
      */
     public boolean isCarnetVisible(){
        return carnetVisible;
+    }
+
+    // passe a TRUE la variable actionPossible
+    private void setActionPossibleAfterTime(){
+
+        actionPossible = false;
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                actionPossible = true;
+            }
+        }, 2000);
+
     }
 
     /**
@@ -322,12 +362,20 @@ public class MenuCircleButtonFragment extends android.support.v4.app.Fragment {
     }
 
 
-    public void changeBtnVisibility(int i){
-        if (i == 1){
-            btn_Jeu.setVisibility(View.VISIBLE);
-        } else if (i == 2) {
-            btn_Jeu.setVisibility(View.GONE);
+    // Affecte l'image et le tag correspondant - au type de spot - au btn_jeu
+    public void changeGameBtnImage(int typeSpot){
+
+        if (typeSpot == 1){
+            btn_Jeu.setBackgroundResource(R.drawable.btn_jeu_off);
+            btn_Jeu.setTag("PP");
         }
+
+        else if (typeSpot == 2) {
+            btn_Jeu.setBackgroundResource(R.drawable.btn_prisephoto_off);
+            btn_Jeu.setTag("PS");
+        }
+
+        setUpBackgroundBtn();
     }
 
 

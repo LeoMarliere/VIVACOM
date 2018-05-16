@@ -25,6 +25,7 @@ import android.widget.ThemedSpinnerAdapter;
 
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
+import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import java.util.Objects;
 public class DragNDropPuzzleFragmentClass extends Fragment {
 
     // ------------------- Elements Graphiques ---------------------
-    TextView txtVConsigne;
+    TextView txtVConsigne, selection_title;
     LinearLayout layoutForGame;
     LinearLayout layoutOneOne,layoutOneTwo,layoutOneThree,layoutOneFour;
     LinearLayout layoutTwoOne,layoutTwoTwo,layoutTwoThree,layoutTwoFour;
@@ -80,6 +81,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         void whenGameIsValidate(Boolean correct);
         List<String> getPlayerName();
         String getGameTitle();
+        void handleBtnClick(boolean canClick);
     }
 
     public static DragNDropPuzzleFragmentClass newInstance(String spotName){
@@ -177,6 +179,10 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         image9 = view.findViewById(R.id.dndPuzzle_image9);
         image10 = view.findViewById(R.id.dndPuzzle_image10);
         image11 = view.findViewById(R.id.dndPuzzle_image11);
+
+        selection_title = view.findViewById(R.id.selection_title);
+        Typeface type = Typeface.createFromAsset(getActivity().getAssets(),"fonts/steinem.ttf");
+        selection_title.setTypeface(type);
     }
 
     /**
@@ -206,6 +212,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
                 if (gameFinish){
                     dragNDropPuzzleFragmentClassCallBack.whenGameIsValidate(true);
                 } else {
+                    dragNDropPuzzleFragmentClassCallBack.handleBtnClick(false);
                     animator.fadeOutFadeInAnimation(txtVConsigne,layoutForGame);
                     selectLayoutWhitchCanBeClickable();
                 }
@@ -242,13 +249,13 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         if (getArguments() != null) {
             Bundle args = getArguments();
             if (args.containsKey(TXT_INFOS)) {
-                if (Objects.equals(args.getString(TXT_INFOS), "L'Opera De Lille")) {
+                if (Objects.equals(args.getString(TXT_INFOS), ConstantInfos.NAME_OPERA)) {
                     setUpForOperaDeLille();
                     nbRotationAFaire = 14;
-                } else if (Objects.equals(args.getString(TXT_INFOS), "La Grand'Garde")) {
+                } else if (Objects.equals(args.getString(TXT_INFOS), ConstantInfos.NAME_GRANDGARDE)) {
                     setUpForGrandGarde();
                     nbRotationAFaire = 15;
-                } else if (Objects.equals(args.getString(TXT_INFOS), "Notre Dame De La Treille")) {
+                } else if (Objects.equals(args.getString(TXT_INFOS), ConstantInfos.NAME_TREILLE)) {
                     setUpForNotreDameDeLaTreille();
                     nbRotationAFaire = 16;
                 }
@@ -336,33 +343,33 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
      */
     private void setUpForNotreDameDeLaTreille(){
         // On affecte les images a leur elements
-        image1.setImageResource(R.drawable.puzzle_grandgarde_p6);
-        image2.setImageResource(R.drawable.puzzle_grandgarde_p11);
-        image3.setImageResource(R.drawable.puzzle_grandgarde_p5);
-        image4.setImageResource(R.drawable.puzzle_grandgarde_p9);
-        image5.setImageResource(R.drawable.puzzle_grandgarde_p2);
-        image6.setImageResource(R.drawable.puzzle_grandgarde_p8);
-        image7.setImageResource(R.drawable.puzzle_grandgarde_p12);
-        image8.setImageResource(R.drawable.puzzle_grandgarde_p3);
-        image9.setImageResource(R.drawable.puzzle_grandgarde_p4);
-        image10.setImageResource(R.drawable.puzzle_grandgarde_p10);
-        image11.setImageResource(R.drawable.puzzle_grandgarde_p7);
+        image1.setImageResource(R.drawable.puzzle_treille_p7);
+        image2.setImageResource(R.drawable.puzzle_treille_p3);
+        image3.setImageResource(R.drawable.puzzle_treille_p2);
+        image4.setImageResource(R.drawable.puzzle_treille_p9);
+        image5.setImageResource(R.drawable.puzzle_treille_p12);
+        image6.setImageResource(R.drawable.puzzle_treille_p6);
+        image7.setImageResource(R.drawable.puzzle_treille_p5);
+        image8.setImageResource(R.drawable.puzzle_treille_p11);
+        image9.setImageResource(R.drawable.puzzle_treille_p8);
+        image10.setImageResource(R.drawable.puzzle_treille_p4);
+        image11.setImageResource(R.drawable.puzzle_treille_p10);
         // pas de 12
 
 
         // On affecte chaque bonne image à sa bonne place
         // pas de 1
-        goodImageFor2 = layoutTwoOne.getChildAt(0);
-        goodImageFor3 = layoutTwoFour.getChildAt(0);
-        goodImageFor4 = layoutThreeOne.getChildAt(0);
-        goodImageFor5 = layoutOneThree.getChildAt(0);
-        goodImageFor6 = layoutOneOne.getChildAt(0);
-        goodImageFor7 = layoutThreeThree.getChildAt(0);
-        goodImageFor8 = layoutTwoTwo.getChildAt(0);
+        goodImageFor2 = layoutOneThree.getChildAt(0);
+        goodImageFor3 = layoutOneTwo.getChildAt(0);
+        goodImageFor4 = layoutThreeTwo.getChildAt(0);
+        goodImageFor5 = layoutTwoThree.getChildAt(0);
+        goodImageFor6 = layoutTwoTwo.getChildAt(0);
+        goodImageFor7 = layoutOneOne.getChildAt(0);
+        goodImageFor8 = layoutThreeOne.getChildAt(0);
         goodImageFor9 = layoutOneFour.getChildAt(0);
-        goodImageFor10 = layoutThreeTwo.getChildAt(0);
-        goodImageFor11 = layoutOneTwo.getChildAt(0);
-        goodImageFor12 = layoutTwoThree.getChildAt(0);
+        goodImageFor10 = layoutThreeThree.getChildAt(0);
+        goodImageFor11 = layoutTwoFour.getChildAt(0);
+        goodImageFor12 = layoutTwoOne.getChildAt(0);
 
         startMessage = "Oh Non !!! \n La Cathédrale est sans dessus dessous... \n \n Vite, remettez moi un peu d'ordre !!";
         endMessage = "Félicitation !!! \n Vous êtes vraiment très doué pour les puzzles. \n \n Cliquer sur l'écran pour continuer";

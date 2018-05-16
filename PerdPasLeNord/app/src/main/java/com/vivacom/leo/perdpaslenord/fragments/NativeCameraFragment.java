@@ -5,33 +5,9 @@ package com.vivacom.leo.perdpaslenord.fragments;
  */
 
 
-/*
- * Copyright (c) 2014 Rex St. John on behalf of AirPair.com
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
-
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
@@ -49,6 +25,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.vivacom.leo.perdpaslenord.R;
+import com.vivacom.leo.perdpaslenord.objects.TeamClass;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,6 +33,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import io.realm.Realm;
 
 /**
  * Take a picture directly from inside the app using this fragment.
@@ -80,7 +59,6 @@ public class NativeCameraFragment extends Fragment {
     // Notre photo
     byte[] photoTake;
 
-    int numPhoto = 0;
 
     public final String TAG = "NATIVE_PHOTO";
     public static final String ARG_SECTION_NUMBER = "ARG_SECTION_NUMBER";
@@ -102,9 +80,7 @@ public class NativeCameraFragment extends Fragment {
     }
 
     public interface NativeCameraFragmentCallBack{
-        void addPhotoToGalery(Bitmap bmc);
         void whenGameIsValidate(Boolean correct);
-
     }
 
     @Override
@@ -250,10 +226,6 @@ public class NativeCameraFragment extends Fragment {
     private boolean safeCameraOpenInView(View view) {
         final boolean qOpened;
 
-        /*
-
-        */
-
         releaseCameraAndPreview();
         mCamera = getCameraInstance();
 
@@ -322,14 +294,33 @@ public class NativeCameraFragment extends Fragment {
     }
 
     /**
-     * Cette méthode va créer une ImageView a artir du byte[] passé en parametre
+     * Cette méthode va créer une ImageView a partir du byte[] passé en parametre
      * Puis elle va l'envoyer vers le RoadBook
      * @param data
      */
-    private void createAndSendImageView( final byte[] data ){
-        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-        Log.i(TAG,"ImageView créer et envoyer");
-        nativeCameraFragmentCallBack.addPhotoToGalery(bmp);
+    private void addDataToBDD( final byte[] data ){
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm =  Realm.getDefaultInstance();
+                try{
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            TeamClass team = realm.where(TeamClass.class).findFirst();
+                            if (team != null){ team.getList_photos().add(data); }
+                        }
+                    });
+                } finally {
+                    realm.close();
+                }
+            }
+        }).start();
+
+
+        Log.i(TAG,"ImageView créer et ajouter en BDD");
+
     }
 
     /**
@@ -343,7 +334,7 @@ public class NativeCameraFragment extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                createAndSendImageView(photoTake);
+                addDataToBDD(photoTake);
                 mPreview.startCameraPreview();
             }
         }).start();
@@ -513,7 +504,6 @@ public class NativeCameraFragment extends Fragment {
          */
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            // Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
             final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
             final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
             setMeasuredDimension(width, height);
@@ -579,7 +569,7 @@ public class NativeCameraFragment extends Fragment {
          * @return
          */
         private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int width, int height) {
-            // Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
+
             Camera.Size optimalSize = null;
 
             final double ASPECT_TOLERANCE = 0.1;
@@ -598,6 +588,7 @@ public class NativeCameraFragment extends Fragment {
             // If we cannot find the one that matches the aspect ratio, ignore the requirement.
             if (optimalSize == null) {
                 // TODO : Backup in case we don't get a size.
+                Log.e(TAG, "We don't get  size");
             }
 
             return optimalSize;

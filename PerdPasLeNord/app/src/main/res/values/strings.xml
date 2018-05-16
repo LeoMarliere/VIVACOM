@@ -1,7 +1,6 @@
 <resources>
 
     <string name="app_name">PerdsPasLeNord</string>
-    <string name="text">BlaBlaBlaBla BlaBlaBla "\n" BlaBlaBlaBlaBlaBlaBla BlaBla</string>
 
 
     <string name="map_style">
@@ -25,16 +24,6 @@
 ]</string>
 
 
-    <string name="VF_vrai">VRAI</string>
-    <string name="VF_faux">FAUX</string>
-
-    <string name="btn_photo">Galerie Photo</string>
-    <string name="btn_infos">Informations</string>
-    <string name="btn_jeux">Mini-Jeux</string>
-    <string name="btn_map">Carte</string>
-    <string name="btn_spot">Points d\'intérêts</string>
-    <string name="btn_stats">Carnet De Bord</string>
-    <string name="rb_Titre2">Phrase Mystère</string>
     <string name="rb_Titre1">Carnet de Route</string>
 
 
@@ -73,10 +62,25 @@
 
     <string name="deroulement_Game_1">Une partie se déroule très simplement. Vous devez d\'abord vous rendre à l\'un des lieux affiché sur votre carte.</string>
     <string name="deroulement_Game_2">Une fois devant le lieu, vous pouvez accéder aux différentes rubriques associé à ce dernier. Une fois le lieu complété, il ne vous reste plus qu\'à vous rendre au prochain lieu.</string>
-    <string name="deroulement_Game_3">Le but de ce jeu est que vous vous amusiez tout en visitant la captitale des Flandres. </string>
-
-    <string name="title_PlayerSelection">Sélection du joueur</string>
+    <string name="deroulement_Game_3">Le but de ce jeu est que vous vous amusiez tout en visitant la capitale des Flandres. </string>
 
 
+    <string name="title_PlayerSelection">SÉLÉCTION DU JOUEUR</string>
+
+    <string name="point_secondaire">Point Secondaire</string>
+    <string name="secret_d_couvert">Secret Découvert</string>
+    <string name="point_principaux">Point Principaux</string>
+
+    <string name="vieux_lille">Vieux Lille</string>
+    <string name="grand_place">Grand Place</string>
+    <string name="lille_centre">Lille Centre</string>
+    <string name="place_du_th_atre">Place du Théatre</string>
+
+
+    <string name="noPlayer_message"><u>L\'équipe ne possède pas de joueur pour le moment.</u></string>
+    <string name="qcm_txtv_question1">Question 1</string>
+    <string name="qcm_txtv_question2">Question 2</string>
+    <string name="qcm_txtv_question3">Question 3</string>
+    <string name="qcm_txtv_reponse">Réponses :</string>
 
 </resources>

@@ -7,7 +7,6 @@
     android:gravity="center_horizontal|center_vertical">
 
     <RelativeLayout
-        android:id="@+id/photoContainer"
         android:layout_width="800dp"
         android:layout_height="600dp"
         android:layout_centerInParent="true"

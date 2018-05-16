@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -16,7 +17,6 @@ import android.widget.RelativeLayout;
 import com.vivacom.leo.perdpaslenord.OnSwipeTouchListener;
 import com.vivacom.leo.perdpaslenord.R;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -83,7 +83,7 @@ public class PictureGaleryFragmentClass extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view =inflater.inflate(R.layout.fragment_picturegallery,container,false);
         lPhotoGalery = view.findViewById(R.id.photoGalery);
         mPhoto1 = view.findViewById(R.id.pg_photo1);

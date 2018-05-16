@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,8 @@ import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
 
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
+
 /**
  * Created by Leo on 14/09/2017.
  */
@@ -35,7 +36,7 @@ public class QCMFragmentClass extends Fragment {
     // ------- Element graphiques -------
 
     // Pour la consigne
-    TextView txtVConsigne1;
+    TextView txtVConsigne, selection_title;
 
     // Pour le jeu
     LinearLayout gameLayout;
@@ -94,6 +95,7 @@ public class QCMFragmentClass extends Fragment {
         void whenGameIsValidate(Boolean correct);
         List<String> getPlayerName();
         String getGameTitle();
+        void handleBtnClick(boolean canClick);
     }
 
     @Override
@@ -151,7 +153,7 @@ public class QCMFragmentClass extends Fragment {
     public void associateElements(View view){
         gameLayout = view.findViewById(R.id.qcm_gameLayout);
 
-        txtVConsigne1 = view.findViewById(R.id.qcm_consigne1);
+        txtVConsigne = view.findViewById(R.id.qcm_consigne1);
         txtQuestionNumber = view.findViewById(R.id.question_number);
 
         txtVQuestion = view.findViewById(R.id.qcm_question);
@@ -167,6 +169,10 @@ public class QCMFragmentClass extends Fragment {
         tGameName = view.findViewById(R.id.gamerName);
         tGameTitle = view.findViewById(R.id.gameTitle);
         tContinue = view.findViewById(R.id.blink_continue);
+
+        selection_title = view.findViewById(R.id.selection_title);
+        Typeface type = Typeface.createFromAsset(getActivity().getAssets(),"fonts/steinem.ttf");
+        selection_title.setTypeface(type);
 
     }
 
@@ -230,12 +236,13 @@ public class QCMFragmentClass extends Fragment {
         });
 
         // TextView
-        txtVConsigne1.setOnClickListener(new View.OnClickListener() {
+        txtVConsigne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!gameFinish) {
                     if (!firstclic){
-                        animator.fadeOutFadeInAnimation(txtVConsigne1, gameLayout);
+                        qcmFragmentClassCallBack.handleBtnClick(false);
+                        animator.fadeOutFadeInAnimation(txtVConsigne, gameLayout);
                         currentQuestion = 1;
                         setUpQuestion();
                         firstclic = true;
@@ -251,16 +258,14 @@ public class QCMFragmentClass extends Fragment {
                 int tag = (int)btnValider.getTag();
                 if (tag == 1){
                     if (!chkBReponse1.isChecked() & !chkBReponse2.isChecked() & !chkBReponse3.isChecked() & !chkBReponse4.isChecked() & !chkBReponse5.isChecked()){
-                        Toast toast = Toast.makeText(getContext(), "Vous devez d'abord séléctionner une réponse", Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
-                        toast.show();
+                        Toasty.error(getContext(), "Vous devez d'abord séléctionner une réponse",  Toast.LENGTH_SHORT ).show();
                     } else {
                         registerAnswer();
                     }
                 } if (tag == 2){
                     currentQuestion++;
                     setUpQuestion();
-                    colorCheckBox();
+
                 }
 
             }
@@ -280,19 +285,19 @@ public class QCMFragmentClass extends Fragment {
         if (getArguments() != null) {
             Bundle args = getArguments();
             if (args.containsKey(SPOT_NAME)){
-                if (args.getString(SPOT_NAME).equals("La Vieille Bourse")){
+                if (args.getString(SPOT_NAME).equals(ConstantInfos.NAME_VIEILLEBOURSE)){
                     spotTag = 1;
                     nbRoatationPlayerSelection = 23;
                     setUpQuestionAndAnswerForVieilleBourse();
-                } else if (args.getString(SPOT_NAME).equals("Le Nouveau Siecle")){
+                } else if (args.getString(SPOT_NAME).equals(ConstantInfos.NAME_NOUVEAUSIECLE)){
                     spotTag = 3;
                     nbRoatationPlayerSelection = 24;
                     setUpQuestionAndAnswerForLeNouveauSiecle();
-                } else if (args.getString(SPOT_NAME).equals("Rue Grande Chaussee")){
+                } else if (args.getString(SPOT_NAME).equals(ConstantInfos.NAME_RUECHAUSSEE)){
                     spotTag = 4;
                     nbRoatationPlayerSelection = 25;
                     setUpQuestionAndAnswerForRueGrandeChaussee();
-                } else if (args.getString(SPOT_NAME).equals("La Place aux Oignons")){
+                } else if (args.getString(SPOT_NAME).equals(ConstantInfos.NAME_PLACEAUXOIGNONS)){
                     spotTag = 2;
                     nbRoatationPlayerSelection = 26;
                     setUpQuestionAndAnswerForPlaceOignons();
@@ -348,7 +353,7 @@ public class QCMFragmentClass extends Fragment {
         possibility3for1 = "La Gare Lille-Europe";
         possibility4for1 = "La Grande Gare";
         possibility5for1 = "La Gare de Lille";
-        bonneReponse1 = "La Gare Lille-Europe";
+        bonneReponse1 = possibility3for1;
 
         question2 = "Les deux géants de la Lille se nomment :";
         possibility1for2 = "Lydéric et Phinaert";
@@ -356,7 +361,7 @@ public class QCMFragmentClass extends Fragment {
         possibility3for2 = "Lydie et Phinaert";
         possibility4for2 = "Lydéric et Lydiaert";
         possibility5for2 = "Phydéric et Phinaert";
-        bonneReponse2 = "Lydéric et Phinaert";
+        bonneReponse2 = possibility1for2;
 
         question3 = "Traditionnellement, on sert lors de la braderie de Lille :";
         possibility1for3 = "Du poulet frites";
@@ -364,7 +369,7 @@ public class QCMFragmentClass extends Fragment {
         possibility3for3 = "Du fish and chips";
         possibility4for3 = "Des moules frites";
         possibility5for3 = "Du Welsh";
-        bonneReponse3 = "Des moules frites";
+        bonneReponse3 = possibility4for3;
 
         succesMessage= "Bravo !!  \n La ville n'a plus de secret pour vous.. \n \n Cliquer sur l'écran pour continuer et un mot.";
         failMessage = "Aïe Aïe Aïe !! \n Dommage, j'ai l'impression que Lille vous est toujours inconnue ... \n \n Cliquer sur l'écran pour continuer";
@@ -401,7 +406,7 @@ public class QCMFragmentClass extends Fragment {
         possibility3for3 = "Au Moulin D'Or";
         possibility4for3 = "Le Bettigny";
         possibility5for3 = "Le Bon Ch'ti";
-        bonneReponse3 = possibility1for2;
+        bonneReponse3 = possibility1for3;
 
         succesMessage= "Clap Clap Clap !! \n Je vous félicite, vous avez réussi ce jeu !! \n \n Ciquer sur l'écran pour continuer.";
         failMessage = "Dommage !! \n Tous les autres ont pourtant réussi ..... \n \n Ciquer sur l'écran pour continuer.";
@@ -412,7 +417,6 @@ public class QCMFragmentClass extends Fragment {
      * Affiche la question et les réponses du QCM 'La Vieille Bourse' -- 1
      */
     public void setUpQuestionAndAnswerForVieilleBourse(){
-        //TODO : trouver des questions pour Questionnaire
         question1 = "Combien il a t'y d'armoirie sur la façade de La Voix Du Nord?";
         possibility1for1 ="21";
         possibility2for1 ="22";
@@ -421,13 +425,13 @@ public class QCMFragmentClass extends Fragment {
         possibility5for1 = "32";
         bonneReponse1 = possibility4for1;
 
-        question2 = "Qui dit commerce dit calcul : 3 - 2 * 4  +5";
+        question2 = "Qui dit commerce dit calcul : \n 3 - 2 * 4 + 5";
         possibility1for2 ="12";
         possibility2for2 ="9";
         possibility3for2 = "0";
         possibility4for2 = "-9";
         possibility5for2 = "-12";
-        bonneReponse2 = possibility5for2 ;
+        bonneReponse2 = possibility3for2 ;
 
         question3 = "Combien y a t'il d'acces a la chambre des Commerces .";
         possibility1for3 ="1";
@@ -542,7 +546,7 @@ public class QCMFragmentClass extends Fragment {
     public void setUpQuestion(){
         switch (currentQuestion){
             case 1 :
-                txtQuestionNumber.setText("Question 1");
+                txtQuestionNumber.setText(R.string.qcm_txtv_question1);
                 txtVQuestion.setText(question1);
                 chkBReponse1.setText(possibility1for1);
                 chkBReponse2.setText(possibility2for1);
@@ -550,26 +554,30 @@ public class QCMFragmentClass extends Fragment {
                 chkBReponse4.setText(possibility4for1);
                 chkBReponse5.setText(possibility5for1);
                 btnValider.setBackgroundResource(R.drawable.btn_action_question_suivante);
+                if(gameFinish){
+                    txtVConsigne.setClickable(true);
+                    txtVConsigne.setFocusable(true);
+                }
                 break;
             case 2 :
-                txtQuestionNumber.setText("Question 2");
+                txtQuestionNumber.setText(R.string.qcm_txtv_question2);
                 animator.slideOutAndInWithMessage(txtVQuestion, question2);
                 fadeInOutAllCheckBox(2);
                 break;
             case 3 :
-                txtQuestionNumber.setText("Question 3");
+                txtQuestionNumber.setText(R.string.qcm_txtv_question3);
                 animator.slideOutAndInWithMessage(txtVQuestion, question3);
                 fadeInOutAllCheckBox(3);
                 btnValider.setBackgroundResource(R.drawable.btn_action_terminer);
                 break;
             case 4 :
-                animator.fadeOutFadeInAnimation(gameLayout,txtVConsigne1);
+                animator.fadeOutFadeInAnimation(gameLayout, txtVConsigne);
                 gameFinish = true;
                 if (nbBonneReponse >= 2){
-                    txtVConsigne1.setText(succesMessage);
+                    txtVConsigne.setText(succesMessage);
                     succes = true;
                 } else {
-                    txtVConsigne1.setText(failMessage);
+                    txtVConsigne.setText(failMessage);
                     succes = false;
                 }
                 break;
@@ -626,7 +634,7 @@ public class QCMFragmentClass extends Fragment {
                     chkBReponse5.setText(possibility5for3);
                 }
 
-
+                if(gameFinish){colorCheckBox();}
             }
         },750);
     }
@@ -656,16 +664,14 @@ public class QCMFragmentClass extends Fragment {
         switch (currentQuestion){
             case 1:
                 chkBSelected1.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_uncorrect));
-                chkBSelected1.setChecked(true);
                 if (spotTag == 1){chkBReponse4.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
-                else if (spotTag == 2){chkBReponse1.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
+                else if (spotTag == 2){chkBReponse3.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 3){chkBReponse3.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 4){chkBReponse3.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 break;
 
             case 2:
                 chkBSelected2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_uncorrect));
-                chkBSelected2.setChecked(true);
                 if (spotTag == 1){chkBReponse5.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 2){chkBReponse2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 3){chkBReponse2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
@@ -674,9 +680,8 @@ public class QCMFragmentClass extends Fragment {
 
             case 3:
                 chkBSelected3.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_uncorrect));
-                chkBSelected3.setChecked(true);
                 if (spotTag == 1){chkBReponse4.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
-                else if (spotTag == 2){chkBReponse2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
+                else if (spotTag == 2){chkBReponse1.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 3){chkBReponse5.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 4){chkBReponse4.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 break;
@@ -768,9 +773,9 @@ public class QCMFragmentClass extends Fragment {
      * Cette méthode affiche la consigne et prepare les éléments pour la partie
      */
     public void setUpBeforeGame(){
-        txtVConsigne1.setVisibility(View.VISIBLE);
+        txtVConsigne.setVisibility(View.VISIBLE);
         gameLayout.setVisibility(View.GONE);
-        txtVConsigne1.setText(ConstantInfos.CONSIGNE_QCM);
+        txtVConsigne.setText(ConstantInfos.CONSIGNE_QCM);
 
 
         btnValider.setTag(1);
@@ -780,20 +785,23 @@ public class QCMFragmentClass extends Fragment {
      * Méthode affichant le layout de fin de jeu
      */
     public void setUpAfterLastQuestion(){
-        txtVConsigne1.setText("Réponses :");
-        animator.fadeOutFadeInAnimation(gameLayout,txtVConsigne1);
+        txtVConsigne.setText(R.string.qcm_txtv_reponse);
+        animator.fadeOutFadeInAnimation(gameLayout, txtVConsigne);
         chkBReponse1.setClickable(false);
         chkBReponse2.setClickable(false);
         chkBReponse3.setClickable(false);
         chkBReponse4.setClickable(false);
         chkBReponse5.setClickable(false);
         currentQuestion = 1;
+        gameFinish = true;
+        txtVConsigne.setClickable(false);
+        txtVConsigne.setFocusable(false);
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                animator.fadeOutFadeInAnimation(txtVConsigne1,gameLayout);
+                animator.fadeOutFadeInAnimation(txtVConsigne,gameLayout);
                 setUpQuestion();
                 btnValider.setBackgroundResource(R.drawable.btn_action_question_suivante);
                 btnValider.setTag(2);

@@ -24,10 +24,15 @@ import static android.view.View.GONE;
 
 /**
  * Created by Leo on 20/02/2018.
+ * CodeRevue 14/05
  */
 
 public class RulesExplicationClass extends Activity {
 
+    // -----------------------------------------
+
+    // Variable
+    int numLayout = 1;
     static final String TAG = "RulesExplication";
 
     // Objects
@@ -39,8 +44,7 @@ public class RulesExplicationClass extends Activity {
     Button backButton, nextButton;
     TextView title;
 
-    // Variable
-    int numLayout = 1;
+    // -----------------------------------------
 
     @Override
     public void onBackPressed() { }
@@ -57,11 +61,10 @@ public class RulesExplicationClass extends Activity {
         Log.d(TAG, "Activity onPause");
     }
 
-    // ----------------------------
+    // -----------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        overridePendingTransition(R.anim.slide_to_right, R.anim.slide_from_left);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rules_explication);
 
@@ -73,11 +76,10 @@ public class RulesExplicationClass extends Activity {
         explicationLayout_UI.setVisibility(GONE);
         explicationLayout_Game.setVisibility(GONE);
         explicationLayout_Party.setVisibility(GONE);
-
         backButton.setVisibility(GONE);
         nextButton.setVisibility(View.VISIBLE);
-
         lBlckScreen.setVisibility(View.VISIBLE);
+
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -183,7 +185,6 @@ public class RulesExplicationClass extends Activity {
         });
 
     }
-
 
     /**
      * Cette méthode va désactiver les boutons pendant 3 secondes

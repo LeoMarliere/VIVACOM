@@ -2,6 +2,7 @@ package com.vivacom.leo.perdpaslenord.fragments.game;
 
 import android.app.Activity;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -39,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 public class VraiFauxFragmentClass extends Fragment  {
 
     LinearLayout layoutForGame,layoutResultat;
-    TextView txtVConsigne,txtVNbQuestion, txtVQuestion;
+    TextView txtVConsigne,txtVNbQuestion, txtVQuestion, selection_title;
     TextView txtVResultQuestion, txtVResultAnswer, timer, isCorrectMessage;
     ImageView imageAnswer;
     CountDownTimer countDown;
@@ -120,22 +121,8 @@ public class VraiFauxFragmentClass extends Fragment  {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_vrai_faux_game,container,false);
-        layoutForGame = view.findViewById(R.id.VF_layoutGame);
-        layoutResultat = view.findViewById(R.id.VF_layoutResultat);
-        txtVConsigne =  view.findViewById(R.id.VF_consigne);
-        txtVNbQuestion = view.findViewById(R.id.VF_numeroQuestion);
-        txtVQuestion =  view.findViewById(R.id.VF_question);
-        txtVResultAnswer = view.findViewById(R.id.VF_resultAnswer);
-        txtVResultQuestion =view.findViewById(R.id.VF_resultQuestion);
-        btnVrai = view.findViewById(R.id.VF_btnVrai);
-        btnFaux = view.findViewById(R.id.VF_btnFaux);
-        imageAnswer = view.findViewById(R.id.VF_ImageAnswer);
-        timer = view.findViewById(R.id.VF_chrono);
-        lPlayerSelection = view.findViewById(R.id.playerSelection);
-        tGameName = view.findViewById(R.id.gamerName);
-        tGameTitle = view.findViewById(R.id.gameTitle);
-        isCorrectMessage = view.findViewById(R.id.VF_isCorrectMessage);
-        tContinue = view.findViewById(R.id.blink_continue);
+
+
         return view;
     }
 
@@ -145,6 +132,8 @@ public class VraiFauxFragmentClass extends Fragment  {
 
         Log.d(TAG, "Fragment onStart");
 
+        associateElements(view);
+
         // --------------- On affiche en premier la selection du joueur -----------------------
         setUpGamerSelection();
 
@@ -153,16 +142,24 @@ public class VraiFauxFragmentClass extends Fragment  {
         if (getArguments() != null) {
             Bundle args = getArguments();
             if (args.containsKey(SPOT_NAME)){
-                if (Objects.equals(args.getString(SPOT_NAME), "Le Palais Rihour")){
+                if (Objects.equals(args.getString(SPOT_NAME), ConstantInfos.NAME_PALAIS)){
                     setUpForPalaisRihour();
-                } else if (Objects.equals(args.getString(SPOT_NAME), "La Place Louise De Bettignies")){
+                    nbRoatationPlayerSelection = 17;
+                } else if (Objects.equals(args.getString(SPOT_NAME), ConstantInfos.NAME_PLACELOUISE)){
                     setUpForLouiseDeBettignies();
-                } else if (Objects.equals(args.getString(SPOT_NAME), "Le Beffroi")){
+                    nbRoatationPlayerSelection = 18;
+                } else if (Objects.equals(args.getString(SPOT_NAME), ConstantInfos.NAME_BEFFROI)){
                     setUpForBeffroi();
-                } else if (Objects.equals(args.getString(SPOT_NAME), "Le Furet Du Nord")){
+                    nbRoatationPlayerSelection = 19;
+                } else if (Objects.equals(args.getString(SPOT_NAME), ConstantInfos.NAME_FURET)){
                     setUpForFuretDuNord();
-                } else if (Objects.equals(args.getString(SPOT_NAME), "Rue Esquermoise")){
+                    nbRoatationPlayerSelection = 20;
+                } else if (Objects.equals(args.getString(SPOT_NAME), ConstantInfos.NAME_RUEESQUERMOISE)){
                     setUpForRueEsquermoise();
+                    nbRoatationPlayerSelection = 21;
+                } else if (Objects.equals(args.getString(SPOT_NAME), ConstantInfos.NAME_QUINQUIN)){
+                    setUpForQuinquin();
+                    nbRoatationPlayerSelection = 22;
                 }
 
 
@@ -188,7 +185,31 @@ public class VraiFauxFragmentClass extends Fragment  {
             }
         });
 
-        // -------------------- Gestion du chronometer ---------------------------
+
+    }
+
+    private void associateElements(View view){
+
+        layoutForGame = view.findViewById(R.id.VF_layoutGame);
+        layoutResultat = view.findViewById(R.id.VF_layoutResultat);
+        txtVConsigne =  view.findViewById(R.id.VF_consigne);
+        txtVNbQuestion = view.findViewById(R.id.VF_numeroQuestion);
+        txtVQuestion =  view.findViewById(R.id.VF_question);
+        txtVResultAnswer = view.findViewById(R.id.VF_resultAnswer);
+        txtVResultQuestion =view.findViewById(R.id.VF_resultQuestion);
+        btnVrai = view.findViewById(R.id.VF_btnVrai);
+        btnFaux = view.findViewById(R.id.VF_btnFaux);
+        imageAnswer = view.findViewById(R.id.VF_ImageAnswer);
+        timer = view.findViewById(R.id.VF_chrono);
+        lPlayerSelection = view.findViewById(R.id.playerSelection);
+        tGameName = view.findViewById(R.id.gamerName);
+        tGameTitle = view.findViewById(R.id.gameTitle);
+        isCorrectMessage = view.findViewById(R.id.VF_isCorrectMessage);
+        tContinue = view.findViewById(R.id.blink_continue);
+
+        selection_title = view.findViewById(R.id.selection_title);
+        Typeface type = Typeface.createFromAsset(getActivity().getAssets(),"fonts/steinem.ttf");
+        selection_title.setTypeface(type);
 
     }
 
@@ -206,9 +227,6 @@ public class VraiFauxFragmentClass extends Fragment  {
         infos1 = "Le Palais de Rihour a subit 3 violent incendies avant le XVIIème siècle ainsi qu'un quatrième en 1918.";
         infos2 = "La construction du Palais c'est finie en 1473, sous Charles le Téméraire.";
         infos3 = "Le Palais de Rihour est inscrit aux Monuments Historiques depuis 1998";
-
-        nbRoatationPlayerSelection = 17;
-
     } // DONE
 
     private void setUpForFuretDuNord(){
@@ -223,9 +241,6 @@ public class VraiFauxFragmentClass extends Fragment  {
         infos1 = "Jean de la Fontaine est né en 1621 à Château-Thierry, dans l'Aisne";
         infos2 = "Elle fut la première femme élue à l'Académie française, le 6 mars 1980.";
         infos3 = "Paul Callens a put acheter la boutique grâce aux économies d'une de ses amies.";
-
-
-        nbRoatationPlayerSelection = 19;
     } // DONE
 
     private void setUpForBeffroi(){
@@ -240,8 +255,6 @@ public class VraiFauxFragmentClass extends Fragment  {
         infos1 = "Le Beffroi de Lille mesure 76 mètres.";
         infos2 = "Le Beffroi ne donne pas sur le boulevard Vauban.";
         infos3 = "Les beffrois sont les symbole de la reconnaissance du roi et de la richesse de la ville.";
-
-        nbRoatationPlayerSelection = 18;
     } // DONE
 
     private void setUpForLouiseDeBettignies(){
@@ -256,9 +269,6 @@ public class VraiFauxFragmentClass extends Fragment  {
         infos1 = "Effectivement, si vous observez bien, vous appercevrez un bar nommé \"L'Imaginaire\", au Sud de la place. ";
         infos2 = "La rue Nationale n'est pas du tout proche de cette place. \n Regardez votre carte.";
         infos3 = "Vous voyez une statue sur cette place ? \n La statue ce trouve en réalité à l'entrée du boulevard Carnot.";
-
-        nbRoatationPlayerSelection = 16;
-
     } // DONE
 
     private void setUpForRueEsquermoise(){
@@ -273,9 +283,21 @@ public class VraiFauxFragmentClass extends Fragment  {
         infos1 = "On retrouve des traces de l'existance de cette rue au XI siècle. Elle est donc bien antérieure à la remière Guerre Mondiale.";
         infos2 = "L'Opéra de Lille se situe \"Place du Théatre\". C'était un petit piège, il est vrai.";
         infos3 = "La ville de Lille fût occupée par les Allemands d’octobre 1914 à octobre 1918.";
-
-        nbRoatationPlayerSelection = 20;
     } // DONE
+
+    private void setUpForQuinquin(){
+        question1 = "Le nom \"P'tit Quinquin\" est le nom original de la chanson ?";
+        question2 = "Il existe une film nommé \"La Statue du Quinquin\" ?";
+        question3 = "Les Lillois entendent régulièrement cette musique.";
+
+        bonneReponse1 = false;
+        bonneReponse2 = false;
+        bonneReponse3 = true;
+
+        infos1 = "Le titre original de la chanson est \"L'canchon Dormoire\" (La chanson pour dormir). Une berceuse destinée à endormir les enfants.";
+        infos2 = "Il existe cependant un film nommé \"P'tit Quinquin\" réalisé par Bruno Dumont en 2014.";
+        infos3 = "Ahah !! La mélodie du \"P'tit quinquin\" est régulièrement sonné toutes les heures par le carillon du beffroi de la Chambre de commerce de Lille.";
+    }
 
     // ------------ Méthode de gestion du jeu ---------------------------------
 

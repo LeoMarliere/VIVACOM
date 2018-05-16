@@ -78,7 +78,7 @@ public class MarkerOptionRealm extends RealmObject {
     public boolean isCompleted() {
         return isCompleted;
     }
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
+    public void setCompleted() {
+        this.isCompleted = true;
     }
 }

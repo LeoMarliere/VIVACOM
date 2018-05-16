@@ -69,6 +69,12 @@ public class ConstantLatLng {
     public static final LatLng LATLNG_BEHINDTREILLE = new LatLng(50.64027245701933, 3.063609329983592);
     public static final LatLng LATLNG_COMPOSTELLE = new LatLng(50.6373874340431, 3.0616959929466248);
 
+    // ------- Point Pastille -------
+    public static final LatLng LATLNG_PASTILLE_PORTE = new LatLng(50.76462919940274, 3.1567735669758576);
+    public static final LatLng LATLNG_PASTILLE_PARK1 = new LatLng(50.76433400441892, 3.1565323358025807);
+    public static final LatLng LATLNG_PASTILLE_PARK2 = new LatLng(50.764191495829095, 3.157097443714406);
+    public static final LatLng LATLNG_PASTILLE_COUSSIN = new LatLng(50.764984589541875, 3.1569630193154126);
+
 
     // ------- Mes Zones -------
     public static final LatLng LATLNG_VIEUXLILLE = new LatLng(50.63935729791928, 3.0621511302888393);
