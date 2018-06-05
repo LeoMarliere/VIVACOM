@@ -2,6 +2,10 @@ package com.vivacom.leo.perdpaslenord.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -18,6 +22,7 @@ import com.vivacom.leo.perdpaslenord.OnSwipeTouchListener;
 import com.vivacom.leo.perdpaslenord.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -29,13 +34,16 @@ public class PictureGaleryFragmentClass extends Fragment {
     // ----------------------------------------------------------------------
     RelativeLayout lPhotoGalery;
     ImageView mPhoto1,mPhoto2,mPhoto3;
+    ImageView imageLeft, imageRight, imageCenter;
     // -------
     static final String IMG_PATH = "LISTE D'IMAGE";
+
     ArrayList<ImageView> listImageView = new ArrayList<>();
-    ArrayList<Integer> maListe;
+    List<Bitmap> list_Bitmap = new ArrayList<>();
+    ArrayList<Integer> maListe = new ArrayList<>();
+
     int numPhoto = 0;
-    boolean alreadyDone = false;
-    boolean canMoove = true;
+    boolean alreadyDone = false, canMoove = true;
     // -------
     PictureGaleryFragmentClassCallBack pictureGaleryFragmentClassCallBack;
 
@@ -70,6 +78,7 @@ public class PictureGaleryFragmentClass extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        recycleAllBitmap();
         Log.d(TAG, "Fragment onDestroy");
     }
 
@@ -109,6 +118,16 @@ public class PictureGaleryFragmentClass extends Fragment {
                 maListe = args.getIntegerArrayList(IMG_PATH);
         }
 
+        assert maListe != null;
+        for(Integer inte : maListe){
+            Bitmap bitmap = decodeSampledBitmapFromResource(getResources(), inte, 800, 600);
+            list_Bitmap.add(bitmap);
+        }
+
+        imageLeft = new ImageView(getContext());
+        imageRight = new ImageView(getContext());
+        imageCenter = new ImageView(getContext());
+
         // On ajoute nos imageView dans la liste
         listImageView.add(mPhoto1);
         listImageView.add(mPhoto2);
@@ -124,7 +143,7 @@ public class PictureGaleryFragmentClass extends Fragment {
 
         try{
             if (maListe != null) {
-                mPhoto1.setImageResource(maListe.get(numPhoto));// numPhoto = 0
+                mPhoto1.setImageBitmap(list_Bitmap.get(numPhoto));// numPhoto = 0
                 if (maListe.size() >= 2){
                     lPhotoGalery.setOnTouchListener(new OnSwipeTouchListener(this.getContext()){
                         @Override
@@ -151,9 +170,6 @@ public class PictureGaleryFragmentClass extends Fragment {
         if(canMoove){
             canMoove = false;
 
-            ImageView imageLeft = new ImageView(getContext());
-            ImageView imageRight = new ImageView(getContext());
-            ImageView imageCenter = new ImageView(getContext());
 
             // On passse a la photo précédente
             numPhoto--;
@@ -178,7 +194,8 @@ public class PictureGaleryFragmentClass extends Fragment {
             }
 
             // On affecte l'image qui va s'afficher
-            imageLeft.setImageResource(maListe.get(numPhoto));
+            //imageLeft.setImageResource(maListe.get(numPhoto));
+            imageLeft.setImageBitmap(list_Bitmap.get(numPhoto));
 
             // On modifie les visibilités
             imageCenter.setVisibility(View.VISIBLE);
@@ -212,10 +229,6 @@ public class PictureGaleryFragmentClass extends Fragment {
         if (canMoove){
             canMoove = false;
 
-            ImageView imageLeft = new ImageView(getContext());
-            ImageView imageRight = new ImageView(getContext());
-            ImageView imageCenter = new ImageView(getContext());
-
             // On passse a la photo précédente
             numPhoto++;
             if(numPhoto == maListe.size()){
@@ -238,7 +251,8 @@ public class PictureGaleryFragmentClass extends Fragment {
             }
 
             // On affecte l'image qui va s'afficher
-            imageRight.setImageResource(maListe.get(numPhoto));
+            //imageRight.setImageResource(maListe.get(numPhoto));
+            imageRight.setImageBitmap(list_Bitmap.get(numPhoto));
 
             // On modifie les visibilités
             imageCenter.setVisibility(View.VISIBLE);
@@ -264,6 +278,75 @@ public class PictureGaleryFragmentClass extends Fragment {
             }, 500);
 
         }
+    }
+
+
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            // Calculate ratios of height and width to requested height and
+            // width
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+            // Choose the smallest ratio as inSampleSize value, this will
+            // guarantee
+            // a final image with both dimensions larger than or equal to the
+            // requested height and width.
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+
+        return inSampleSize;
+    }
+
+    /**
+     * Cette méthode va recycler et detrure les Bitmap
+     */
+    private void recycleAllBitmap(){
+
+        if(imageCenter != null){
+            if(imageCenter.getDrawable() != null){
+                ((BitmapDrawable)imageCenter.getDrawable()).getBitmap().recycle();
+                imageCenter.setImageDrawable(null);
+            }
+        }
+
+        if(imageCenter != null){
+            if(imageLeft.getDrawable() != null){
+                ((BitmapDrawable)imageLeft.getDrawable()).getBitmap().recycle();
+                imageLeft.setImageDrawable(null);
+            }
+        }
+
+        if(imageCenter != null){
+            if(imageRight.getDrawable() != null){
+                ((BitmapDrawable)imageRight.getDrawable()).getBitmap().recycle();
+                imageRight.setImageDrawable(null);
+            }
+        }
+
+        System.gc();
     }
 }
 

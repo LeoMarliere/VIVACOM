@@ -2,6 +2,7 @@ package com.vivacom.leo.perdpaslenord.constant;
 
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 /**
  * Created by Leo on 03/01/2018.
@@ -16,17 +17,18 @@ public class ConstantLatLng {
 
     // ------- Point de Passage -------
     public static final LatLng latlng_palaisRihour = new LatLng(50.635492340272776, 3.0620438419282436);
-    public static final LatLng latlng_furetDuNord = new LatLng(50.636642334476555, 3.0629754066467285);
-    public static final LatLng latlng_laGrandGarde = new LatLng(50.636254469753524, 3.064007218927145);
-    public static final LatLng latlng_laVoixDuNord = new LatLng(50.63643139090138, 3.064232524484396);
+    public static final LatLng latlng_furetDuNord = new LatLng(50.636694417096884, 3.063141557093786);
+    public static final LatLng latlng_laGrandGarde = new LatLng(50.636392461618264, 3.063795150104852);
+    public static final LatLng latlng_laVoixDuNord = new LatLng(50.636539611995246, 3.0640387701205327);
     public static final LatLng latlng_laColonneDeLaDeesse = new LatLng(50.636853277105, 3.0634385906159878);
 
     public static final LatLng latlng_laVieilleBourse = new LatLng(50.63704890853525, 3.0642845551483333);
     public static final LatLng latlng_leRangBeauxRegard = new LatLng(50.63753373074422, 3.06418240070343);
     public static final LatLng latlng_leBeffroi = new LatLng(50.63771404930742, 3.064520820043981);
-    public static final LatLng latlng_opera = new LatLng(50.637367020513715, 3.0650174897164106);
+    public static final LatLng latlng_opera = new LatLng(50.63737221101224, 3.06501061120116);
+    public static final LatLng latlng_carlton = new LatLng(50.6369688370937, 3.0651822420730923);
 
-    public static final LatLng latlng_leNouveauSiecle = new LatLng(50.63710504609965, 3.060413058847189);
+    public static final LatLng latlng_leNouveauSiecle = new LatLng(50.636889473250804, 3.060671332086713);
     public static final LatLng latlng_ptitQuinquin = new LatLng(50.635172514399045, 3.0578507110476494);
     public static final LatLng latlng_rueNationale = new LatLng(50.63624086040688, 3.0607992969453335);
 
@@ -37,10 +39,10 @@ public class ConstantLatLng {
     public static final LatLng latlng_placeAuxOignons = new LatLng(50.64079296706997, 3.0617434345185757);
     public static final LatLng latlng_placeLouiseDeBettignies = new LatLng(50.64095626315273, 3.0649102851748466);
     public static final LatLng latlng_ilotComtesse = new LatLng(50.64105151893896, 3.064139485359192);
-    public static final LatLng latlng_hospiceComtesse = new LatLng(50.641391716599415, 3.0632543563842773);
+    public static final LatLng latlng_hospiceComtesse = new LatLng(50.64103949063269, 3.063031194112682);
     public static final LatLng latlng_rueEsquermoise = new LatLng(50.63822097892037, 3.060876242816448);
     public static final LatLng latlng_rueGrandeChaussee = new LatLng(50.63885888593245, 3.0639414628967643);
-    public static final LatLng latlng_notreDameDeLaTreille = new LatLng(50.64015338528247, 3.0625784397125244);
+    public static final LatLng latlng_notreDameDeLaTreille = new LatLng(50.639985584339364, 3.0621726928428643);
 
     // ------- Points Culture -------
     // GrandPlace
@@ -77,16 +79,17 @@ public class ConstantLatLng {
 
 
     // ------- Mes Zones -------
-    public static final LatLng LATLNG_VIEUXLILLE = new LatLng(50.63935729791928, 3.0621511302888393);
-    public static final LatLng LATLNG_LILLECENTRE = new LatLng(50.63683966793173, 3.0574071407318115);
-    public static final LatLng LATLNG_OPERA = new LatLng(50.63739764080446, 3.064661677926779);
-    public static final LatLng LATLNG_GRANDPLACE = new LatLng(50.63605713384144, 3.063406404107809);
+    private static final LatLng LATLNG_VIEUXLILLE = new LatLng(50.63935729791928, 3.0621511302888393);
+    private static final LatLng LATLNG_LILLECENTRE = new LatLng(50.63683966793173, 3.0574071407318115);
+    private static final LatLng LATLNG_OPERA = new LatLng(50.63739764080446, 3.064661677926779);
+    private static final LatLng LATLNG_GRANDPLACE = new LatLng(50.63605713384144, 3.063406404107809);
+
+
 
 
 
     // -------------- CameraPosition ----------------
     public static final CameraPosition CAMPOS_LILLE = new CameraPosition.Builder().target(latlng_LILLE).zoom(16f).bearing(0).tilt(0).build();
-
     public static final CameraPosition CAMPOS_VIEUXLILLE = new CameraPosition.Builder().target(LATLNG_VIEUXLILLE).zoom(17.4f).bearing(0).tilt(30).build();
     public static final CameraPosition CAMPOS_LILLECENTRE = new CameraPosition.Builder().target(LATLNG_LILLECENTRE).zoom(17.2f).bearing(0).tilt(30).build();
     public static final CameraPosition CAMPOS_OPERA = new CameraPosition.Builder().target(LATLNG_OPERA).zoom(19f).bearing(0).tilt(30).build();

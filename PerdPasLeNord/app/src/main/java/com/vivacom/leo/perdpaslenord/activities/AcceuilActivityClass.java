@@ -254,6 +254,7 @@ public class AcceuilActivityClass extends Activity {
         RealmList<Integer> photoGalleryLeRangBeauxregard = new RealmList<>();
         RealmList<Integer> photoGalleryLeBeffroi = new RealmList<>();
         RealmList<Integer> photoGalleryChambreCommerce = new RealmList<>();
+        RealmList<Integer> photoGalleryCarlton = new RealmList<>();
 
         photoGalleryLOpera.add(R.drawable.pht_opera1);
         photoGalleryLOpera.add(R.drawable.pht_opera2);
@@ -287,6 +288,11 @@ public class AcceuilActivityClass extends Activity {
         photoGalleryChambreCommerce.add(R.drawable.pht_chambre2);
         photoGalleryChambreCommerce.add(R.drawable.pht_chambre3);
 
+        // TODO : Trouber photo Carlton
+        photoGalleryCarlton.add(R.drawable.pht_carlton1);
+        photoGalleryCarlton.add(R.drawable.pht_carlton2);
+        photoGalleryCarlton.add(R.drawable.pht_carlton3);
+
         // ----
 
         final SpotClass spotLaVieilleBourse = new SpotClass(1,0, zonePlaceDuTheatre.getmZoneName(), ConstantInfos.NAME_VIEILLEBOURSE, "Calcul Mentaux", 3, ConstantInfos.INFO_LAVIEILLEBOURSE1, ConstantInfos.INFO_LAVIEILLEBOURSE2, ConstantInfos.INFO_LAVIEILLEBOURSE3, photoGalleryLaVieilleBourse);
@@ -295,6 +301,8 @@ public class AcceuilActivityClass extends Activity {
         final SpotClass spotLOpera = new SpotClass(1,9, zonePlaceDuTheatre.getmZoneName(), ConstantInfos.NAME_OPERA ,"Pièce de Théatre", 3, ConstantInfos.INFO_OPERA1, ConstantInfos.INFO_OPERA2, ConstantInfos.INFO_OPERA3, photoGalleryLOpera);
 
         final SpotClass spotChambreCommerce = new SpotClass(2, 21, zonePlaceDuTheatre.getmZoneName(), ConstantInfos.NAME_CHAMBRECOMMERCE , "PAS DE JEU", 1, ConstantInfos.CULTURE_CHAMBRECOMMERCE, null, null, photoGalleryChambreCommerce);
+        final SpotClass spotCarlton = new SpotClass(2, 30, zonePlaceDuTheatre.getmZoneName(), ConstantInfos.NAME_CARLTON , "PAS DE JEU", 1, ConstantInfos.CULTURE_CARLTON, null, null, photoGalleryCarlton);
+
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -308,6 +316,7 @@ public class AcceuilActivityClass extends Activity {
                 realm.copyToRealm(spotLeBeffroi);
                 realm.copyToRealm(spotLOpera);
                 realm.copyToRealm(spotChambreCommerce);
+                realm.copyToRealm(spotCarlton);
 
                 Log.i(TAG, "Création des données ZONE DU THEATRE terminé");
 
@@ -651,7 +660,6 @@ public class AcceuilActivityClass extends Activity {
 
     }
 
-
     // ------- Gestion des animations -------
     /**
      * Cette méthode s'occupe de l'animation au lancement de l'application
@@ -925,6 +933,9 @@ public class AcceuilActivityClass extends Activity {
 
     // ------- Méthode de changement d'activity -------
 
+    /**
+     * Cette méthode permet d'activé l'Intent pour aller a l'écran des règles
+     */
     private void goToRulesExplicationActivity(){
 
         animator.fadeOutAnimation(lMJ_Introduction);

@@ -36,6 +36,8 @@ import java.util.List;
 
 import io.realm.Realm;
 
+import static java.lang.System.gc;
+
 /**
  * Take a picture directly from inside the app using this fragment.
  *
@@ -139,6 +141,7 @@ public class NativeCameraFragment extends Fragment {
         cancelButton.setVisibility(View.GONE);
         registerButton.setVisibility(View.GONE);
         Log.d(TAG, "Fragment onDestroy");
+        System.gc();
     }
 
     // ---------------------------------------------------------------
@@ -328,7 +331,6 @@ public class NativeCameraFragment extends Fragment {
      * Ensuite, elle redemare la preview (normalement)
      */
     private void onRegister(){
-        captureButton.setVisibility(View.VISIBLE);
         registerButton.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
         new Thread(new Runnable() {
@@ -588,7 +590,7 @@ public class NativeCameraFragment extends Fragment {
             // If we cannot find the one that matches the aspect ratio, ignore the requirement.
             if (optimalSize == null) {
                 // TODO : Backup in case we don't get a size.
-                Log.e(TAG, "We don't get  size");
+               // Log.e(TAG, "We don't get  size");
             }
 
             return optimalSize;

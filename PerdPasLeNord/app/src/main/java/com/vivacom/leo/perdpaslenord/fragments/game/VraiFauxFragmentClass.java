@@ -113,6 +113,7 @@ public class VraiFauxFragmentClass extends Fragment  {
 
     public void onDestroy(){
         super.onDestroy();
+        System.gc();
         Log.d(TAG, "Fragment onDestroy");
     }
 

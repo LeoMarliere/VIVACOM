@@ -88,6 +88,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
     // ------------------ Objet ------------------
     private LocationManager mLocationManager = null;
+    private LocationListener locationListenerGPS = null;
     public Marker currentPositionMarker;
     public Realm realm;
     Polygon polygonOpera, polygonGrandPlace, polygonVieuxLille, polygonLilleCentre, polygonLille;
@@ -174,6 +175,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
     @Override
     public void onPause(){
+        removeLocationListener();
         super.onPause();
         Log.d(TAG, "Activity onPause");
         if (centerBtnVisible){changeCenterBtnVisibility();}
@@ -181,6 +183,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
     @Override
     public  void onResume(){
+        restartLocationListener();
         super.onResume();
         Log.i(TAG, "Activity onResume");
         if (!centerBtnVisible){changeCenterBtnVisibility();}
@@ -303,8 +306,13 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         legendVisible = false;
 
         // Limiter la map a la zone de Lille
-        final LatLngBounds LILLE = new LatLngBounds( new LatLng(50.62414739873161, 3.061429113149643), new LatLng(50.64794573000398, 3.0610161074305324));
-        googleMap.setLatLngBoundsForCameraTarget(LILLE);
+        LatLng one = new LatLng(50.63511116592, 3.0715429900363915);
+        LatLng two = new LatLng(50.6449909133538, 3.0491060660309586);
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(one);
+        builder.include(two);
+        LatLngBounds bounds = builder.build();
+        googleMap.setLatLngBoundsForCameraTarget(bounds);
 
     }
 
@@ -363,6 +371,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         final MarkerOptionRealm markerOptionOperaDeLille = new MarkerOptionRealm(10, "Place du Théatre", ConstantLatLng.latlng_opera.latitude, ConstantLatLng.latlng_opera.longitude, ConstantInfos.NAME_OPERA, R.drawable.marker_principal);
 
         final MarkerOptionRealm markerOptionChambreCommerce = new MarkerOptionRealm(102, "Place du Théatre", ConstantLatLng.LATLNG_COMMERCE.latitude, ConstantLatLng.LATLNG_COMMERCE.longitude, ConstantInfos.NAME_CHAMBRECOMMERCE, R.drawable.marker_secondaire);
+        final MarkerOptionRealm markerOptionCarlton = new MarkerOptionRealm(110, "Place du Théatre", ConstantLatLng.latlng_carlton.latitude, ConstantLatLng.latlng_carlton.longitude, ConstantInfos.NAME_CARLTON, R.drawable.marker_secondaire);
 
         // ------- Lille Centre --------
         final MarkerOptionRealm markerOptionLeNouveauSiecle = new MarkerOptionRealm(12, "Lille Centre", ConstantLatLng.latlng_leNouveauSiecle.latitude, ConstantLatLng.latlng_leNouveauSiecle.longitude, ConstantInfos.NAME_NOUVEAUSIECLE, R.drawable.marker_principal);
@@ -419,6 +428,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                 realm.copyToRealm(markerOptionLeBeffroi);
                 realm.copyToRealm(markerOptionOperaDeLille);
                 realm.copyToRealm(markerOptionChambreCommerce);
+                realm.copyToRealm(markerOptionCarlton);
 
                 realm.copyToRealm(markerOptionLeNouveauSiecle);
                 realm.copyToRealm(markerOptionLaStatueDuPtitQuinquin);
@@ -702,7 +712,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
     public void createLocationListener(){
 
         initializeLocationManager();
-        LocationListener locationListenerGPS = new LocationListener(LocationManager.GPS_PROVIDER);
+        locationListenerGPS = new LocationListener(LocationManager.GPS_PROVIDER);
 
         // -----
         try {
@@ -723,8 +733,42 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
      */
     private void initializeLocationManager() {
         Log.i(TAG, "initializeLocationManager - LOCATION_INTERVAL: "+ LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
-        //mLocationManager = (LocationManager) .getSystemService(Context.LOCATION_SERVICE);
-        mLocationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) Objects.requireNonNull(getContext()).getSystemService(Context.LOCATION_SERVICE);
+    }
+
+    /**
+     * Cette méthode va supprimer le locationListener
+     */
+    private void removeLocationListener(){
+
+        if(mLocationManager != null) {
+            mLocationManager.removeUpdates(locationListenerGPS);
+            mLocationManager = null;
+        }
+
+        if (locationListenerGPS != null){
+            locationListenerGPS = null;
+        }
+    }
+
+    /**
+     * Cette méthode va relancer le locationListener
+     */
+    private void restartLocationListener(){
+        if(mLocationManager == null){
+            initializeLocationManager();
+            locationListenerGPS = new LocationListener(LocationManager.GPS_PROVIDER);
+
+            // -----
+            try {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, locationListenerGPS);
+                Log.i(TAG, "mLocationMaganer with GPS is succes" );
+            } catch (java.lang.SecurityException ex) {
+                Log.i(TAG, "fail to request location update, ignore", ex);
+            } catch (IllegalArgumentException ex) {
+                Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+            }
+        }
     }
 
     /**
@@ -884,7 +928,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                           // Marker marker = getGoogleMap().addMarker(theMarker.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.marker_principal_valide)));
                             Marker marker = getGoogleMap().addMarker(theMarker);
                             animator.fadeInMarkerAnimation(marker);
                             if (markerOptionList != markerOptionList_Completed) {
@@ -901,7 +944,7 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
     }
 
-
+    // Cette méthode va créer un Bitmap a partir d'un Vector et du context
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
 
         //Drawable vectorDrawable = ContextCompat.getDrawable(context, R.drawable.marker_principal);
@@ -1145,9 +1188,11 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                 new LatLng(50.636806495555376,3.0639182031154633),
                 new LatLng(50.63672909325284,3.0640623718500137),
                 new LatLng(50.636733771417624,3.0642186105251312),
-                new LatLng(50.63700212718037,3.0647899210453033), // opera
-                new LatLng(50.637202010825725,3.065227121114731),
-                new LatLng(50.63724879198167,3.0652888119220734),
+                new LatLng(50.63700212718037,3.0647899210453033), // angle carlton
+                new LatLng(50.63665486921253,3.0652233175444508), // test1 - gauche
+                new LatLng(50.63702856664193,3.06590297051207), // test1 - droite
+               // new LatLng(50.637202010825725,3.065227121114731),
+                //new LatLng(50.63724879198167,3.0652888119220734),
                 new LatLng(50.63787225276015,3.0658158659934998),
                 new LatLng(50.63806702939791,3.065251260995865),
                 new LatLng(50.638132521797836,3.0651815235614777)
@@ -1571,26 +1616,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
     }
 
     /**
-     * Cette méthode augmente en BDD le nombre de secret découvert
-     */
-    public void incrementStats_nbMetre(final int metre){
-
-        Realm realm =  Realm.getDefaultInstance();
-        try{
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    TeamClass team = realm.where(TeamClass.class).findFirst();
-                    if (team != null){ team.setStats_NbMetre(team.getStats_NbMetre()+metre); }
-                }
-            });
-        } finally {
-            realm.close();
-        }
-
-    }
-
-    /**
      * Cette méthode va mettre a jour dans la BDD
      * Le nombre de spot découvert
      */
@@ -1621,8 +1646,9 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
     private class LocationListener implements android.location.LocationListener {
 
-        Location mLastLocation;
-        int nbChangementPosition = 0;
+        private Location mLastLocation;
+        private int nbChangementPosition = 0;
+
 
         LocationListener(String provider) {
             Log.d(TAG, "LocationListener " + provider);
@@ -1643,7 +1669,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
                 // On calcul la distance et la nouvelle LatLng
                 float distance = mLastLocation.distanceTo(location);
-                incrementStats_nbMetre((int)distance);
 
                 // On déplace la marker
                 LatLng newLatLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -1679,6 +1704,8 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
         public void onStatusChanged(String provider, int status, Bundle extras) {
             Log.v(TAG, "onStatusChanged: " + provider + "status : "+ status);
         }
+
+
     }
 
 

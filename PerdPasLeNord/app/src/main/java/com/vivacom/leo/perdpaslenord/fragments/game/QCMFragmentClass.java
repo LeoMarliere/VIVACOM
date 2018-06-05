@@ -115,6 +115,7 @@ public class QCMFragmentClass extends Fragment {
 
     public void onDestroy(){
         super.onDestroy();
+        System.gc();
         Log.d(TAG, "Fragment onDestroy");
     }
 
@@ -554,10 +555,7 @@ public class QCMFragmentClass extends Fragment {
                 chkBReponse4.setText(possibility4for1);
                 chkBReponse5.setText(possibility5for1);
                 btnValider.setBackgroundResource(R.drawable.btn_action_question_suivante);
-                if(gameFinish){
-                    txtVConsigne.setClickable(true);
-                    txtVConsigne.setFocusable(true);
-                }
+
                 break;
             case 2 :
                 txtQuestionNumber.setText(R.string.qcm_txtv_question2);
@@ -672,7 +670,7 @@ public class QCMFragmentClass extends Fragment {
 
             case 2:
                 chkBSelected2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_uncorrect));
-                if (spotTag == 1){chkBReponse5.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
+                if (spotTag == 1){chkBReponse3.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 2){chkBReponse2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 3){chkBReponse2.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
                 else if (spotTag == 4){chkBReponse1.setBackground(getResources().getDrawable(R.drawable.checkbox_qcm_correct));}
@@ -787,13 +785,16 @@ public class QCMFragmentClass extends Fragment {
     public void setUpAfterLastQuestion(){
         txtVConsigne.setText(R.string.qcm_txtv_reponse);
         animator.fadeOutFadeInAnimation(gameLayout, txtVConsigne);
+
         chkBReponse1.setClickable(false);
         chkBReponse2.setClickable(false);
         chkBReponse3.setClickable(false);
         chkBReponse4.setClickable(false);
         chkBReponse5.setClickable(false);
+
         currentQuestion = 1;
         gameFinish = true;
+
         txtVConsigne.setClickable(false);
         txtVConsigne.setFocusable(false);
 
@@ -808,6 +809,18 @@ public class QCMFragmentClass extends Fragment {
                 colorCheckBox();
             }
         }, 2000);
+
+        // On réactive le click sur le TextViewConsigne
+        final Handler handler2 = new Handler();
+        handler2.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                txtVConsigne.setClickable(true);
+                txtVConsigne.setFocusable(true);
+            }
+        }, 4000);
+
+
     }
 
 

@@ -26,21 +26,15 @@ import java.util.List;
 public class MJFragmentClass extends Fragment {
 
     RelativeLayout lMJ_Screen, lMJ_Bandeau, lMJ_textBox;
-
     TextView MJ_Texte;
-
     ImageView iMJ_Image;
 
-
+    ViewAnimations animator = new ViewAnimations();
     MJFragmentCallBack mjFragmentCallBack;
 
     String[] messageList;
-
     int currentMessage;
-
     boolean canChange = true;
-
-    ViewAnimations animator = new ViewAnimations();
 
     public final String TAG= "MJ_Screen";
 

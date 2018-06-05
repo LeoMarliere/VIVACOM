@@ -2,8 +2,12 @@ package com.vivacom.leo.perdpaslenord.fragments.game;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -109,6 +113,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
 
     public void onDestroy(){
         super.onDestroy();
+        recycleAllBitmap();
         Log.i(TAG, "Fragment onDestroy");
     }
 
@@ -269,6 +274,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
      */
     private void setUpForOperaDeLille(){
         // On affecte les images a leur elements
+        /*
         image1.setImageResource(R.drawable.puzzle_opera_p6);
         image2.setImageResource(R.drawable.puzzle_opera_p11);
         image3.setImageResource(R.drawable.puzzle_opera_p5);
@@ -280,6 +286,21 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         image9.setImageResource(R.drawable.puzzle_opera_p4);
         image10.setImageResource(R.drawable.puzzle_opera_p10);
         image11.setImageResource(R.drawable.puzzle_opera_p7);
+        */
+
+        image1.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p6, 150, 150));
+        image2.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p11, 150, 150));
+        image3.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p5, 150, 150));
+        image4.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p9, 150, 150));
+        image5.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p2, 150, 150));
+        image6.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p8, 150, 150));
+        image7.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p12, 150, 150));
+        image8.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p3, 150, 150));
+        image9.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p4, 150, 150));
+        image10.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p10, 150, 150));
+        image11.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p7, 150, 150));
+
+
         // pas de 12
 
 
@@ -306,6 +327,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
      */
     private void setUpForGrandGarde(){
         // On affecte les images a leur elements
+        /*
         image1.setImageResource(R.drawable.puzzle_grandgarde_p6);
         image2.setImageResource(R.drawable.puzzle_grandgarde_p11);
         image3.setImageResource(R.drawable.puzzle_grandgarde_p5);
@@ -317,8 +339,20 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         image9.setImageResource(R.drawable.puzzle_grandgarde_p4);
         image10.setImageResource(R.drawable.puzzle_grandgarde_p10);
         image11.setImageResource(R.drawable.puzzle_grandgarde_p7);
+        */
         // pas de 12
 
+        image1.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p6, 150, 150));
+        image2.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p11, 150, 150));
+        image3.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p5, 150, 150));
+        image4.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p9, 150, 150));
+        image5.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p2, 150, 150));
+        image6.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p8, 150, 150));
+        image7.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p12, 150, 150));
+        image8.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p3, 150, 150));
+        image9.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p4, 150, 150));
+        image10.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p10, 150, 150));
+        image11.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p7, 150, 150));
 
         // On affecte chaque bonne image à sa bonne place
         // pas de 1
@@ -343,6 +377,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
      */
     private void setUpForNotreDameDeLaTreille(){
         // On affecte les images a leur elements
+        /*
         image1.setImageResource(R.drawable.puzzle_treille_p7);
         image2.setImageResource(R.drawable.puzzle_treille_p3);
         image3.setImageResource(R.drawable.puzzle_treille_p2);
@@ -354,7 +389,19 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         image9.setImageResource(R.drawable.puzzle_treille_p8);
         image10.setImageResource(R.drawable.puzzle_treille_p4);
         image11.setImageResource(R.drawable.puzzle_treille_p10);
-        // pas de 12
+        */
+
+        image1.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p7, 150, 150));
+        image2.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p3, 150, 150));
+        image3.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p2, 150, 150));
+        image4.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p9, 150, 150));
+        image5.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p12, 150, 150));
+        image6.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p6, 150, 150));
+        image7.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p5, 150, 150));
+        image8.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p11, 150, 150));
+        image9.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p8, 150, 150));
+        image10.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p4, 150, 150));
+        image11.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p10, 150, 150));
 
 
         // On affecte chaque bonne image à sa bonne place
@@ -398,6 +445,56 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         if(layoutThreeFour.getChildAt(0) != null){if (layoutThreeFour.getChildAt(0)==(goodImageFor12)){nbBonneReponse++;}}
         Log.d("PUZZLE CORRECTION", "Nb bonnes reponses : "+nbBonneReponse);
         return nbBonneReponse == 11;
+    }
+
+    // Cette méthode va recycler nos Bitmap
+    private void recycleAllBitmap(){
+        if(image1.getDrawable() != null){
+            ((BitmapDrawable)image1.getDrawable()).getBitmap().recycle();
+            image1.setImageDrawable(null);
+        }
+        if(image2.getDrawable() != null){
+            ((BitmapDrawable)image2.getDrawable()).getBitmap().recycle();
+            image2.setImageDrawable(null);
+        }
+        if(image3.getDrawable() != null){
+            ((BitmapDrawable)image3.getDrawable()).getBitmap().recycle();
+            image3.setImageDrawable(null);
+        }
+        if(image4.getDrawable() != null){
+            ((BitmapDrawable)image4.getDrawable()).getBitmap().recycle();
+            image4.setImageDrawable(null);
+        }
+        if(image5.getDrawable() != null){
+            ((BitmapDrawable)image5.getDrawable()).getBitmap().recycle();
+            image5.setImageDrawable(null);
+        }
+        if(image6.getDrawable() != null){
+            ((BitmapDrawable)image6.getDrawable()).getBitmap().recycle();
+            image6.setImageDrawable(null);
+        }
+        if(image7.getDrawable() != null){
+            ((BitmapDrawable)image7.getDrawable()).getBitmap().recycle();
+            image7.setImageDrawable(null);
+        }
+        if(image8.getDrawable() != null){
+            ((BitmapDrawable)image8.getDrawable()).getBitmap().recycle();
+            image8.setImageDrawable(null);
+        }
+        if(image9.getDrawable() != null){
+            ((BitmapDrawable)image9.getDrawable()).getBitmap().recycle();
+            image9.setImageDrawable(null);
+        }
+        if(image10.getDrawable() != null){
+            ((BitmapDrawable)image10.getDrawable()).getBitmap().recycle();
+            image10.setImageDrawable(null);
+        }
+        if(image11.getDrawable() != null){
+            ((BitmapDrawable)image11.getDrawable()).getBitmap().recycle();
+            image11.setImageDrawable(null);
+        }
+
+        System.gc();
     }
 
     // ------------- Méthode de fonctionnement du jeu ------------
@@ -505,6 +602,48 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         layoutForGame.addView(whiteView);
     }
 
+    // ---------
+
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth,
+                reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            // Calculate ratios of height and width to requested height and
+            // width
+            final int heightRatio = Math.round((float) height
+                    / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+            // Choose the smallest ratio as inSampleSize value, this will
+            // guarantee
+            // a final image with both dimensions larger than or equal to the
+            // requested height and width.
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+
+        return inSampleSize;
+    }
 
     // -----------------------------------------------------------------------------
     // -------------------- Class De Gestion D'Event--------------------------------

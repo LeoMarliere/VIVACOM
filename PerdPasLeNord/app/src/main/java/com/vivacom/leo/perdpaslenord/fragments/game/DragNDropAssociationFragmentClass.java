@@ -3,6 +3,9 @@ package com.vivacom.leo.perdpaslenord.fragments.game;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -132,6 +135,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
 
     public void onDestroy(){
         super.onDestroy();
+        System.gc();
         Log.d(TAG, "Fragment onDestroy");
     }
 
@@ -399,6 +403,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         imageTwo.setImageResource(R.drawable.jeu_asso_blason_amiens);
         imageThree.setImageResource(R.drawable.jeu_asso_blason_saintomer);
         imageFour.setImageResource(R.drawable.jeu_asso_blason_tourcoin);
+
 
         txtVConsigne.setText("La Voix du Nord est publiée dans de nombreuses communes de la métropole Lilloise. \n Vous devez associer chaque blason à sa commune. \n Vous trouverez des indices sur la façade du bâtiment. \n \n Une fois cela fait, appuyer sur le bouton TERMINER, mais attention, vous n'avez pas le droit a l'erreur. \n \n Toucher l'écran pour continuer");
 

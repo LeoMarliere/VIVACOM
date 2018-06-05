@@ -131,8 +131,6 @@ public class ConstantInfos {
             "\n Attestée par la charte de 1066 sous le nom de « Grande-Cauchie », est reliait la place du Marché (actuelle Grand'Place) au castrum.";
     public static final String INFO_LARUEGRANDECHAUSSEE2 = "Le navire sculpté au premier étage du 23 de la rue Grande Chaussée et celui sur la balustrade de la fenêtre rappelle les écuries de l’Auberge de la Nef d’Argent.";
     public static final String INFO_LARUEGRANDECHAUSSEE3 = "Ce lieu était le point de départ de l’incendie qui détruisit, en 1545, 200 maisons en bois comprenant une grande partie de celles de la rue Grande Chaussée.";
-
-
     // --------------------------------------
     // --------------------------------------
     // --------------------------------------
@@ -176,6 +174,8 @@ public class ConstantInfos {
     public static final String CULTURE_RUEWEPPES = "La rue de Weppes est aujourd’hui une petite rue du Vieux Lille pleine de charme, avec ses lampadaires « Belle Epoque » et sa passerelle piétonnière qui relie la rue Esquermoise et le parvis de la Treille. \n" +
             "\n  On sait moins en revanche que son tracé est celui de l’ancien canal Saint Martin.";
 
+    //   ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
+    public static final String CULTURE_CARLTON = "L'hôtel Carlton de Lille est un hôtel quatre étoiles situé sur la place de l'Opéra. Tristement célèbre à cause de l'affaire de proxénétisme impliquant Dominique Strauss-Kahn en 2011, cet établissement n'en reste pas moins l'un des plus préstigieux de la ville.";
 
     // --------------------------------------
     // --------------------------------------
@@ -245,6 +245,7 @@ public class ConstantInfos {
     public static final String NAME_RANG = "Le Rang Beauregard";
     public static final String NAME_BEFFROI = "Le Beffroi";
     public static final String NAME_CHAMBRECOMMERCE = "La Chambre des Commerces";
+    public static final String NAME_CARLTON = "L'Hotel Carlton";
 
     public static final String NAME_FURET = "Le Furet du Nord";
     public static final String NAME_VOIXDUNORD = "La Voix du Nord";

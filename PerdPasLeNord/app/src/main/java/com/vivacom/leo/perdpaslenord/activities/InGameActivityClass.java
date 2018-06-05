@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
 import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
@@ -48,6 +49,7 @@ import io.realm.RealmResults;
 
 /**
  * Created by Leo on 08/09/2017.
+ * C'est la classe qui controle l'activité principale de l'application
  */
 
 public class InGameActivityClass extends AppCompatActivity implements GoogleMapFragment.GoogleMapFragmentCallBack, QCMFragmentClass.QCMFragmentClassCallBack ,
@@ -112,6 +114,9 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         setContentView(R.layout.activity_in_game);
 
         Log.i(TAG, "Activity onCreate : ----------- Start");
+
+        // On init notre LeakCanary
+        initLeakCanary();
 
         // On associe nos elements
         associateElements();
@@ -226,7 +231,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     /**
      * Cette méthode ajoute une view a tout l'écran (pour éviter problème de DnD)
      */
-    public void setUpWhiteScreen(boolean activate){
+    private void setUpWhiteScreen(boolean activate){
         if (activate){
             layoutForGame.addView(whiteView);
             layoutForGame.setOnDragListener(new MyDragListener());
@@ -236,6 +241,19 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             whiteViewActive = false;
         }
 
+    }
+
+    /**
+     * Cette méthode va initialiser LeakCanary
+     * Permet de voir les leak de mémoire
+     */
+    private void initLeakCanary(){
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(getApplication());
     }
 
 
@@ -797,6 +815,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                 if(correct && spotSelected.getmSpotType() == 1){
                     incrementStats_NbVictoire();
                     addNumberToList_listWord(spotSelected.getmSpotId());
+                    Toasty.success(getApplicationContext(), "Félicitations, vous venez de débloquer un mot !",Toast.LENGTH_SHORT, true).show();
                 }
 
                 else if (!correct && spotSelected.getmSpotType() == 1) {
@@ -1260,7 +1279,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Cette méthode va récupérer le spot actuel dans la BDD
      * Et va passer la variable isInfosChecked a TRUE
      */
-    public void setInfoCheckedInBDD(){
+    private void setInfoCheckedInBDD(){
 
         final String spotName = spotSelected.getmSpotName();
         realm =  Realm.getDefaultInstance();
@@ -1284,7 +1303,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Cette méthode va récupérer le spot actuel dans la BDD
      * Et va passer la variable isImageChecked a TRUE
      */
-    public void setPhotoCheckedInBDD(){
+    private void setPhotoCheckedInBDD(){
 
         final String spotName = spotSelected.getmSpotName();
         realm =  Realm.getDefaultInstance();
@@ -1307,7 +1326,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Cette méthode va récupérer le spot actuel dans la BDD
      * Et va passer la variable isGameChecked a TRUE
      */
-    public void setGameCheckedInBDD(){
+    private void setGameCheckedInBDD(){
 
         final String spotName = spotSelected.getmSpotName();
         realm =  Realm.getDefaultInstance();
@@ -1330,7 +1349,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Cette méthode va récupérer le spot actuel dans la BDD
      * Et va passer la variable isSpotCompleted a TRUE
      */
-    public void setSpotCompletedInBDD(){
+    private void setSpotCompletedInBDD(){
 
         final String spotName = spotSelected.getmSpotName();
 
@@ -1357,7 +1376,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Cette méthode va récupérer la zone actuelle dans la BDD
      * Et va passer la variable isZoneCompleted a TRUE
      */
-    public void setZoneCompletedInBDD() {
+    private void setZoneCompletedInBDD() {
 
 
         new Thread(new Runnable() {
@@ -1392,7 +1411,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
      * Cette méthode va récupérer dans la BDD la zone associé a notre spot
      * Puis va créer notre objet zoneSelected via les informations de l'objet récupérer
      */
-    public void getZoneSelectedFromBDD(){
+    private void getZoneSelectedFromBDD(){
         final String zoneName = spotSelected.getmZoneName();
 
         Realm realm = Realm.getDefaultInstance();
@@ -1418,6 +1437,8 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
 
     public void incrementStats_PointPrincipaux(){
 
+
+
                 realm =  Realm.getDefaultInstance();
                 try{
                     realm.executeTransaction(new Realm.Transaction() {
@@ -1433,9 +1454,11 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                 } finally {
                     realm.close();
                 }
-            }
+
+        }
 
     public void incrementStats_PointSecondaire(){
+
 
                 realm =  Realm.getDefaultInstance();
                 try{
@@ -1452,10 +1475,10 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                 } finally {
                     realm.close();
                 }
-            }
+
+    }
 
     public void incrementStats_NbZones(){
-
                 realm =  Realm.getDefaultInstance();
                 try{
                     realm.executeTransaction(new Realm.Transaction() {
@@ -1471,9 +1494,11 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                     realm.close();
                 }
 
+
     }
 
     public void incrementStats_NbVictoire(){
+
 
                 realm =  Realm.getDefaultInstance();
                 try{
@@ -1489,42 +1514,50 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                 } finally {
                     realm.close();
                 }
+
+
     }
 
     public void addNumberToList_listWord(final int nb){
 
-        realm =  Realm.getDefaultInstance();
-        try{
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    TeamClass team = realm.where(TeamClass.class).findFirst();
-                    if (team != null){ team.getList_DiscoverWord().add(nb); }
-                    Toasty.success(getApplicationContext(), "Félicitations, vous venez de débloquer un mot !",Toast.LENGTH_SHORT, true).show();
+                realm =  Realm.getDefaultInstance();
+                try{
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            TeamClass team = realm.where(TeamClass.class).findFirst();
+                            if (team != null){ team.getList_DiscoverWord().add(nb); }
+                        }
+                    });
+                } finally {
+                    realm.close();
                 }
-            });
-        } finally {
-            realm.close();
-        }
 
     }
 
     public void addNumberToList_UnlistWord(final int nb){
 
-        realm =  Realm.getDefaultInstance();
-        try{
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    TeamClass team = realm.where(TeamClass.class).findFirst();
-                    if (team != null){ team.getList_UnDiscoverWord().add(nb); }
+
+                realm =  Realm.getDefaultInstance();
+                try{
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            TeamClass team = realm.where(TeamClass.class).findFirst();
+                            if (team != null){ team.getList_UnDiscoverWord().add(nb); }
+                        }
+                    });
+                } finally {
+                    realm.close();
                 }
-            });
-        } finally {
-            realm.close();
-        }
+
+
+
+
 
     }
+
+
 
 
     // ---------------------------------------------------------------------------------
