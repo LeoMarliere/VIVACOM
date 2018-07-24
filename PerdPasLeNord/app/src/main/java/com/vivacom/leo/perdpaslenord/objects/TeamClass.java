@@ -32,14 +32,10 @@ public class TeamClass extends RealmObject {
     private int stats_NbVictoire;
 
 
-    public TeamClass(){}
-
-    // Constructeur
-    public TeamClass(String name, RealmList<String> list){
-        this.mTeamName = name;
-        this.membersList = list;
-        numInsigne = 1;
+    public TeamClass(){
+        // Empty
     }
+
     // Constructeur
     public TeamClass(String name, RealmList<String> list, int numInsigne){
         this.mTeamName = name;

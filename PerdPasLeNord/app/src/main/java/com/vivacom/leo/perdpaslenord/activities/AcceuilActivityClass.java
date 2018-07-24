@@ -21,22 +21,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.vivacom.leo.perdpaslenord.constant.ConstantGuideMessage;
 import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
-import com.vivacom.leo.perdpaslenord.objects.MarkerOptionRealm;
 import com.vivacom.leo.perdpaslenord.objects.SpotClass;
 import com.vivacom.leo.perdpaslenord.objects.TeamClass;
 import com.vivacom.leo.perdpaslenord.objects.ZoneClass;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 
 import static android.view.View.GONE;
 
@@ -288,7 +288,6 @@ public class AcceuilActivityClass extends Activity {
         photoGalleryChambreCommerce.add(R.drawable.pht_chambre2);
         photoGalleryChambreCommerce.add(R.drawable.pht_chambre3);
 
-        // TODO : Trouber photo Carlton
         photoGalleryCarlton.add(R.drawable.pht_carlton1);
         photoGalleryCarlton.add(R.drawable.pht_carlton2);
         photoGalleryCarlton.add(R.drawable.pht_carlton3);
@@ -522,6 +521,8 @@ public class AcceuilActivityClass extends Activity {
         photoGaleryHospiceComtesse.add(R.drawable.pht_hospice5);
         photoGaleryHospiceComtesse.add(R.drawable.pht_hospice6);
 
+        //TODO : ajouter une photo pour Esquermoise
+        photoGaleryRueEsquermoise.add(R.drawable.pht_esquermoise1);
         photoGaleryRueEsquermoise.add(R.drawable.pht_esquermoise1);
         //photoGaleryRueEsquermoise.add(R.drawable.pht_esquermoise2);
 
@@ -960,6 +961,7 @@ public class AcceuilActivityClass extends Activity {
 
 
     }
+
 
     // ------- OnClickListener -------
     /**

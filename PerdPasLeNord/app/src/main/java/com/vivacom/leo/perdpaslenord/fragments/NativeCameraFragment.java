@@ -24,7 +24,10 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.vivacom.leo.perdpaslenord.R;
+import com.vivacom.leo.perdpaslenord.activities.InGameActivityClass;
 import com.vivacom.leo.perdpaslenord.objects.TeamClass;
 
 import java.io.File;
@@ -33,6 +36,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import io.realm.Realm;
 
@@ -122,8 +126,8 @@ public class NativeCameraFragment extends Fragment {
 
     @Override
     public void onPause() {
-        super.onPause();
         releaseCameraAndPreview();
+        super.onPause();
         Log.d(TAG, "Fragment onPause");
     }
 
@@ -135,11 +139,11 @@ public class NativeCameraFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         releaseCameraAndPreview();
         captureButton.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
         registerButton.setVisibility(View.GONE);
+        super.onDestroy();
         Log.d(TAG, "Fragment onDestroy");
         System.gc();
     }
@@ -161,12 +165,12 @@ public class NativeCameraFragment extends Fragment {
 
         Log.d(TAG,"OnCreateView");
 
+
+        // Association des éléments
         captureButton = view.findViewById(R.id.button_capture);
         cancelButton = view.findViewById(R.id.button_cancel);
         registerButton = view.findViewById(R.id.button_register);
-
         preview =  view.findViewById(R.id.camera_preview);
-
         captureButton.setVisibility(View.VISIBLE);
         cancelButton.setVisibility(View.GONE);
         registerButton.setVisibility(View.GONE);
@@ -423,7 +427,7 @@ public class NativeCameraFragment extends Fragment {
          * @param camera
          */
         private void setCamera(Camera camera) {
-            // Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
+
             mCamera = camera;
             mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
             mSupportedFlashModes = mCamera.getParameters().getSupportedFlashModes();
@@ -625,6 +629,7 @@ public class NativeCameraFragment extends Fragment {
                         // On enregistre la photo pis on ferme le stream
                         fos.write(data);
                         fos.close();
+                        photoTake = data;
 
 
                     } catch (IOException e) {
@@ -634,7 +639,6 @@ public class NativeCameraFragment extends Fragment {
                 }
             }).start();
 
-            photoTake = data;
             captureButton.setVisibility(View.GONE);
             cancelButton.setVisibility(View.VISIBLE);
             registerButton.setVisibility(View.VISIBLE);
@@ -670,6 +674,7 @@ public class NativeCameraFragment extends Fragment {
 
 
     }
+
 
 
 

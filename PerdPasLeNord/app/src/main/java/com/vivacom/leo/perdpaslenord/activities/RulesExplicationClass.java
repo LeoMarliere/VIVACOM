@@ -16,9 +16,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
 import com.vivacom.leo.perdpaslenord.objects.TeamClass;
+
+import java.util.Objects;
 
 import static android.view.View.GONE;
 
@@ -67,6 +70,7 @@ public class RulesExplicationClass extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rules_explication);
+
 
         // ------- On associe nos élements graphiques -------
         associateElements();

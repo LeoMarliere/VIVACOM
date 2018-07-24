@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.leakcanary.LeakCanary;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
 import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
@@ -25,7 +24,6 @@ import com.vivacom.leo.perdpaslenord.fragments.MJFragmentClass;
 import com.vivacom.leo.perdpaslenord.fragments.MenuCircleButtonFragment;
 import com.vivacom.leo.perdpaslenord.fragments.NativeCameraFragment;
 import com.vivacom.leo.perdpaslenord.fragments.RoadBookFragmentClass;
-import com.vivacom.leo.perdpaslenord.fragments.game.DifferenceFragmentClass;
 import com.vivacom.leo.perdpaslenord.fragments.game.DragNDropPuzzleFragmentClass;
 import com.vivacom.leo.perdpaslenord.fragments.game.DragNDropAssociationFragmentClass;
 import com.vivacom.leo.perdpaslenord.fragments.GoogleMapFragment;
@@ -56,7 +54,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         DragNDropAssociationFragmentClass.DragNDropAssociationFragmentClassCallBack, DragNDropPuzzleFragmentClass.DragNDropPuzzleFragmentClassCallBack,
         PictureGaleryFragmentClass.PictureGaleryFragmentClassCallBack , VraiFauxFragmentClass.VraiFauxFragmentClassCallBack,
         MenuCircleButtonFragment.MenuCircleButtonFragmentCallBack, NativeCameraFragment.NativeCameraFragmentCallBack,
-        InformationFragmentClass.InformationFragmentClassCallBack, MJFragmentClass.MJFragmentCallBack, DifferenceFragmentClass.DifferenceFragmentClassCallBack{
+        InformationFragmentClass.InformationFragmentClassCallBack, MJFragmentClass.MJFragmentCallBack{
 
 
     // ------- Elements Graphiques -------
@@ -71,6 +69,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
     Realm realm;
     SpotClass spotSelected;
     ZoneClass zoneSelected;
+
 
     // ------- Nos Listes -------
     ArrayList<Integer> listPhotoOfSpot = new ArrayList<>();
@@ -116,7 +115,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         Log.i(TAG, "Activity onCreate : ----------- Start");
 
         // On init notre LeakCanary
-        initLeakCanary();
+
 
         // On associe nos elements
         associateElements();
@@ -241,19 +240,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
             whiteViewActive = false;
         }
 
-    }
-
-    /**
-     * Cette méthode va initialiser LeakCanary
-     * Permet de voir les leak de mémoire
-     */
-    private void initLeakCanary(){
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(getApplication());
     }
 
 
@@ -1111,6 +1097,7 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
                         actualFragment = "PUZZLE";
                         setDnDPuzzleGame(spotName);
                     } else if (spotName.equals(ConstantInfos.NAME_ILOT) || spotName.equals(ConstantInfos.NAME_RANG)) {
+                        // TODO : trouver autre jeux pour ces spot
                         actualFragment = "CAMERA";
                         setNativePhotoFragment();
                     } else if (spotSelected.getmSpotType() == 2){
@@ -1211,21 +1198,6 @@ public class InGameActivityClass extends AppCompatActivity implements GoogleMapF
         try {
             FragmentTransaction transactionManager = getSupportFragmentManager().beginTransaction();
             transactionManager.replace(R.id.IG_fragmentLayout, NativeCameraFragment.newInstance(1))
-                    .addToBackStack(null)
-                    .commit();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Cette méthode place le jeu Difference dans le fragment
-     */
-    private void setDifferenceFragment(String spotName){
-        try {
-            FragmentTransaction transactionManager = getSupportFragmentManager().beginTransaction();
-            transactionManager.replace(R.id.IG_fragmentLayout, DifferenceFragmentClass.newInstance(spotName))
                     .addToBackStack(null)
                     .commit();
 

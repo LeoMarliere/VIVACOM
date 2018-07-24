@@ -109,6 +109,7 @@ public class RoadBookFragmentClass extends Fragment {
     @Override
     public void onPause(){
         super.onPause();
+        recycleAllBitmap();
         Log.d(TAG, "Activity onPause");
     }
 
@@ -469,6 +470,8 @@ public class RoadBookFragmentClass extends Fragment {
         phraseMystereList.add(pm_16);
         phraseMystereList.add(pm_17);
         phraseMystereList.add(pm_18);
+        // TODO : trouver 1 autre mot pour la phtrase car 1 poitn uppléetnatie
+
     }
 
     /**
@@ -747,6 +750,20 @@ public class RoadBookFragmentClass extends Fragment {
         System.exit(0);
 
 
+    }
+
+    /**
+     * Cette méthode va recycler et detrure les Bitmap
+     */
+    private void recycleAllBitmap(){
+
+        if(listPhoto_Bitmap != null && listPhoto_Bitmap.size() != 0){
+            for (Bitmap btm : listPhoto_Bitmap) {
+                btm.recycle();
+            }
+        }
+
+        System.gc();
     }
 }
 

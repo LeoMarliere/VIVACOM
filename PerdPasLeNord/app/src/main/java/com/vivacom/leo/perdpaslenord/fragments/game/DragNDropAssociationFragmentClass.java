@@ -3,9 +3,7 @@ package com.vivacom.leo.perdpaslenord.fragments.game;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -16,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,7 +36,7 @@ import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
-import static com.vivacom.leo.perdpaslenord.R.string.playerSelection_subtitle;
+
 
 /**
  * Created by Leo on 18/09/2017.
@@ -153,6 +150,7 @@ public class DragNDropAssociationFragmentClass extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Log.d(TAG, "Fragment onStart");
+
 
         //  Affectation des Events
         associateDragNDropAction();
@@ -300,7 +298,9 @@ public class DragNDropAssociationFragmentClass extends Fragment {
 
     }
 
-
+    /**
+     * Méthode qui va lancer du jeu
+     */
     public void startGame(){
         View whiteView = new View(getContext());
         layoutForGame.addView(whiteView);
@@ -658,7 +658,6 @@ public class DragNDropAssociationFragmentClass extends Fragment {
     }
 
 
-
     // ----------------------------------------------------------------------------
     // -------------------- Class De Gestion D'Event-------------------------
 
@@ -720,6 +719,8 @@ public class DragNDropAssociationFragmentClass extends Fragment {
             return true;
         }
     }
+
+
 
     // ----------------------------------------------------------------------------
 }

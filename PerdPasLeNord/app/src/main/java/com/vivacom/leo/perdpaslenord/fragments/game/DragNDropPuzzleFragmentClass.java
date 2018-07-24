@@ -27,8 +27,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ThemedSpinnerAdapter;
 
+import com.squareup.leakcanary.RefWatcher;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
+import com.vivacom.leo.perdpaslenord.activities.InGameActivityClass;
 import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
 
 import java.util.ArrayList;
@@ -59,6 +61,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
 
     List<LinearLayout> layoutList;
     List<String> playersName;
+    List<ImageView> list_ImageView;
 
     int numName = 0, nbBonneReponse = 0;
     int nbRotationAFaire;
@@ -228,7 +231,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
     /**
      * Cette méthode créer nos OnDragListener au lancement du fragment
      */
-    public void createLayoutList(){
+    public void createLayoutList() {
         layoutList = new ArrayList<>();
 
         layoutList.add(layoutOneOne);
@@ -245,6 +248,20 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         layoutList.add(layoutThreeTwo);
         layoutList.add(layoutThreeThree);
         layoutList.add(layoutThreeFour);
+
+        list_ImageView = new ArrayList<>();
+        list_ImageView.add(image1);
+        list_ImageView.add(image2);
+        list_ImageView.add(image3);
+        list_ImageView.add(image4);
+        list_ImageView.add(image5);
+        list_ImageView.add(image6);
+        list_ImageView.add(image7);
+        list_ImageView.add(image8);
+        list_ImageView.add(image9);
+        list_ImageView.add(image10);
+        list_ImageView.add(image11);
+
     }
 
     /**
@@ -274,20 +291,6 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
      */
     private void setUpForOperaDeLille(){
         // On affecte les images a leur elements
-        /*
-        image1.setImageResource(R.drawable.puzzle_opera_p6);
-        image2.setImageResource(R.drawable.puzzle_opera_p11);
-        image3.setImageResource(R.drawable.puzzle_opera_p5);
-        image4.setImageResource(R.drawable.puzzle_opera_p9);
-        image5.setImageResource(R.drawable.puzzle_opera_p2);
-        image6.setImageResource(R.drawable.puzzle_opera_p8);
-        image7.setImageResource(R.drawable.puzzle_opera_p12);
-        image8.setImageResource(R.drawable.puzzle_opera_p3);
-        image9.setImageResource(R.drawable.puzzle_opera_p4);
-        image10.setImageResource(R.drawable.puzzle_opera_p10);
-        image11.setImageResource(R.drawable.puzzle_opera_p7);
-        */
-
         image1.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p6, 150, 150));
         image2.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p11, 150, 150));
         image3.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p5, 150, 150));
@@ -299,9 +302,6 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
         image9.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p4, 150, 150));
         image10.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p10, 150, 150));
         image11.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p7, 150, 150));
-
-
-        // pas de 12
 
 
         // On affecte chaque bonne image à sa bonne place
@@ -327,46 +327,32 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
      */
     private void setUpForGrandGarde(){
         // On affecte les images a leur elements
-        /*
-        image1.setImageResource(R.drawable.puzzle_grandgarde_p6);
-        image2.setImageResource(R.drawable.puzzle_grandgarde_p11);
-        image3.setImageResource(R.drawable.puzzle_grandgarde_p5);
-        image4.setImageResource(R.drawable.puzzle_grandgarde_p9);
-        image5.setImageResource(R.drawable.puzzle_grandgarde_p2);
-        image6.setImageResource(R.drawable.puzzle_grandgarde_p8);
-        image7.setImageResource(R.drawable.puzzle_grandgarde_p12);
-        image8.setImageResource(R.drawable.puzzle_grandgarde_p3);
-        image9.setImageResource(R.drawable.puzzle_grandgarde_p4);
-        image10.setImageResource(R.drawable.puzzle_grandgarde_p10);
-        image11.setImageResource(R.drawable.puzzle_grandgarde_p7);
-        */
-        // pas de 12
 
-        image1.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p6, 150, 150));
-        image2.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p11, 150, 150));
-        image3.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p5, 150, 150));
-        image4.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p9, 150, 150));
-        image5.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p2, 150, 150));
-        image6.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p8, 150, 150));
-        image7.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p12, 150, 150));
-        image8.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p3, 150, 150));
-        image9.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p4, 150, 150));
-        image10.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p10, 150, 150));
-        image11.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p7, 150, 150));
+        image1.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p2, 150, 150));
+        image2.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p6, 150, 150));
+        image3.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p5, 150, 150));
+        image4.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p11, 150, 150));
+        image5.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p7, 150, 150));
+        image6.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p4, 150, 150));
+        image7.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p8, 150, 150));
+        image8.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p3, 150, 150));
+        image9.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p10, 150, 150));
+        image10.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p12, 150, 150));
+        image11.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_grandgarde_p9, 150, 150));
 
         // On affecte chaque bonne image à sa bonne place
         // pas de 1
-        goodImageFor2 = layoutTwoOne.getChildAt(0);
+        goodImageFor2 = layoutOneOne.getChildAt(0);
         goodImageFor3 = layoutTwoFour.getChildAt(0);
-        goodImageFor4 = layoutThreeOne.getChildAt(0);
+        goodImageFor4 = layoutTwoTwo.getChildAt(0);
         goodImageFor5 = layoutOneThree.getChildAt(0);
-        goodImageFor6 = layoutOneOne.getChildAt(0);
-        goodImageFor7 = layoutThreeThree.getChildAt(0);
-        goodImageFor8 = layoutTwoTwo.getChildAt(0);
-        goodImageFor9 = layoutOneFour.getChildAt(0);
-        goodImageFor10 = layoutThreeTwo.getChildAt(0);
-        goodImageFor11 = layoutOneTwo.getChildAt(0);
-        goodImageFor12 = layoutTwoThree.getChildAt(0);
+        goodImageFor6 = layoutOneTwo.getChildAt(0);
+        goodImageFor7 = layoutTwoOne.getChildAt(0);
+        goodImageFor8 = layoutTwoThree.getChildAt(0);
+        goodImageFor9 = layoutThreeThree.getChildAt(0);
+        goodImageFor10 = layoutThreeOne.getChildAt(0);
+        goodImageFor11 = layoutOneFour.getChildAt(0);
+        goodImageFor12 = layoutThreeTwo.getChildAt(0);
 
         startMessage = "Oh Non !!! \n C'est le bazar au niveau de la Grand'Garde ... \n \n Aider moi a recomposer le puzzle !!";
         endMessage = "Félicitation !!!  \n Vous êtes vraiment très doué pour les puzzles. \n \n Cliquer sur l'écran pour débloquer un mot.";
@@ -377,31 +363,18 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
      */
     private void setUpForNotreDameDeLaTreille(){
         // On affecte les images a leur elements
-        /*
-        image1.setImageResource(R.drawable.puzzle_treille_p7);
-        image2.setImageResource(R.drawable.puzzle_treille_p3);
-        image3.setImageResource(R.drawable.puzzle_treille_p2);
-        image4.setImageResource(R.drawable.puzzle_treille_p9);
-        image5.setImageResource(R.drawable.puzzle_treille_p12);
-        image6.setImageResource(R.drawable.puzzle_treille_p6);
-        image7.setImageResource(R.drawable.puzzle_treille_p5);
-        image8.setImageResource(R.drawable.puzzle_treille_p11);
-        image9.setImageResource(R.drawable.puzzle_treille_p8);
-        image10.setImageResource(R.drawable.puzzle_treille_p4);
-        image11.setImageResource(R.drawable.puzzle_treille_p10);
-        */
 
-        image1.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p7, 150, 150));
-        image2.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p3, 150, 150));
-        image3.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p2, 150, 150));
-        image4.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p9, 150, 150));
-        image5.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p12, 150, 150));
-        image6.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p6, 150, 150));
-        image7.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p5, 150, 150));
-        image8.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p11, 150, 150));
-        image9.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p8, 150, 150));
-        image10.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p4, 150, 150));
-        image11.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_opera_p10, 150, 150));
+        image1.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p7, 150, 150));
+        image2.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p3, 150, 150));
+        image3.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p2, 150, 150));
+        image4.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p9, 150, 150));
+        image5.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p12, 150, 150));
+        image6.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p6, 150, 150));
+        image7.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p5, 150, 150));
+        image8.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p11, 150, 150));
+        image9.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p8, 150, 150));
+        image10.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p4, 150, 150));
+        image11.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.puzzle_treille_p10, 150, 150));
 
 
         // On affecte chaque bonne image à sa bonne place
@@ -449,49 +422,13 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
 
     // Cette méthode va recycler nos Bitmap
     private void recycleAllBitmap(){
-        if(image1.getDrawable() != null){
-            ((BitmapDrawable)image1.getDrawable()).getBitmap().recycle();
-            image1.setImageDrawable(null);
-        }
-        if(image2.getDrawable() != null){
-            ((BitmapDrawable)image2.getDrawable()).getBitmap().recycle();
-            image2.setImageDrawable(null);
-        }
-        if(image3.getDrawable() != null){
-            ((BitmapDrawable)image3.getDrawable()).getBitmap().recycle();
-            image3.setImageDrawable(null);
-        }
-        if(image4.getDrawable() != null){
-            ((BitmapDrawable)image4.getDrawable()).getBitmap().recycle();
-            image4.setImageDrawable(null);
-        }
-        if(image5.getDrawable() != null){
-            ((BitmapDrawable)image5.getDrawable()).getBitmap().recycle();
-            image5.setImageDrawable(null);
-        }
-        if(image6.getDrawable() != null){
-            ((BitmapDrawable)image6.getDrawable()).getBitmap().recycle();
-            image6.setImageDrawable(null);
-        }
-        if(image7.getDrawable() != null){
-            ((BitmapDrawable)image7.getDrawable()).getBitmap().recycle();
-            image7.setImageDrawable(null);
-        }
-        if(image8.getDrawable() != null){
-            ((BitmapDrawable)image8.getDrawable()).getBitmap().recycle();
-            image8.setImageDrawable(null);
-        }
-        if(image9.getDrawable() != null){
-            ((BitmapDrawable)image9.getDrawable()).getBitmap().recycle();
-            image9.setImageDrawable(null);
-        }
-        if(image10.getDrawable() != null){
-            ((BitmapDrawable)image10.getDrawable()).getBitmap().recycle();
-            image10.setImageDrawable(null);
-        }
-        if(image11.getDrawable() != null){
-            ((BitmapDrawable)image11.getDrawable()).getBitmap().recycle();
-            image11.setImageDrawable(null);
+
+
+        for(ImageView img : list_ImageView){
+            if(img.getDrawable() != null){
+                ((BitmapDrawable)img.getDrawable()).getBitmap().recycle();
+                img.setImageDrawable(null);
+            }
         }
 
         System.gc();
@@ -605,6 +542,7 @@ public class DragNDropPuzzleFragmentClass extends Fragment {
     // ---------
 
     public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();

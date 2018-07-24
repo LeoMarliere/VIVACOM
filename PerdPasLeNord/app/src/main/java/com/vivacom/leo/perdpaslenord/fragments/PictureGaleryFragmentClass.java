@@ -18,11 +18,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.vivacom.leo.perdpaslenord.OnSwipeTouchListener;
 import com.vivacom.leo.perdpaslenord.R;
+import com.vivacom.leo.perdpaslenord.activities.InGameActivityClass;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -111,6 +115,7 @@ public class PictureGaleryFragmentClass extends Fragment {
 
         Log.d(TAG, "Fragment onStart");
 
+
         // On récupère notre liste de photo
         if (getArguments() != null) {
             Bundle args = getArguments();
@@ -118,12 +123,14 @@ public class PictureGaleryFragmentClass extends Fragment {
                 maListe = args.getIntegerArrayList(IMG_PATH);
         }
 
-        assert maListe != null;
-        for(Integer inte : maListe){
-            Bitmap bitmap = decodeSampledBitmapFromResource(getResources(), inte, 800, 600);
-            list_Bitmap.add(bitmap);
-        }
+        createListBitmap();
 
+    }
+
+    // ------- Methode de setUp -------
+
+    // SetUp nos photos et image
+    private void setUpImage(){
         imageLeft = new ImageView(getContext());
         imageRight = new ImageView(getContext());
         imageCenter = new ImageView(getContext());
@@ -140,6 +147,12 @@ public class PictureGaleryFragmentClass extends Fragment {
         // On déplace nos photos
         mPhoto2.animate().translationX(-1000).withLayer().setDuration(50);
         mPhoto3.animate().translationX(+1000).withLayer().setDuration(50);
+
+        createImageListener();
+    }
+
+    // Créer le listener
+    private void createImageListener(){
 
         try{
             if (maListe != null) {
@@ -280,7 +293,34 @@ public class PictureGaleryFragmentClass extends Fragment {
         }
     }
 
+    // ----------------- Méthode de gestion des Bitmap------------------------
 
+    // Créer nos Bitmap est les mets dans notre liste
+    // Utilise un thread a part
+    private void createListBitmap(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                assert maListe != null;
+                for(Integer inte : maListe){
+                    Bitmap bitmap = decodeSampledBitmapFromResource(getResources(), inte, 800, 600);
+                    list_Bitmap.add(bitmap);
+                }
+
+                // Une fois la list complété, on setUp tout
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setUpImage();
+                    }
+                });
+
+            }
+        }).start();
+    }
+
+    // Méthode qui créer les bitmap a partir des ressources
     public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
@@ -296,7 +336,7 @@ public class PictureGaleryFragmentClass extends Fragment {
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
-
+    // Cette méthode va calculer la bonne taille pour les bitmap
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
@@ -320,29 +360,13 @@ public class PictureGaleryFragmentClass extends Fragment {
         return inSampleSize;
     }
 
-    /**
-     * Cette méthode va recycler et detrure les Bitmap
-     */
+    // Cette méthode va recycler et detruire les Bitmap d la liste
+    // Libere de la place mémoire
     private void recycleAllBitmap(){
 
-        if(imageCenter != null){
-            if(imageCenter.getDrawable() != null){
-                ((BitmapDrawable)imageCenter.getDrawable()).getBitmap().recycle();
-                imageCenter.setImageDrawable(null);
-            }
-        }
-
-        if(imageCenter != null){
-            if(imageLeft.getDrawable() != null){
-                ((BitmapDrawable)imageLeft.getDrawable()).getBitmap().recycle();
-                imageLeft.setImageDrawable(null);
-            }
-        }
-
-        if(imageCenter != null){
-            if(imageRight.getDrawable() != null){
-                ((BitmapDrawable)imageRight.getDrawable()).getBitmap().recycle();
-                imageRight.setImageDrawable(null);
+        if(list_Bitmap != null && list_Bitmap.size() != 0){
+            for (Bitmap btm : list_Bitmap) {
+                btm.recycle();
             }
         }
 

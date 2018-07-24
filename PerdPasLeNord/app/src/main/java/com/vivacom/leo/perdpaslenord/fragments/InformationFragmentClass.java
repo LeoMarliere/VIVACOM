@@ -17,12 +17,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
 
 
 import java.util.ArrayList;
-
+import java.util.Objects;
 
 
 /**
@@ -109,6 +110,7 @@ public class InformationFragmentClass extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Log.d(TAG, "Fragment onStart");
+        initLeakCanary();
 
         if (getArguments() != null) {
             Bundle args = getArguments();
@@ -195,6 +197,19 @@ public class InformationFragmentClass extends Fragment {
 
         moreInformation.setVisibility(View.GONE);
         informationFragmentClassCallBack.checkIfInformationsCompleted();
+    }
+
+
+    /**
+     * Initialise LeakCanary pour observer les fuites de mémoire
+     */
+    private void initLeakCanary(){
+        if (LeakCanary.isInAnalyzerProcess(Objects.requireNonNull(getActivity()).getApplicationContext())) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(getActivity().getApplication());
     }
 
 

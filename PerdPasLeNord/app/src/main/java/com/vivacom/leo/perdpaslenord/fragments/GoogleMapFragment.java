@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
@@ -48,13 +49,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.vivacom.leo.perdpaslenord.CustomMapTileProvider;
 import com.vivacom.leo.perdpaslenord.R;
 import com.vivacom.leo.perdpaslenord.ViewAnimations;
 import com.vivacom.leo.perdpaslenord.constant.ConstantInfos;
 import com.vivacom.leo.perdpaslenord.constant.ConstantLatLng;
-import com.vivacom.leo.perdpaslenord.fragments.game.QCMFragmentClass;
 import com.vivacom.leo.perdpaslenord.objects.MarkerOptionRealm;
 import com.vivacom.leo.perdpaslenord.objects.SpotClass;
 import com.vivacom.leo.perdpaslenord.objects.TeamClass;
@@ -175,7 +176,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
     @Override
     public void onPause(){
-        removeLocationListener();
         super.onPause();
         Log.d(TAG, "Activity onPause");
         if (centerBtnVisible){changeCenterBtnVisibility();}
@@ -183,7 +183,6 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
 
     @Override
     public  void onResume(){
-        restartLocationListener();
         super.onResume();
         Log.i(TAG, "Activity onResume");
         if (!centerBtnVisible){changeCenterBtnVisibility();}
@@ -1461,7 +1460,10 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                     Log.d(TAG, "Distance de la pastille "+ myMarkerOption.getTitle() + " : " + mLastLocationGoogleMap.distanceTo(markerLocation));
                     if ((int) mLastLocationGoogleMap.distanceTo(markerLocation) < 12) {
 
-                        pastilleFind = true;
+
+                        // On joue notre son
+                        final MediaPlayer mp = MediaPlayer.create(getContext(), R.raw.noise1);
+                        mp.start();
 
                         // On fait apparaitre la marker
                         markerOptionList_Pastille.remove(myMarkerOption);
@@ -1473,20 +1475,19 @@ public class GoogleMapFragment extends android.support.v4.app.Fragment implement
                                 String[] messages = getListMessageForPopUp(myMarkerOption.getTitle());
                                 googleMapFragmentCallBack.showMJFragment(messages, 3);
                                 changeSecretSpotStatusInBDD(myMarkerOption.getTitle());
+                                mp.release();
                             }
                         });
                     }
                 }
 
-                if(pastilleFind){
-                    // On joue notre son
-                    final MediaPlayer mp = MediaPlayer.create(getContext(), R.raw.noise1);
-                    mp.start();
-                }
+
 
             }
 
         }).start();
+
+
 
     }
 
